@@ -1,11 +1,19 @@
 'use strict';
+
+const selectorMap = {};
+
 module.exports = selector => {
-	return new Promise(resolve => {
+	if (selectorMap[selector]) {
+		return selectorMap[selector];
+	}
+
+	selectorMap[selector] = new Promise(resolve => {
 		const el = document.querySelector(selector);
 
 		// shortcut if the element already exists
 		if (el) {
 			resolve(el);
+			delete selectorMap[selector];
 			return;
 		}
 
@@ -16,7 +24,10 @@ module.exports = selector => {
 			if (el) {
 				resolve(el);
 				clearInterval(awaitElement);
+				delete selectorMap[selector];
 			}
 		}, 50);
 	});
+
+	return selectorMap[selector];
 };

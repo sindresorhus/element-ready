@@ -9,6 +9,12 @@ global.window = document.defaultView;
 test(async t => {
 	const elCheck = m('#unicorn');
 
+	//multiple calls
+	m('#unicorn');
+	m('#unicorn');
+	m('#unicorn');
+	m('#unicorn');
+
 	delay(500).then(() => {
 		const el = document.createElement('p');
 		el.id = 'unicorn';
