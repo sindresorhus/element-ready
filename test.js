@@ -9,7 +9,7 @@ global.window = document.defaultView;
 test(async t => {
 	const elCheck = m('#unicorn');
 
-	//multiple calls
+	// multiple calls
 	m('#unicorn');
 	m('#unicorn');
 	m('#unicorn');
