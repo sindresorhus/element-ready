@@ -1,19 +1,19 @@
 'use strict';
 
-const selectorMap = {};
+const selectorMap = new Map();
 
 module.exports = selector => {
-	if (selectorMap[selector]) {
-		return selectorMap[selector];
+	if (selectorMap.has(selector)) {
+		return selectorMap.get(selector);
 	}
 
-	selectorMap[selector] = new Promise(resolve => {
+	const promise = new Promise(resolve => {
 		const el = document.querySelector(selector);
 
 		// shortcut if the element already exists
 		if (el) {
 			resolve(el);
-			delete selectorMap[selector];
+			selectorMap.delete(selector);
 			return;
 		}
 
@@ -24,10 +24,10 @@ module.exports = selector => {
 			if (el) {
 				resolve(el);
 				clearInterval(awaitElement);
-				delete selectorMap[selector];
+				selectorMap.delete(selector);
 			}
 		}, 50);
 	});
 
-	return selectorMap[selector];
+	return selectorMap.set(selector, promise).get(selector);
 };
