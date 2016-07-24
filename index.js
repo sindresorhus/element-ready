@@ -1,10 +1,10 @@
 'use strict';
 
-const selectorMap = new Map();
+const selectorCache = new Map();
 
 module.exports = selector => {
-	if (selectorMap.has(selector)) {
-		return selectorMap.get(selector);
+	if (selectorCache.has(selector)) {
+		return selectorCache.get(selector);
 	}
 
 	const promise = new Promise(resolve => {
@@ -13,7 +13,7 @@ module.exports = selector => {
 		// shortcut if the element already exists
 		if (el) {
 			resolve(el);
-			selectorMap.delete(selector);
+			selectorCache.delete(selector);
 			return;
 		}
 
@@ -24,10 +24,12 @@ module.exports = selector => {
 			if (el) {
 				resolve(el);
 				clearInterval(awaitElement);
-				selectorMap.delete(selector);
+				selectorCache.delete(selector);
 			}
 		}, 50);
 	});
 
-	return selectorMap.set(selector, promise).get(selector);
+	selectorCache.set(selector, promise);
+
+	return promise;
 };
