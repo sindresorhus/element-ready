@@ -2,8 +2,6 @@
 
 > Detect when an element is ready in the DOM
 
-Uses ES2015 syntax.
-
 
 ## Install
 

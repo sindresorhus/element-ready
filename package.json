@@ -37,7 +37,6 @@
     "xo": "*"
   },
   "xo": {
-    "esnext": true,
     "envs": [
       "node",
       "browser"
