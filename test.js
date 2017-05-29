@@ -5,6 +5,7 @@ import m from './';
 
 global.document = jsdom.jsdom();
 global.window = document.defaultView;
+global.requestAnimationFrame = fn => setTimeout(fn, 16);
 
 test('check if element ready', async t => {
 	const elCheck = m('#unicorn');
