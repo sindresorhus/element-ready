@@ -1,7 +1,7 @@
 import test from 'ava';
 import jsdom from 'jsdom';
 import delay from 'delay';
-import m from './';
+import m from '.';
 
 global.document = jsdom.jsdom();
 global.window = document.defaultView;
