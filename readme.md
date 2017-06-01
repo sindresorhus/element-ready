@@ -35,6 +35,11 @@ Type: `string`
 [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
 
 
+## Related
+
+- [dom-loaded](https://github.com/sindresorhus/dom-loaded) - Check when the DOM is loaded like `DOMContentLoaded`
+
+
 ## License
 
 MIT © [Sindre Sorhus](https://sindresorhus.com)
