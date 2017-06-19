@@ -30,7 +30,7 @@
     "detect",
     "check"
   ],
-	"dependencies": {
+  "dependencies": {
     "p-cancelable": "^0.2.0"
   },
   "devDependencies": {
