@@ -30,6 +30,9 @@
     "detect",
     "check"
   ],
+	"dependencies": {
+    "p-cancelable": "^0.2.0"
+  },
   "devDependencies": {
     "ava": "*",
     "delay": "^2.0.0",
@@ -41,8 +44,5 @@
       "node",
       "browser"
     ]
-  },
-  "dependencies": {
-    "p-cancelable": "^0.2.0"
   }
 }
