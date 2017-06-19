@@ -34,7 +34,7 @@ test('ensure only one promise is returned on multiple calls passing the same sel
 	t.pass();
 });
 
-test('check if wait can be cancelled', async t => {
+test('check if wait can be canceled', async t => {
 	const elCheck = m('#dofle');
 
 	await delay(200);
