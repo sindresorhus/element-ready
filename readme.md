@@ -34,6 +34,16 @@ Type: `string`
 
 [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
 
+### elementReadyPromise#cancel()
+
+Type: `Function`
+
+Stops checking for the element to be ready. The cancelation is synchronous.
+
+Calling it after the promise has settled or multiple times does nothing.
+
+Based on [p-cancelable](https://github.com/sindresorhus/p-cancelable).
+
 
 ## Related
 
