@@ -1,11 +1,13 @@
 import test from 'ava';
 import jsdom from 'jsdom';
 import delay from 'delay';
+import PCancelable from 'p-cancelable';
 import m from '.';
 
 global.document = jsdom.jsdom();
 global.window = document.defaultView;
 global.requestAnimationFrame = fn => setTimeout(fn, 16);
+global.cancelAnimationFrame = id => clearTimeout(id);
 
 test('check if element ready', async t => {
 	const elCheck = m('#unicorn');
@@ -30,4 +32,18 @@ test('ensure only one promise is returned on multiple calls passing the same sel
 	}
 
 	t.pass();
+});
+
+test('check if wait can be cancelled', async t => {
+	const elCheck = m('#dofle');
+
+	await delay(200);
+	elCheck.cancel();
+
+	await delay(500);
+	const el = document.createElement('p');
+	el.id = 'dofle';
+	document.body.appendChild(el);
+
+	await t.throws(elCheck, PCancelable.CancelError);
 });

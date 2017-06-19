@@ -1,4 +1,5 @@
 'use strict';
+const PCancelable = require('p-cancelable');
 
 const selectorCache = new Map();
 
@@ -7,7 +8,12 @@ module.exports = selector => {
 		return selectorCache.get(selector);
 	}
 
-	const promise = new Promise(resolve => {
+	const promise = new PCancelable((onCancel, resolve) => {
+		let raf;
+		onCancel(() => {
+			cancelAnimationFrame(raf);
+		});
+
 		// Interval to keep checking for it to come into the DOM
 		(function check() {
 			const el = document.querySelector(selector);
@@ -16,7 +22,7 @@ module.exports = selector => {
 				resolve(el);
 				selectorCache.delete(selector);
 			} else {
-				requestAnimationFrame(check);
+				raf = requestAnimationFrame(check);
 			}
 		})();
 	});

@@ -41,5 +41,8 @@
       "node",
       "browser"
     ]
+  },
+  "dependencies": {
+    "p-cancelable": "^0.2.0"
   }
 }
