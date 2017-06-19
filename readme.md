@@ -38,7 +38,7 @@ Type: `string`
 
 Type: `Function`
 
-Stops checking for the element to be ready. The cancellation is synchronous.
+Stops checking for the element to be ready. The cancelation is synchronous.
 
 Calling it after the promise has settled or multiple times does nothing.
 
