@@ -4,8 +4,9 @@ import delay from 'delay';
 import PCancelable from 'p-cancelable';
 import m from '.';
 
-global.document = jsdom.jsdom();
-global.window = document.defaultView;
+const dom = new jsdom.JSDOM();
+global.window = dom.window;
+global.document = dom.window.document;
 global.requestAnimationFrame = fn => setTimeout(fn, 16);
 global.cancelAnimationFrame = id => clearTimeout(id);
 

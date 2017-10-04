@@ -31,12 +31,12 @@
 		"check"
 	],
 	"dependencies": {
-		"p-cancelable": "^0.2.0"
+		"p-cancelable": "^0.3.0"
 	},
 	"devDependencies": {
 		"ava": "*",
 		"delay": "^2.0.0",
-		"jsdom": "^9.4.0",
+		"jsdom": "^11.3.0",
 		"xo": "*"
 	},
 	"xo": {
