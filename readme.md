@@ -40,7 +40,7 @@ Type: `Object`
 
 ##### target
 
-Type: `Element`, `document`<br>
+Type: `Element` `document`<br>
 Default: `document`
 
 The element that's expected to contain a match.
