@@ -1,48 +1,48 @@
 {
-  "name": "element-ready",
-  "version": "2.1.0",
-  "description": "Detect when an element is ready in the DOM",
-  "license": "MIT",
-  "repository": "sindresorhus/element-ready",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "engines": {
-    "node": ">=4"
-  },
-  "scripts": {
-    "test": "xo && ava"
-  },
-  "files": [
-    "index.js"
-  ],
-  "keywords": [
-    "browser",
-    "element",
-    "ready",
-    "el",
-    "dom",
-    "css",
-    "selector",
-    "wait",
-    "detect",
-    "check"
-  ],
-  "dependencies": {
-    "p-cancelable": "^0.2.0"
-  },
-  "devDependencies": {
-    "ava": "*",
-    "delay": "^2.0.0",
-    "jsdom": "^9.4.0",
-    "xo": "*"
-  },
-  "xo": {
-    "envs": [
-      "node",
-      "browser"
-    ]
-  }
+	"name": "element-ready",
+	"version": "2.1.0",
+	"description": "Detect when an element is ready in the DOM",
+	"license": "MIT",
+	"repository": "sindresorhus/element-ready",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=4"
+	},
+	"scripts": {
+		"test": "xo && ava"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"browser",
+		"element",
+		"ready",
+		"el",
+		"dom",
+		"css",
+		"selector",
+		"wait",
+		"detect",
+		"check"
+	],
+	"dependencies": {
+		"p-cancelable": "^0.2.0"
+	},
+	"devDependencies": {
+		"ava": "*",
+		"delay": "^2.0.0",
+		"jsdom": "^9.4.0",
+		"xo": "*"
+	},
+	"xo": {
+		"envs": [
+			"node",
+			"browser"
+		]
+	}
 }

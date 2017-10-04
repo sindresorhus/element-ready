@@ -6,7 +6,7 @@
 ## Install
 
 ```
-$ npm install --save element-ready
+$ npm install element-ready
 ```
 
 
