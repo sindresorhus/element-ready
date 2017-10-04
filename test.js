@@ -22,6 +22,22 @@ test('check if element ready', async t => {
 	t.is(el.id, 'unicorn');
 });
 
+test('check if element ready inside target', async t => {
+	const target = document.createElement('p');
+	const elCheck = m('#unicorn', {
+		target
+	});
+
+	delay(500).then(() => {
+		const el = document.createElement('p');
+		el.id = 'unicorn';
+		target.appendChild(el);
+	});
+
+	const el = await elCheck;
+	t.is(el.id, 'unicorn');
+});
+
 test('ensure only one promise is returned on multiple calls passing the same selector', t => {
 	const elCheck = m('#unicorn');
 

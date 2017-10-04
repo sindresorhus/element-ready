@@ -3,7 +3,11 @@ const PCancelable = require('p-cancelable');
 
 const selectorCache = new Map();
 
-module.exports = selector => {
+module.exports = (selector, options) => {
+	options = Object.assign({
+		target: document
+	}, options);
+
 	if (selectorCache.has(selector)) {
 		return selectorCache.get(selector);
 	}
@@ -16,7 +20,7 @@ module.exports = selector => {
 
 		// Interval to keep checking for it to come into the DOM
 		(function check() {
-			const el = document.querySelector(selector);
+			const el = options.target.querySelector(selector);
 
 			if (el) {
 				resolve(el);
