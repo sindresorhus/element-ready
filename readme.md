@@ -24,7 +24,7 @@ elementReady('#unicorn').then(element => {
 
 ## API
 
-### elementReady(selector)
+### elementReady(selector, [options])
 
 Returns a promise for a matching element.
 
@@ -33,6 +33,17 @@ Returns a promise for a matching element.
 Type: `string`
 
 [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
+
+#### options
+
+Type: `Object`
+
+##### target
+
+Type: `Element`, `document`<br>
+Default: `document`
+
+The element that's expected to contain a match.
 
 ### elementReadyPromise#cancel()
 
