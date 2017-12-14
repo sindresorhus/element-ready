@@ -3,6 +3,13 @@ const PCancelable = require('p-cancelable');
 
 const targetCache = new Map();
 
+const cleanCache = (target, selector) => {
+	targetCache.get(target).delete(selector);
+	if (!targetCache.get(target).size) {
+		targetCache.delete(target);
+	}
+};
+
 module.exports = (selector, options) => {
 	options = Object.assign({
 		target: document
@@ -16,6 +23,7 @@ module.exports = (selector, options) => {
 		let raf;
 		onCancel(() => {
 			cancelAnimationFrame(raf);
+			cleanCache(options.target, selector);
 		});
 
 		// Interval to keep checking for it to come into the DOM
@@ -24,10 +32,7 @@ module.exports = (selector, options) => {
 
 			if (el) {
 				resolve(el);
-				targetCache.get(options.target).delete(selector);
-				if (!targetCache.get(options.target).size) {
-					targetCache.delete(options.target);
-				}
+				cleanCache(options.target, selector);
 			} else {
 				raf = requestAnimationFrame(check);
 			}
