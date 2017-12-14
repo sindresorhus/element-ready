@@ -1,7 +1,7 @@
 'use strict';
 const PCancelable = require('p-cancelable');
 
-const targetCache = new Map();
+const targetCache = new WeakMap();
 
 const cleanCache = (target, selector) => {
 	targetCache.get(target).delete(selector);
