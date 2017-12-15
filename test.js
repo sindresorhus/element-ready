@@ -39,6 +39,35 @@ test('check if element ready inside target', async t => {
 	t.is(el.id, 'unicorn');
 });
 
+test('check if different elements ready inside different targets with same selector', async t => {
+	const target1 = document.createElement('p');
+	const elCheck1 = m('.unicorn', {
+		target: target1
+	});
+	const target2 = document.createElement('span');
+	const elCheck2 = m('.unicorn', {
+		target: target2
+	});
+
+	delay(500).then(() => {
+		const el1 = document.createElement('p');
+		el1.id = 'unicorn1';
+		el1.className = 'unicorn';
+		target1.appendChild(el1);
+
+		const el2 = document.createElement('span');
+		el2.id = 'unicorn2';
+		el2.className = 'unicorn';
+		target2.appendChild(el2);
+	});
+
+	const el1 = await elCheck1;
+	t.is(el1.id, 'unicorn1');
+
+	const el2 = await elCheck2;
+	t.is(el2.id, 'unicorn2');
+});
+
 test('ensure only one promise is returned on multiple calls passing the same selector', t => {
 	const elCheck = m('#unicorn');
 
@@ -63,4 +92,15 @@ test('check if wait can be canceled', async t => {
 	document.body.appendChild(el);
 
 	await t.throws(elCheck, PCancelable.CancelError);
+});
+
+test('ensure different promises are returned on second call with the same selector when first was cancelled', async t => {
+	const elCheck1 = m('.unicorn');
+
+	elCheck1.cancel();
+
+	const elCheck2 = m('.unicorn');
+
+	await t.throws(elCheck1, PCancelable.CancelError);
+	t.true(elCheck1 !== elCheck2);
 });

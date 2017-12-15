@@ -1,21 +1,29 @@
 'use strict';
 const PCancelable = require('p-cancelable');
 
-const selectorCache = new Map();
+const targetCache = new WeakMap();
+
+const cleanCache = (target, selector) => {
+	targetCache.get(target).delete(selector);
+	if (!targetCache.get(target).size) {
+		targetCache.delete(target);
+	}
+};
 
 module.exports = (selector, options) => {
 	options = Object.assign({
 		target: document
 	}, options);
 
-	if (selectorCache.has(selector)) {
-		return selectorCache.get(selector);
+	if (targetCache.has(options.target) && targetCache.get(options.target).has(selector)) {
+		return targetCache.get(options.target).get(selector);
 	}
 
 	const promise = new PCancelable((onCancel, resolve) => {
 		let raf;
 		onCancel(() => {
 			cancelAnimationFrame(raf);
+			cleanCache(options.target, selector);
 		});
 
 		// Interval to keep checking for it to come into the DOM
@@ -24,14 +32,18 @@ module.exports = (selector, options) => {
 
 			if (el) {
 				resolve(el);
-				selectorCache.delete(selector);
+				cleanCache(options.target, selector);
 			} else {
 				raf = requestAnimationFrame(check);
 			}
 		})();
 	});
 
-	selectorCache.set(selector, promise);
+	if (targetCache.has(options.target)) {
+		targetCache.get(options.target).set(selector, promise);
+	} else {
+		targetCache.set(options.target, new Map([[selector, promise]]));
+	}
 
 	return promise;
 };
