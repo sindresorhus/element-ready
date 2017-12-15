@@ -15,10 +15,12 @@ $ npm install element-ready
 ```js
 const elementReady = require('element-ready');
 
-elementReady('#unicorn').then(element => {
+(async () => {
+	const element = await elementReady('#unicorn');
+
 	console.log(element.id);
 	//=> 'unicorn'
-});
+})();
 ```
 
 

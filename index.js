@@ -5,6 +5,7 @@ const targetCache = new WeakMap();
 
 const cleanCache = (target, selector) => {
 	targetCache.get(target).delete(selector);
+
 	if (!targetCache.get(target).size) {
 		targetCache.delete(target);
 	}
