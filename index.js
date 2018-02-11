@@ -20,7 +20,7 @@ module.exports = (selector, options) => {
 		return targetCache.get(options.target).get(selector);
 	}
 
-	const promise = new PCancelable((onCancel, resolve) => {
+	const promise = Promise.resolve().then(() => new PCancelable((onCancel, resolve) => {
 		let raf;
 		onCancel(() => {
 			cancelAnimationFrame(raf);
@@ -38,7 +38,7 @@ module.exports = (selector, options) => {
 				raf = requestAnimationFrame(check);
 			}
 		})();
-	});
+	}));
 
 	if (targetCache.has(options.target)) {
 		targetCache.get(options.target).set(selector, promise);
