@@ -104,3 +104,15 @@ test('ensure different promises are returned on second call with the same select
 	await t.throws(elCheck1, PCancelable.CancelError);
 	t.not(elCheck1, elCheck2);
 });
+
+test.failing('ensure different promises are returned on second call with the same selector when first was found', async t => {
+	const prependElement = () => {
+		const el = document.createElement('p');
+		el.className = 'unicorn';
+		document.body.prepend(el);
+		return el;
+	});
+
+	t.is(prependElement(), await m('.unicorn'));
+	t.is(prependElement(), await m('.unicorn'));
+});
