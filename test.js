@@ -111,7 +111,7 @@ test.failing('ensure different promises are returned on second call with the sam
 		el.className = 'unicorn';
 		document.body.prepend(el);
 		return el;
-	});
+	};
 
 	t.is(prependElement(), await m('.unicorn'));
 	t.is(prependElement(), await m('.unicorn'));
