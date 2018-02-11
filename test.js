@@ -105,7 +105,7 @@ test('ensure different promises are returned on second call with the same select
 	t.not(elCheck1, elCheck2);
 });
 
-test.failing('ensure different promises are returned on second call with the same selector when first was found', async t => {
+test('ensure different promises are returned on second call with the same selector when first was found', async t => {
 	const prependElement = () => {
 		const el = document.createElement('p');
 		el.className = 'unicorn';
@@ -114,5 +114,8 @@ test.failing('ensure different promises are returned on second call with the sam
 	};
 
 	t.is(prependElement(), await m('.unicorn'));
+
+	document.querySelector('.unicorn').remove();
+
 	t.is(prependElement(), await m('.unicorn'));
 });
