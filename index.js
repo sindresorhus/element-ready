@@ -4,10 +4,12 @@ const PCancelable = require('p-cancelable');
 const targetCache = new WeakMap();
 
 const cleanCache = (target, selector) => {
-	targetCache.get(target).delete(selector);
-
-	if (!targetCache.get(target).size) {
-		targetCache.delete(target);
+	const map = targetCache.get(target);
+	if (map) {
+		map.delete(selector);
+		if (map.size === 0) {
+			targetCache.delete(target);
+		}
 	}
 };
 
@@ -20,6 +22,7 @@ module.exports = (selector, options) => {
 		return targetCache.get(options.target).get(selector);
 	}
 
+	let alreadyFound = false;
 	const promise = new PCancelable((onCancel, resolve) => {
 		let raf;
 		onCancel(() => {
@@ -33,6 +36,7 @@ module.exports = (selector, options) => {
 
 			if (el) {
 				resolve(el);
+				alreadyFound = true;
 				cleanCache(options.target, selector);
 			} else {
 				raf = requestAnimationFrame(check);
@@ -40,10 +44,13 @@ module.exports = (selector, options) => {
 		})();
 	});
 
-	if (targetCache.has(options.target)) {
-		targetCache.get(options.target).set(selector, promise);
-	} else {
-		targetCache.set(options.target, new Map([[selector, promise]]));
+	// The element might have been found in the first synchronous check
+	if (!alreadyFound) {
+		if (targetCache.has(options.target)) {
+			targetCache.get(options.target).set(selector, promise);
+		} else {
+			targetCache.set(options.target, new Map([[selector, promise]]));
+		}
 	}
 
 	return promise;
