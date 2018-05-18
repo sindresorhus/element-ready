@@ -23,7 +23,7 @@ module.exports = (selector, options) => {
 	}
 
 	let alreadyFound = false;
-	const promise = new PCancelable((onCancel, resolve) => {
+	const promise = new PCancelable((resolve, reject, onCancel) => {
 		let raf;
 		onCancel(() => {
 			cancelAnimationFrame(raf);

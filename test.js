@@ -114,7 +114,7 @@ test('ensure different promises are returned on second call with the same select
 	};
 
 	t.is(prependElement(), await m('.unicorn'));
-	
+
 	document.querySelector('.unicorn').remove();
 	t.is(prependElement(), await m('.unicorn'));
 
