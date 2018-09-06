@@ -1,0 +1,14 @@
+[ignore]
+
+[include]
+index.js.flow$
+
+[libs]
+
+[lints]
+
+[options]
+suppress_comment=\\(.\\|\n\\)*\\$ExpectError
+include_warnings=true
+
+[strict]

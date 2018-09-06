@@ -1,0 +1,11 @@
+// @flow
+
+export type Options = {|
+	target?: Document | DocumentFragment | Element
+|};
+
+// TODO: Replace `Promise<HTMLElement>` with PCancelable
+declare module.exports: (
+	selector: string,
+	options?: ?Options
+) => Promise<HTMLElement>;

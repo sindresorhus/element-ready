@@ -7,13 +7,13 @@
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
-		"url": "sindresorhus.com"
+		"url": "http://sindresorhus.com"
 	},
 	"engines": {
 		"node": ">=6"
 	},
 	"scripts": {
-		"test": "xo && ava"
+		"test": "xo && ava && flow check flow-tests.js"
 	},
 	"files": [
 		"index.js"
@@ -35,7 +35,11 @@
 	},
 	"devDependencies": {
 		"ava": "*",
+		"babel-eslint": "^9.0.0",
 		"delay": "^2.0.0",
+		"eslint-config-xo-flow": "^0.1.0",
+		"eslint-plugin-flowtype": "^2.50.0",
+		"flow-bin": "^0.80.0",
 		"jsdom": "^11.10.0",
 		"xo": "*"
 	},
@@ -43,6 +47,12 @@
 		"envs": [
 			"node",
 			"browser"
-		]
+		],
+		"extends": "xo-flow",
+		"settings": {
+			"flowtype": {
+				"onlyFilesWithFlowAnnotation": true
+			}
+		}
 	}
 }
