@@ -1,7 +1,7 @@
 // @flow
 
-declare type Options = {|
-	target?: ?HTMLElement
+export type Options = {|
+	target?: Document | DocumentFragment | Element
 |};
 
 // TODO: Replace `Promise<HTMLElement>` with PCancelable
