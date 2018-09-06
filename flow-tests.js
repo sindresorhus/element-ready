@@ -12,6 +12,9 @@ elementReady('#unicorn', {target: document.createDocumentFragment()});
 
 (async (): Promise<void> => {
 	const element: HTMLElement = await elementReady('#unicorn');
+	if (element instanceof HTMLInputElement) {
+		element.checked = true;
+	}
 })();
 
 ({target: document}: Options);
