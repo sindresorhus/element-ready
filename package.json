@@ -35,7 +35,10 @@
 	},
 	"devDependencies": {
 		"ava": "*",
+		"babel-eslint": "^9.0.0",
 		"delay": "^2.0.0",
+		"eslint-config-xo-flow": "^0.1.0",
+		"eslint-plugin-flowtype": "^2.50.0",
 		"flow-bin": "^0.80.0",
 		"jsdom": "^11.10.0",
 		"xo": "*"
@@ -45,8 +48,11 @@
 			"node",
 			"browser"
 		],
-		"ignores": [
-			"flow-tests.js"
-		]
+		"extends": "xo-flow",
+		"settings": {
+			"flowtype": {
+				"onlyFilesWithFlowAnnotation": true
+			}
+		}
 	}
 }
