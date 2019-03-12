@@ -13,7 +13,7 @@ const cleanCache = (target, selector) => {
 	}
 };
 
-module.exports = (selector, options) => {
+const elementReady = (selector, options) => {
 	options = Object.assign({
 		target: document
 	}, options);
@@ -24,9 +24,9 @@ module.exports = (selector, options) => {
 
 	let alreadyFound = false;
 	const promise = new PCancelable((resolve, reject, onCancel) => {
-		let raf;
+		let requestedAnimationFrameId;
 		onCancel(() => {
-			cancelAnimationFrame(raf);
+			cancelAnimationFrame(requestedAnimationFrameId);
 			cleanCache(options.target, selector);
 		});
 
@@ -39,7 +39,7 @@ module.exports = (selector, options) => {
 				alreadyFound = true;
 				cleanCache(options.target, selector);
 			} else {
-				raf = requestAnimationFrame(check);
+				requestedAnimationFrameId = requestAnimationFrame(check);
 			}
 		})();
 	});
@@ -55,3 +55,6 @@ module.exports = (selector, options) => {
 
 	return promise;
 };
+
+module.exports = elementReady;
+module.exports.default = elementReady;
