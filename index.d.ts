@@ -5,7 +5,7 @@ export interface Options {
 	The element that's expected to contain a match.
 
 	@default document
-	 */
+	*/
 	readonly target?: Element | Document;
 }
 
