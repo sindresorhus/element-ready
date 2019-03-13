@@ -4,7 +4,8 @@ const ManyKeysMap = require('many-keys-map');
 
 const cache = new ManyKeysMap();
 
-module.exports = (selector, options) => {
+
+const elementReady = (selector, options) => {
 	const {target} = Object.assign({
 		target: document
 	}, options);
@@ -16,9 +17,9 @@ module.exports = (selector, options) => {
 
 	let alreadyFound = false;
 	promise = new PCancelable((resolve, reject, onCancel) => {
-		let raf;
+		let rafId;
 		onCancel(() => {
-			cancelAnimationFrame(raf);
+			cancelAnimationFrame(rafId);
 			cache.delete([target, selector], promise);
 		});
 
@@ -31,7 +32,7 @@ module.exports = (selector, options) => {
 				alreadyFound = true;
 				cache.delete([target, selector], promise);
 			} else {
-				raf = requestAnimationFrame(check);
+				rafId = requestAnimationFrame(check);
 			}
 		})();
 	});
@@ -42,3 +43,6 @@ module.exports = (selector, options) => {
 
 	return promise;
 };
+
+module.exports = elementReady;
+module.exports.default = elementReady;
