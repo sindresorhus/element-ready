@@ -4,7 +4,6 @@ const ManyKeysMap = require('many-keys-map');
 
 const cache = new ManyKeysMap();
 
-
 const elementReady = (selector, options) => {
 	const {target} = Object.assign({
 		target: document
