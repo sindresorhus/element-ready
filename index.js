@@ -24,9 +24,9 @@ const elementReady = (selector, options) => {
 
 	let alreadyFound = false;
 	const promise = new PCancelable((resolve, reject, onCancel) => {
-		let requestedAnimationFrameId;
+		let rafId;
 		onCancel(() => {
-			cancelAnimationFrame(requestedAnimationFrameId);
+			cancelAnimationFrame(rafId);
 			cleanCache(options.target, selector);
 		});
 
@@ -39,7 +39,7 @@ const elementReady = (selector, options) => {
 				alreadyFound = true;
 				cleanCache(options.target, selector);
 			} else {
-				requestedAnimationFrameId = requestAnimationFrame(check);
+				rafId = requestAnimationFrame(check);
 			}
 		})();
 	});
