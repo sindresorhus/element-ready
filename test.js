@@ -2,7 +2,7 @@ import test from 'ava';
 import jsdom from 'jsdom';
 import delay from 'delay';
 import PCancelable from 'p-cancelable';
-import m from '.';
+import elementReady from '.';
 
 const dom = new jsdom.JSDOM();
 global.window = dom.window;
@@ -11,68 +11,68 @@ global.requestAnimationFrame = fn => setTimeout(fn, 16);
 global.cancelAnimationFrame = id => clearTimeout(id);
 
 test('check if element ready', async t => {
-	const elCheck = m('#unicorn');
+	const elementCheck = elementReady('#unicorn');
 
 	delay(500).then(() => {
-		const el = document.createElement('p');
-		el.id = 'unicorn';
-		document.body.appendChild(el);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		document.body.append(element);
 	});
 
-	const el = await elCheck;
-	t.is(el.id, 'unicorn');
+	const element = await elementCheck;
+	t.is(element.id, 'unicorn');
 });
 
 test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
-	const elCheck = m('#unicorn', {
+	const elCheck = elementReady('#unicorn', {
 		target
 	});
 
 	delay(500).then(() => {
-		const el = document.createElement('p');
-		el.id = 'unicorn';
-		target.appendChild(el);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		target.append(element);
 	});
 
-	const el = await elCheck;
-	t.is(el.id, 'unicorn');
+	const element = await elCheck;
+	t.is(element.id, 'unicorn');
 });
 
 test('check if different elements ready inside different targets with same selector', async t => {
 	const target1 = document.createElement('p');
-	const elCheck1 = m('.unicorn', {
+	const elementCheck1 = elementReady('.unicorn', {
 		target: target1
 	});
 	const target2 = document.createElement('span');
-	const elCheck2 = m('.unicorn', {
+	const elementCheck2 = elementReady('.unicorn', {
 		target: target2
 	});
 
 	delay(500).then(() => {
-		const el1 = document.createElement('p');
-		el1.id = 'unicorn1';
-		el1.className = 'unicorn';
-		target1.appendChild(el1);
+		const element1 = document.createElement('p');
+		element1.id = 'unicorn1';
+		element1.className = 'unicorn';
+		target1.append(element1);
 
-		const el2 = document.createElement('span');
-		el2.id = 'unicorn2';
-		el2.className = 'unicorn';
-		target2.appendChild(el2);
+		const element2 = document.createElement('span');
+		element2.id = 'unicorn2';
+		element2.className = 'unicorn';
+		target2.append(element2);
 	});
 
-	const el1 = await elCheck1;
-	t.is(el1.id, 'unicorn1');
+	const element1 = await elementCheck1;
+	t.is(element1.id, 'unicorn1');
 
-	const el2 = await elCheck2;
-	t.is(el2.id, 'unicorn2');
+	const element2 = await elementCheck2;
+	t.is(element2.id, 'unicorn2');
 });
 
 test('ensure only one promise is returned on multiple calls passing the same selector', t => {
-	const elCheck = m('#unicorn');
+	const elementCheck = elementReady('#unicorn');
 
 	for (let i = 0; i <= 10; i++) {
-		if (m('#unicorn') !== elCheck) {
+		if (elementReady('#unicorn') !== elementCheck) {
 			t.fail();
 		}
 	}
@@ -81,43 +81,43 @@ test('ensure only one promise is returned on multiple calls passing the same sel
 });
 
 test('check if wait can be canceled', async t => {
-	const elCheck = m('#dofle');
+	const elementCheck = elementReady('#dofle');
 
 	await delay(200);
-	elCheck.cancel();
+	elementCheck.cancel();
 
 	await delay(500);
-	const el = document.createElement('p');
-	el.id = 'dofle';
-	document.body.appendChild(el);
+	const element = document.createElement('p');
+	element.id = 'dofle';
+	document.body.append(element);
 
-	await t.throws(elCheck, PCancelable.CancelError);
+	await t.throwsAsync(elementCheck, PCancelable.CancelError);
 });
 
 test('ensure different promises are returned on second call with the same selector when first was canceled', async t => {
-	const elCheck1 = m('.unicorn');
+	const elementCheck1 = elementReady('.unicorn');
 
-	elCheck1.cancel();
+	elementCheck1.cancel();
 
-	const elCheck2 = m('.unicorn');
+	const elementCheck2 = elementReady('.unicorn');
 
-	await t.throws(elCheck1, PCancelable.CancelError);
-	t.not(elCheck1, elCheck2);
+	await t.throwsAsync(elementCheck1, PCancelable.CancelError);
+	t.not(elementCheck1, elementCheck2);
 });
 
 test('ensure different promises are returned on second call with the same selector when first was found', async t => {
 	const prependElement = () => {
-		const el = document.createElement('p');
-		el.className = 'unicorn';
-		document.body.prepend(el);
-		return el;
+		const element = document.createElement('p');
+		element.className = 'unicorn';
+		document.body.prepend(element);
+		return element;
 	};
 
-	t.is(prependElement(), await m('.unicorn'));
+	t.is(prependElement(), await elementReady('.unicorn'));
 
 	document.querySelector('.unicorn').remove();
-	t.is(prependElement(), await m('.unicorn'));
+	t.is(prependElement(), await elementReady('.unicorn'));
 
 	document.querySelector('.unicorn').remove();
-	t.is(prependElement(), await m('.unicorn'));
+	t.is(prependElement(), await elementReady('.unicorn'));
 });
