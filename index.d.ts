@@ -6,7 +6,7 @@ export interface Options {
 	 *
 	 * @default document
 	 */
-	readonly target?: HTMLElement | Document;
+	readonly target?: Element | Document;
 }
 
 /**
@@ -15,7 +15,19 @@ export interface Options {
  * @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
  * @returns The matching element.
  */
-export default function elementReady(
+export default function elementReady<
+	ElementName extends keyof HTMLElementTagNameMap
+>(
+	selector: ElementName,
+	options?: Options
+): PCancelable<HTMLElementTagNameMap[ElementName]>;
+export default function elementReady<
+	ElementName extends keyof SVGElementTagNameMap
+>(
+	selector: ElementName,
+	options?: Options
+): PCancelable<SVGElementTagNameMap[ElementName]>;
+export default function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: Options
-): PCancelable<HTMLElement>;
+): PCancelable<ElementName>;
