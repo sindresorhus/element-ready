@@ -91,7 +91,7 @@ test('check if wait can be canceled', async t => {
 	el.id = 'dofle';
 	document.body.appendChild(el);
 
-	await t.throws(elCheck, PCancelable.CancelError);
+	await t.throwsAsync(elCheck, PCancelable.CancelError);
 });
 
 test('ensure different promises are returned on second call with the same selector when first was canceled', async t => {
@@ -101,7 +101,7 @@ test('ensure different promises are returned on second call with the same select
 
 	const elCheck2 = m('.unicorn');
 
-	await t.throws(elCheck1, PCancelable.CancelError);
+	await t.throwsAsync(elCheck1, PCancelable.CancelError);
 	t.not(elCheck1, elCheck2);
 });
 

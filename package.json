@@ -43,6 +43,9 @@
 		"envs": [
 			"node",
 			"browser"
-		]
+		],
+		"rules": {
+			"unicorn/prefer-node-append": 0
+		}
 	}
 }
