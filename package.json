@@ -31,6 +31,7 @@
 		"check"
 	],
 	"dependencies": {
+		"many-keys-map": "^1.0.0",
 		"p-cancelable": "^0.4.1"
 	},
 	"devDependencies": {
