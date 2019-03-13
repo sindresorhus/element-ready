@@ -9,12 +9,13 @@ module.exports = (selector, options) => {
 		target: document
 	}, options);
 
-	if (cache.has([target, selector])) {
-		return cache.get([target, selector]);
+	let promise = cache.get([target, selector]);
+	if (promise) {
+		return promise;
 	}
 
 	let alreadyFound = false;
-	const promise = new PCancelable((resolve, reject, onCancel) => {
+	promise = new PCancelable((resolve, reject, onCancel) => {
 		let raf;
 		onCancel(() => {
 			cancelAnimationFrame(raf);
