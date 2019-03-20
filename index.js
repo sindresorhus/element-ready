@@ -1,15 +1,18 @@
 'use strict';
 const PCancelable = require('p-cancelable');
 const ManyKeysMap = require('many-keys-map');
+const domLoaded = require('dom-loaded');
 
 const cache = new ManyKeysMap();
 
 const elementReady = (selector, options) => {
-	const {target} = Object.assign({
-		target: document
+	const {target, until} = Object.assign({
+		target: document,
+		until: domLoaded
 	}, options);
 
-	let promise = cache.get([target, selector]);
+	const cacheKeys = [target, selector, until];
+	let promise = cache.get(cacheKeys);
 	if (promise) {
 		return promise;
 	}
@@ -19,8 +22,15 @@ const elementReady = (selector, options) => {
 		let rafId;
 		onCancel(() => {
 			cancelAnimationFrame(rafId);
-			cache.delete([target, selector], promise);
+			cache.delete(cacheKeys, promise);
 		});
+
+		if (until && typeof until.then === 'function') {
+			until.then(() => {
+				cancelAnimationFrame(rafId);
+				resolve(null);
+			});
+		}
 
 		// Interval to keep checking for it to come into the DOM
 		(function check() {
@@ -29,7 +39,7 @@ const elementReady = (selector, options) => {
 			if (el) {
 				resolve(el);
 				alreadyFound = true;
-				cache.delete([target, selector], promise);
+				cache.delete(cacheKeys, promise);
 			} else {
 				rafId = requestAnimationFrame(check);
 			}
@@ -37,7 +47,7 @@ const elementReady = (selector, options) => {
 	});
 
 	if (!alreadyFound) {
-		cache.set([target, selector], promise);
+		cache.set(cacheKeys, promise);
 	}
 
 	return promise;
