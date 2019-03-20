@@ -13,7 +13,7 @@ global.cancelAnimationFrame = id => clearTimeout(id);
 const elementReady = require('.');
 
 test('check if element ready', async t => {
-	const elementCheck = elementReady('#unicorn', {until: false});
+	const elementCheck = elementReady('#unicorn', {cancelOnDomLoaded: false});
 
 	delay(500).then(() => {
 		const element = document.createElement('p');
@@ -29,7 +29,7 @@ test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
 	const elCheck = elementReady('#unicorn', {
 		target,
-		until: false
+		cancelOnDomLoaded: false
 	});
 
 	delay(500).then(() => {
@@ -46,12 +46,12 @@ test('check if different elements ready inside different targets with same selec
 	const target1 = document.createElement('p');
 	const elementCheck1 = elementReady('.unicorn', {
 		target: target1,
-		until: false
+		cancelOnDomLoaded: false
 	});
 	const target2 = document.createElement('span');
 	const elementCheck2 = elementReady('.unicorn', {
 		target: target2,
-		until: false
+		cancelOnDomLoaded: false
 	});
 
 	delay(500).then(() => {
@@ -73,11 +73,38 @@ test('check if different elements ready inside different targets with same selec
 	t.is(element2.id, 'unicorn2');
 });
 
+test('check if element ready after dom loaded', async t => {
+	const elementCheck = elementReady('#bio', {
+		cancelOnDomLoaded: true
+	});
+
+	delay(50000).then(() => {
+		const element = document.createElement('p');
+		element.id = 'bio';
+		document.body.append(element);
+	});
+
+	const element = await elementCheck;
+	t.is(element, null);
+});
+
+test('check if element ready before dom loaded', async t => {
+	const element = document.createElement('p');
+	element.id = 'history';
+	document.body.append(element);
+
+	const elementCheck = elementReady('#history', {
+		cancelOnDomLoaded: true
+	});
+
+	t.is(await elementCheck, element);
+});
+
 test('ensure only one promise is returned on multiple calls passing the same selector', t => {
-	const elementCheck = elementReady('#wait', {until: false});
+	const elementCheck = elementReady('#wait', {cancelOnDomLoaded: false});
 
 	for (let i = 0; i <= 10; i++) {
-		if (elementReady('#wait', {until: false}) !== elementCheck) {
+		if (elementReady('#wait', {cancelOnDomLoaded: false}) !== elementCheck) {
 			t.fail();
 		}
 	}
@@ -86,7 +113,7 @@ test('ensure only one promise is returned on multiple calls passing the same sel
 });
 
 test('check if wait can be canceled', async t => {
-	const elementCheck = elementReady('#dofle', {until: false});
+	const elementCheck = elementReady('#dofle', {cancelOnDomLoaded: false});
 
 	await delay(200);
 	elementCheck.cancel();
@@ -100,11 +127,11 @@ test('check if wait can be canceled', async t => {
 });
 
 test('ensure different promises are returned on second call with the same selector when first was canceled', async t => {
-	const elementCheck1 = elementReady('.unicorn', {until: false});
+	const elementCheck1 = elementReady('.unicorn', {cancelOnDomLoaded: false});
 
 	elementCheck1.cancel();
 
-	const elementCheck2 = elementReady('.unicorn', {until: false});
+	const elementCheck2 = elementReady('.unicorn', {cancelOnDomLoaded: false});
 
 	await t.throwsAsync(elementCheck1, PCancelable.CancelError);
 	t.not(elementCheck1, elementCheck2);

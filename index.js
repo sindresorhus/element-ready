@@ -6,12 +6,12 @@ const domLoaded = require('dom-loaded');
 const cache = new ManyKeysMap();
 
 const elementReady = (selector, options) => {
-	const {target, until} = Object.assign({
+	const {target, cancelOnDomLoaded} = Object.assign({
 		target: document,
-		until: domLoaded
+		cancelOnDomLoaded: true
 	}, options);
 
-	const cacheKeys = [target, selector, until];
+	const cacheKeys = [target, selector, cancelOnDomLoaded];
 	let promise = cache.get(cacheKeys);
 	if (promise) {
 		return promise;
@@ -25,8 +25,8 @@ const elementReady = (selector, options) => {
 			cache.delete(cacheKeys, promise);
 		});
 
-		if (until && typeof until.then === 'function') {
-			until.then(() => {
+		if (cancelOnDomLoaded) {
+			domLoaded.then(() => {
 				cancelAnimationFrame(rafId);
 				resolve(null);
 			});
