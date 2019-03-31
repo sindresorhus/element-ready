@@ -44,4 +44,5 @@ const elementReady = (selector, options) => {
 };
 
 module.exports = elementReady;
+// TODO: Remove this for the next major release
 module.exports.default = elementReady;

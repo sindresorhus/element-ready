@@ -1,6 +1,6 @@
-import {expectType} from 'tsd-check';
-import PCancelable from 'p-cancelable';
-import elementReady from '.';
+import {expectType} from 'tsd';
+import PCancelable = require('p-cancelable');
+import elementReady = require('.');
 
 const promise = elementReady('#unicorn');
 elementReady('#unicorn', {target: document});
