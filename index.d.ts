@@ -20,7 +20,7 @@ Detect when an element is ready in the DOM.
 
 @example
 ```
-const elementReady = require('element-ready');
+import elementReady = require('element-ready');
 
 (async () => {
 	const element = await elementReady('#unicorn');
