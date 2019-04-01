@@ -5,9 +5,10 @@ const ManyKeysMap = require('many-keys-map');
 const cache = new ManyKeysMap();
 
 const elementReady = (selector, options) => {
-	const {target} = Object.assign({
-		target: document
-	}, options);
+	const {target} = {
+		target: document,
+		...options
+	};
 
 	let promise = cache.get([target, selector]);
 	if (promise) {
@@ -44,4 +45,3 @@ const elementReady = (selector, options) => {
 };
 
 module.exports = elementReady;
-module.exports.default = elementReady;
