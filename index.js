@@ -28,7 +28,7 @@ const elementReady = (selector, options) => {
 		if (cancelOnDomLoaded) {
 			domLoaded.then(() => {
 				cancelAnimationFrame(rafId);
-				resolve(null);
+				resolve();
 			});
 		}
 

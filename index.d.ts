@@ -20,14 +20,14 @@ export default function elementReady<
 >(
 	selector: ElementName,
 	options?: Options
-): PCancelable<HTMLElementTagNameMap[ElementName] | null>;
+): PCancelable<HTMLElementTagNameMap[ElementName]?>;
 export default function elementReady<
 	ElementName extends keyof SVGElementTagNameMap
 >(
 	selector: ElementName,
 	options?: Options
-): PCancelable<SVGElementTagNameMap[ElementName] | null>;
+): PCancelable<SVGElementTagNameMap[ElementName]?>;
 export default function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: Options
-): PCancelable<ElementName | null>;
+): PCancelable<ElementName?>;

@@ -85,7 +85,7 @@ test('check if element ready after dom loaded', async t => {
 	});
 
 	const element = await elementCheck;
-	t.is(element, null);
+	t.is(element, undefined);
 });
 
 test('check if element ready before dom loaded', async t => {
