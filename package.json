@@ -10,10 +10,10 @@
 		"url": "sindresorhus.com"
 	},
 	"engines": {
-		"node": ">=6"
+		"node": ">=8"
 	},
 	"scripts": {
-		"test": "xo && ava && tsd-check"
+		"test": "xo && ava && tsd"
 	},
 	"files": [
 		"index.js",
@@ -33,14 +33,14 @@
 	],
 	"dependencies": {
 		"dom-loaded": "^1.1.0",
-		"many-keys-map": "^1.0.0",
-		"p-cancelable": "^1.1.0"
+		"many-keys-map": "^1.0.1",
+		"p-cancelable": "^2.0.0"
 	},
 	"devDependencies": {
-		"ava": "^1.3.1",
+		"ava": "^1.2.1",
 		"delay": "^4.1.0",
 		"jsdom": "^14.0.0",
-		"tsd-check": "^0.3.0",
+		"tsd": "^0.7.1",
 		"xo": "^0.24.0"
 	},
 	"xo": {

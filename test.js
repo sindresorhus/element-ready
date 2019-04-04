@@ -15,11 +15,12 @@ const elementReady = require('.');
 test('check if element ready', async t => {
 	const elementCheck = elementReady('#unicorn', {cancelOnDomLoaded: false});
 
-	delay(500).then(() => {
+	(async () => {
+		await delay(500);
 		const element = document.createElement('p');
 		element.id = 'unicorn';
 		document.body.append(element);
-	});
+	})();
 
 	const element = await elementCheck;
 	t.is(element.id, 'unicorn');
@@ -32,11 +33,12 @@ test('check if element ready inside target', async t => {
 		cancelOnDomLoaded: false
 	});
 
-	delay(500).then(() => {
+	(async () => {
+		await delay(500);
 		const element = document.createElement('p');
 		element.id = 'unicorn';
 		target.append(element);
-	});
+	})();
 
 	const element = await elCheck;
 	t.is(element.id, 'unicorn');
@@ -54,7 +56,8 @@ test('check if different elements ready inside different targets with same selec
 		cancelOnDomLoaded: false
 	});
 
-	delay(500).then(() => {
+	(async () => {
+		await delay(500);
 		const element1 = document.createElement('p');
 		element1.id = 'unicorn1';
 		element1.className = 'unicorn';
@@ -64,7 +67,7 @@ test('check if different elements ready inside different targets with same selec
 		element2.id = 'unicorn2';
 		element2.className = 'unicorn';
 		target2.append(element2);
-	});
+	})();
 
 	const element1 = await elementCheck1;
 	t.is(element1.id, 'unicorn1');

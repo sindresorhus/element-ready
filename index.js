@@ -6,10 +6,11 @@ const domLoaded = require('dom-loaded');
 const cache = new ManyKeysMap();
 
 const elementReady = (selector, options) => {
-	const {target, cancelOnDomLoaded} = Object.assign({
+	const {target, cancelOnDomLoaded} = {
 		target: document,
-		cancelOnDomLoaded: true
-	}, options);
+			cancelOnDomLoaded: true,
+		...options
+	};
 
 	const cacheKeys = [target, selector, cancelOnDomLoaded];
 	let promise = cache.get(cacheKeys);
@@ -54,4 +55,3 @@ const elementReady = (selector, options) => {
 };
 
 module.exports = elementReady;
-module.exports.default = elementReady;
