@@ -7,7 +7,7 @@ elementReady('#unicorn', {target: document});
 elementReady('#unicorn', {target: document.documentElement});
 
 expectType<PCancelable<Element | undefined>>(promise);
-expectType<PCancelable<HTMLDivElement>>(elementReady('div'));
-expectType<PCancelable<SVGElement>>(elementReady('text'));
+expectType<PCancelable<HTMLDivElement | undefined>>(elementReady('div'));
+expectType<PCancelable<SVGElement | undefined>>(elementReady('text'));
 
 promise.cancel();

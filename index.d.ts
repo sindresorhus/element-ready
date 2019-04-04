@@ -33,13 +33,13 @@ import elementReady = require('element-ready');
 declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
-): PCancelable<HTMLElementTagNameMap[ElementName]?>;
+): PCancelable<HTMLElementTagNameMap[ElementName] | undefined>;
 declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
-): PCancelable<SVGElementTagNameMap[ElementName]?>;
+): PCancelable<SVGElementTagNameMap[ElementName] | undefined>;
 declare function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: elementReady.Options
-): PCancelable<ElementName?>;
+): PCancelable<ElementName | undefined>;
 export = elementReady;
