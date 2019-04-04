@@ -8,7 +8,7 @@ const cache = new ManyKeysMap();
 const elementReady = (selector, options) => {
 	const {target, cancelOnDomLoaded} = {
 		target: document,
-			cancelOnDomLoaded: true,
+		cancelOnDomLoaded: true,
 		...options
 	};
 

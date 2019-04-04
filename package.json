@@ -47,6 +47,9 @@
 		"envs": [
 			"node",
 			"browser"
-		]
+		],
+		"rules": {
+			"promise/prefer-await-to-then": 0
+		}
 	}
 }
