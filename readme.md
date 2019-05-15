@@ -47,6 +47,13 @@ Default: `document`
 
 The element that's expected to contain a match.
 
+##### cancelOnDomLoaded
+
+Type: `boolean`<br>
+Default: `true`
+
+Automatically stops checking for the element to be ready after the DOM ready event.
+
 ### elementReadyPromise#cancel()
 
 Type: `Function`
