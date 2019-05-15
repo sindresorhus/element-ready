@@ -81,11 +81,12 @@ test('check if element ready after dom loaded', async t => {
 		cancelOnDomLoaded: true
 	});
 
-	delay(50000).then(() => {
+	// The element will be added eventually, but we're not around to wait for it
+	setTimeout(() => {
 		const element = document.createElement('p');
 		element.id = 'bio';
 		document.body.append(element);
-	});
+	}, 50000);
 
 	const element = await elementCheck;
 	t.is(element, undefined);
