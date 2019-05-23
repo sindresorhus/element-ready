@@ -1,7 +1,6 @@
 import test from 'ava';
 import {JSDOM} from 'jsdom';
 import delay from 'delay';
-import PCancelable from 'p-cancelable';
 
 const {window} = new JSDOM();
 global.window = window;
@@ -105,10 +104,10 @@ test('check if element ready before dom loaded', async t => {
 });
 
 test('ensure only one promise is returned on multiple calls passing the same selector', t => {
-	const elementCheck = elementReady('#wait', {stopOnDomReady: false});
+	const elementCheck = elementReady('#not-found', {stopOnDomReady: false});
 
 	for (let i = 0; i <= 10; i++) {
-		if (elementReady('#wait', {stopOnDomReady: false}) !== elementCheck) {
+		if (elementReady('#not-found', {stopOnDomReady: false}) !== elementCheck) {
 			t.fail();
 		}
 	}
@@ -116,28 +115,29 @@ test('ensure only one promise is returned on multiple calls passing the same sel
 	t.pass();
 });
 
-test('check if wait can be canceled', async t => {
+test('check if wait can be stopped', async t => {
 	const elementCheck = elementReady('#dofle', {stopOnDomReady: false});
 
 	await delay(200);
-	elementCheck.cancel();
+	elementCheck.stop();
 
 	await delay(500);
 	const element = document.createElement('p');
 	element.id = 'dofle';
 	document.body.append(element);
 
-	await t.throwsAsync(elementCheck, PCancelable.CancelError);
+	t.is(await elementCheck, undefined);
 });
 
-test('ensure different promises are returned on second call with the same selector when first was canceled', async t => {
+test('ensure different promises are returned on second call with the same selector when first was stopped', async t => {
 	const elementCheck1 = elementReady('.unicorn', {stopOnDomReady: false});
 
-	elementCheck1.cancel();
+	elementCheck1.stop();
 
 	const elementCheck2 = elementReady('.unicorn', {stopOnDomReady: false});
 
-	await t.throwsAsync(elementCheck1, PCancelable.CancelError);
+	t.is(await elementCheck1, undefined);
+
 	t.not(elementCheck1, elementCheck2);
 });
 

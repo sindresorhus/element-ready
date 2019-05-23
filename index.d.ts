@@ -1,5 +1,4 @@
 /// <reference lib="dom"/>
-import PCancelable = require('p-cancelable');
 
 declare namespace elementReady {
 	interface Options {
@@ -9,6 +8,10 @@ declare namespace elementReady {
 		@default document
 		*/
 		readonly target?: Element | Document;
+	}
+
+	type PStoppable<T> = Promise<T> & {
+		stop(): void;
 	}
 }
 
@@ -33,13 +36,13 @@ import elementReady = require('element-ready');
 declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
-): PCancelable<HTMLElementTagNameMap[ElementName] | undefined>;
+): elementReady.PStoppable<HTMLElementTagNameMap[ElementName] | undefined>;
 declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
-): PCancelable<SVGElementTagNameMap[ElementName] | undefined>;
+): elementReady.PStoppable<SVGElementTagNameMap[ElementName] | undefined>;
 declare function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: elementReady.Options
-): PCancelable<ElementName | undefined>;
+): elementReady.PStoppable<ElementName | undefined>;
 export = elementReady;

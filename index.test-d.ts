@@ -1,13 +1,12 @@
 import {expectType} from 'tsd';
-import PCancelable = require('p-cancelable');
 import elementReady = require('.');
 
 const promise = elementReady('#unicorn');
 elementReady('#unicorn', {target: document});
 elementReady('#unicorn', {target: document.documentElement});
 
-expectType<PCancelable<Element | undefined>>(promise);
-expectType<PCancelable<HTMLDivElement | undefined>>(elementReady('div'));
-expectType<PCancelable<SVGElement | undefined>>(elementReady('text'));
+expectType<elementReady.PStoppable<Element | undefined>>(promise);
+expectType<elementReady.PStoppable<HTMLDivElement | undefined>>(elementReady('div'));
+expectType<elementReady.PStoppable<SVGElement | undefined>>(elementReady('text'));
 
-promise.cancel();
+promise.stop();

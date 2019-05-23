@@ -54,15 +54,13 @@ Default: `true`
 
 Automatically stops checking for the element to be ready after the DOM ready event.
 
-### elementReadyPromise#cancel()
+### elementReadyPromise#stop()
 
 Type: `Function`
 
-Stops checking for the element to be ready. The cancelation is synchronous.
+Stops checking for the element to be ready. The stop is synchronous.
 
 Calling it after the promise has settled or multiple times does nothing.
-
-Based on [p-cancelable](https://github.com/sindresorhus/p-cancelable).
 
 
 ## Related
