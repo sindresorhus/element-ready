@@ -47,7 +47,7 @@ Default: `document`
 
 The element that's expected to contain a match.
 
-##### cancelOnDomLoaded
+##### stopOnDomReady
 
 Type: `boolean`<br>
 Default: `true`
