@@ -4,7 +4,7 @@ const domLoaded = require('dom-loaded');
 const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
-const elementReady = (selector, options) => {
+const elementReady = (selector, options = {}) => {
 	const {
 		target = document,
 		stopOnDomReady = true
