@@ -38,11 +38,11 @@ Type: `string`
 
 #### options
 
-Type: `Object`
+Type: `object`
 
 ##### target
 
-Type: `Element` `document`<br>
+Type: `Element | document`<br>
 Default: `document`
 
 The element that's expected to contain a match.
@@ -52,13 +52,13 @@ The element that's expected to contain a match.
 Type: `boolean`<br>
 Default: `true`
 
-Automatically stops checking for the element to be ready after the DOM ready event.
+Automatically stops checking for the element to be ready after the DOM ready event and the promise is resolved to `undefined`.
 
 ### elementReadyPromise#stop()
 
-Type: `Function`
+Type: `function`
 
-Stops checking for the element to be ready. The stop is synchronous.
+Stops checking for the element to be ready. The stop is synchronous and the original promise is resolved to `undefined`.
 
 Calling it after the promise has settled or multiple times does nothing.
 
