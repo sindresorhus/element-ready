@@ -10,7 +10,7 @@ declare namespace elementReady {
 		readonly target?: Element | Document;
 	}
 
-	type PStoppable<T> = Promise<T> & {
+	type StoppablePromise<T> = Promise<T> & {
 		stop(): void;
 	}
 }
@@ -36,13 +36,13 @@ import elementReady = require('element-ready');
 declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
-): elementReady.PStoppable<HTMLElementTagNameMap[ElementName] | undefined>;
+): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
 declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
-): elementReady.PStoppable<SVGElementTagNameMap[ElementName] | undefined>;
+): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
 declare function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: elementReady.Options
-): elementReady.PStoppable<ElementName | undefined>;
+): elementReady.StoppablePromise<ElementName | undefined>;
 export = elementReady;
