@@ -19,7 +19,7 @@ declare namespace elementReady {
 Detect when an element is ready in the DOM.
 
 @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
-@returns The matching element.
+@returns The matching element, or `undefined` if the element could not be found.
 
 @example
 ```

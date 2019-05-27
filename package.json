@@ -23,13 +23,15 @@
 		"browser",
 		"element",
 		"ready",
-		"el",
 		"dom",
 		"css",
 		"selector",
 		"wait",
 		"detect",
-		"check"
+		"check",
+		"dom",
+		"domcontentloaded",
+		"domready"
 	],
 	"dependencies": {
 		"dom-loaded": "^1.1.0",
@@ -37,19 +39,16 @@
 		"p-defer": "^2.1.0"
 	},
 	"devDependencies": {
-		"ava": "^1.2.1",
+		"ava": "^1.4.1",
 		"delay": "^4.1.0",
-		"jsdom": "^14.0.0",
-		"tsd": "^0.7.1",
+		"jsdom": "^15.1.0",
+		"tsd": "^0.7.3",
 		"xo": "^0.24.0"
 	},
 	"xo": {
 		"envs": [
 			"node",
 			"browser"
-		],
-		"rules": {
-			"promise/prefer-await-to-then": 0
-		}
+		]
 	}
 }

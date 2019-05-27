@@ -27,7 +27,7 @@ test('check if element ready', async t => {
 
 test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
-	const elCheck = elementReady('#unicorn', {
+	const elementCheck = elementReady('#unicorn', {
 		target,
 		stopOnDomReady: false
 	});
@@ -39,7 +39,7 @@ test('check if element ready inside target', async t => {
 		target.append(element);
 	})();
 
-	const element = await elCheck;
+	const element = await elementCheck;
 	t.is(element.id, 'unicorn');
 });
 

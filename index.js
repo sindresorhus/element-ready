@@ -4,6 +4,7 @@ const domLoaded = require('dom-loaded');
 const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
+
 const elementReady = (selector, options = {}) => {
 	const {
 		target = document,
@@ -29,15 +30,18 @@ const elementReady = (selector, options = {}) => {
 	};
 
 	if (stopOnDomReady) {
-		domLoaded.then(stop);
+		(async () => {
+			await domLoaded;
+			stop();
+		})();
 	}
 
 	// Interval to keep checking for it to come into the DOM
 	(function check() {
-		const el = target.querySelector(selector);
+		const element = target.querySelector(selector);
 
-		if (el) {
-			deferred.resolve(el);
+		if (element) {
+			deferred.resolve(element);
 			stop();
 		} else {
 			rafId = requestAnimationFrame(check);

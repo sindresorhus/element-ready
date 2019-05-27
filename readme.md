@@ -26,7 +26,7 @@ const elementReady = require('element-ready');
 
 ## API
 
-### elementReady(selector, [options])
+### elementReady(selector, options?)
 
 Returns a promise for a matching element.
 
@@ -66,8 +66,3 @@ Calling it after the promise has settled or multiple times does nothing.
 ## Related
 
 - [dom-loaded](https://github.com/sindresorhus/dom-loaded) - Check when the DOM is loaded like `DOMContentLoaded`
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)
