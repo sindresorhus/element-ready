@@ -59,7 +59,7 @@ Automatically stop checking for the element to be ready after the [DOM ready eve
 Type: `number | false`<br>
 Default: `false`
 
-The time to wait before stopping the search, in milliseconds.
+Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
 
 ### elementReadyPromise#stop()
 
