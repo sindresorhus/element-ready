@@ -8,9 +8,21 @@ declare namespace elementReady {
 		@default document
 		*/
 		readonly target?: Element | Document;
+
+		/**
+		Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
+
+		@default true
+		*/
+		readonly stopOnDomReady?: boolean;
 	}
 
 	type StoppablePromise<T> = Promise<T> & {
+		/**
+		Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
+
+		Calling it after the promise has settled or multiple times does nothing.
+		*/
 		stop(): void;
 	}
 }
