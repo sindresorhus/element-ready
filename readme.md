@@ -56,7 +56,7 @@ Automatically stops checking for the element to be ready after the DOM ready eve
 
 ### elementReadyPromise#stop()
 
-Type: `function`
+Type: `Function`
 
 Stops checking for the element to be ready. The stop is synchronous and the original promise is resolved to `undefined`.
 
