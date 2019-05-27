@@ -8,6 +8,13 @@ declare namespace elementReady {
 		@default document
 		*/
 		readonly target?: Element | Document;
+
+		/**
+		Whether to stop when document has finished loading.
+
+		@default true
+		*/
+		readonly stopOnDomReady?: boolean;
 	}
 
 	type StoppablePromise<T> = Promise<T> & {
