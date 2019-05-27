@@ -10,7 +10,7 @@ declare namespace elementReady {
 		readonly target?: Element | Document;
 
 		/**
-		The time to wait before stopping the search, in milliseconds. 0 disables it.
+		The time to wait before stopping the search, in milliseconds.
 
 		@default false
 		*/
