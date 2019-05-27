@@ -52,13 +52,13 @@ The element that's expected to contain a match.
 Type: `boolean`<br>
 Default: `true`
 
-Automatically stops checking for the element to be ready after the DOM ready event and the promise is resolved to `undefined`.
+Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
 
 ### elementReadyPromise#stop()
 
 Type: `Function`
 
-Stops checking for the element to be ready. The stop is synchronous and the original promise is resolved to `undefined`.
+Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
 
 Calling it after the promise has settled or multiple times does nothing.
 
