@@ -10,7 +10,7 @@ const elementReady = (selector, {
 	stopOnDomReady = true,
 	timeout = 0
 } = {}) => {
-	const cacheKeys = [target, selector, stopOnDomReady];
+	const cacheKeys = [target, selector, stopOnDomReady, timeout];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
