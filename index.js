@@ -1,47 +1,50 @@
 'use strict';
-const PCancelable = require('p-cancelable');
 const ManyKeysMap = require('many-keys-map');
+const domLoaded = require('dom-loaded');
+const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
+const elementReady = (selector, options = {}) => {
+	const {
+		target = document,
+		stopOnDomReady = true
+	} = options;
 
-const elementReady = (selector, options) => {
-	const {target} = {
-		target: document,
-		...options
+	const cacheKeys = [target, selector, stopOnDomReady];
+	const cachedPromise = cache.get(cacheKeys);
+	if (cachedPromise) {
+		return cachedPromise;
+	}
+
+	let rafId;
+	const deferred = pDefer();
+	const {promise} = deferred;
+
+	cache.set(cacheKeys, promise);
+
+	const stop = () => {
+		cancelAnimationFrame(rafId);
+		cache.delete(cacheKeys, promise);
+		deferred.resolve();
 	};
 
-	let promise = cache.get([target, selector]);
-	if (promise) {
-		return promise;
+	if (stopOnDomReady) {
+		domLoaded.then(stop);
 	}
 
-	let alreadyFound = false;
-	promise = new PCancelable((resolve, reject, onCancel) => {
-		let rafId;
-		onCancel(() => {
-			cancelAnimationFrame(rafId);
-			cache.delete([target, selector], promise);
-		});
+	// Interval to keep checking for it to come into the DOM
+	(function check() {
+		const el = target.querySelector(selector);
 
-		// Interval to keep checking for it to come into the DOM
-		(function check() {
-			const el = target.querySelector(selector);
+		if (el) {
+			deferred.resolve(el);
+			stop();
+		} else {
+			rafId = requestAnimationFrame(check);
+		}
+	})();
 
-			if (el) {
-				resolve(el);
-				alreadyFound = true;
-				cache.delete([target, selector], promise);
-			} else {
-				rafId = requestAnimationFrame(check);
-			}
-		})();
-	});
-
-	if (!alreadyFound) {
-		cache.set([target, selector], promise);
-	}
-
-	return promise;
+	return Object.assign(promise, {stop});
 };
 
 module.exports = elementReady;

@@ -38,24 +38,29 @@ Type: `string`
 
 #### options
 
-Type: `Object`
+Type: `object`
 
 ##### target
 
-Type: `Element` `document`<br>
+Type: `Element | document`<br>
 Default: `document`
 
 The element that's expected to contain a match.
 
-### elementReadyPromise#cancel()
+##### stopOnDomReady
+
+Type: `boolean`<br>
+Default: `true`
+
+Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
+
+### elementReadyPromise#stop()
 
 Type: `Function`
 
-Stops checking for the element to be ready. The cancelation is synchronous.
+Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
 
 Calling it after the promise has settled or multiple times does nothing.
-
-Based on [p-cancelable](https://github.com/sindresorhus/p-cancelable).
 
 
 ## Related
