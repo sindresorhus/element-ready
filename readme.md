@@ -56,8 +56,8 @@ Automatically stop checking for the element to be ready after the [DOM ready eve
 
 ##### timeout
 
-Type: `number | false`<br>
-Default: `false`
+Type: `number`<br>
+Default: `Infinity`
 
 Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
 

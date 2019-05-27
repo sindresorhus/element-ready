@@ -8,7 +8,7 @@ const cache = new ManyKeysMap();
 const elementReady = (selector, {
 	target = document,
 	stopOnDomReady = true,
-	timeout = 0
+	timeout = Infinity
 } = {}) => {
 	const cacheKeys = [target, selector, stopOnDomReady, timeout];
 	const cachedPromise = cache.get(cacheKeys);
@@ -35,7 +35,7 @@ const elementReady = (selector, {
 		})();
 	}
 
-	if (timeout > 0) {
+	if (timeout !== Infinity) {
 		setTimeout(stop, timeout);
 	}
 
