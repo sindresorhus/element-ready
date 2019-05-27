@@ -8,6 +8,13 @@ declare namespace elementReady {
 		@default document
 		*/
 		readonly target?: Element | Document;
+
+		/**
+		The time to wait before stopping the search, in milliseconds. 0 disables it.
+
+		@default false
+		*/
+		readonly timeout?: number | false
 	}
 
 	type StoppablePromise<T> = Promise<T> & {

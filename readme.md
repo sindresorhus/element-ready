@@ -53,6 +53,14 @@ Type: `boolean`<br>
 Default: `true`
 
 Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
+The element that's expected to contain a match.
+
+##### timeout
+
+Type: `number | false`<br>
+Default: `false`
+
+Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
 
 ### elementReadyPromise#stop()
 
