@@ -54,6 +54,13 @@ Default: `true`
 
 Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
 
+##### timeout
+
+Type: `number`<br>
+Default: `Infinity`
+
+Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
+
 ### elementReadyPromise#stop()
 
 Type: `Function`

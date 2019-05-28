@@ -103,6 +103,36 @@ test('check if element ready before dom loaded', async t => {
 	t.is(await elementCheck, element);
 });
 
+test('check if element ready after timeout', async t => {
+	const elementCheck = elementReady('#cheezburger', {
+		stopOnDomReady: false,
+		timeout: 1000
+	});
+
+	// The element will be added eventually, but we're not around to wait for it
+	setTimeout(() => {
+		const element = document.createElement('p');
+		element.id = 'cheezburger';
+		document.body.append(element);
+	}, 50000);
+
+	const element = await elementCheck;
+	t.is(element, undefined);
+});
+
+test('check if element ready before timeout', async t => {
+	const element = document.createElement('p');
+	element.id = 'thunders';
+	document.body.append(element);
+
+	const elementCheck = elementReady('#thunders', {
+		stopOnDomReady: false,
+		timeout: 10
+	});
+
+	t.is(await elementCheck, element);
+});
+
 test('ensure only one promise is returned on multiple calls passing the same selector', t => {
 	const elementCheck = elementReady('#not-found', {stopOnDomReady: false});
 

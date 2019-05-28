@@ -5,13 +5,12 @@ const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
 
-const elementReady = (selector, options = {}) => {
-	const {
-		target = document,
-		stopOnDomReady = true
-	} = options;
-
-	const cacheKeys = [target, selector, stopOnDomReady];
+const elementReady = (selector, {
+	target = document,
+	stopOnDomReady = true,
+	timeout = Infinity
+} = {}) => {
+	const cacheKeys = [target, selector, stopOnDomReady, timeout];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
@@ -34,6 +33,10 @@ const elementReady = (selector, options = {}) => {
 			await domLoaded;
 			stop();
 		})();
+	}
+
+	if (timeout !== Infinity) {
+		setTimeout(stop, timeout);
 	}
 
 	// Interval to keep checking for it to come into the DOM

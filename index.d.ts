@@ -10,6 +10,13 @@ declare namespace elementReady {
 		readonly target?: Element | Document;
 
 		/**
+		Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
+
+		@default Infinity
+		*/
+		readonly timeout?: number
+
+		/**
 		Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
 
 		@default true
