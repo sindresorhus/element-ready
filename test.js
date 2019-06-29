@@ -187,3 +187,43 @@ test('ensure different promises are returned on second call with the same select
 	document.querySelector('.unicorn').remove();
 	t.is(prependElement(), await elementReady('.unicorn'));
 });
+
+test('Non-cancellable: the promise does not have the stop method', t => {
+	const elementCheck = elementReady('#bio', {
+		cancellable: false
+	});
+
+	t.falsy(elementCheck.stop);
+});
+
+test('Non-cancellable: check if element ready after dom loaded', async t => {
+	const elementCheck = elementReady('#bio', {
+		cancellable: false
+	});
+
+	let element;
+
+	setTimeout(() => {
+		element = document.createElement('p');
+		element.id = 'bio';
+		document.body.append(element);
+	}, 100);
+
+	t.is(await elementCheck, element);
+});
+
+test('Non-cancellable: check if element ready after timeout', async t => {
+	const elementCheck = elementReady('#cheezburger', {
+		cancellable: false,
+		timeout: 1000
+	});
+
+	// The element will be added eventually, but we're not around to wait for it
+	setTimeout(() => {
+		const element = document.createElement('p');
+		element.id = 'cheezburger';
+		document.body.append(element);
+	}, 50000);
+
+	await t.throwsAsync(elementCheck, {instanceOf: Error, message: 'Element \'#cheezburger\' not found'});
+});

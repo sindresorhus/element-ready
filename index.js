@@ -8,9 +8,10 @@ const cache = new ManyKeysMap();
 const elementReady = (selector, {
 	target = document,
 	stopOnDomReady = true,
-	timeout = Infinity
+	timeout = Infinity,
+	cancellable = true
 } = {}) => {
-	const cacheKeys = [target, selector, stopOnDomReady, timeout];
+	const cacheKeys = [target, selector, stopOnDomReady, timeout, cancellable];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
@@ -28,7 +29,7 @@ const elementReady = (selector, {
 		deferred.resolve();
 	};
 
-	if (stopOnDomReady) {
+	if (cancellable && stopOnDomReady) {
 		(async () => {
 			await domLoaded;
 			stop();
@@ -36,7 +37,13 @@ const elementReady = (selector, {
 	}
 
 	if (timeout !== Infinity) {
-		setTimeout(stop, timeout);
+		setTimeout(() => {
+			if (cancellable) {
+				stop();
+			} else {
+				deferred.reject(new Error(`Element '${selector}' not found`));
+			}
+		}, timeout);
 	}
 
 	// Interval to keep checking for it to come into the DOM
@@ -51,7 +58,11 @@ const elementReady = (selector, {
 		}
 	})();
 
-	return Object.assign(promise, {stop});
+	if (cancellable) {
+		Object.assign(promise, {stop});
+	}
+
+	return promise;
 };
 
 module.exports = elementReady;

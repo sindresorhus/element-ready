@@ -22,6 +22,21 @@ declare namespace elementReady {
 		@default true
 		*/
 		readonly stopOnDomReady?: boolean;
+
+		/**
+		If false, makes the returned promise non-cancellable, doesn't stop on the DOM ready event, and throws an eror on timeout (if provided).
+
+		@default true
+		*/
+		readonly cancellable?: boolean;
+	}
+
+	interface OptionsWithUndefinedCancellable extends Options {
+		readonly cancellable: undefined;
+	}
+
+	interface OptionsWithNonCancellable extends Options {
+		readonly cancellable: false;
 	}
 
 	type StoppablePromise<T> = Promise<T> & {
@@ -38,7 +53,7 @@ declare namespace elementReady {
 Detect when an element is ready in the DOM.
 
 @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
-@returns The matching element, or `undefined` if the element could not be found.
+@returns A promise resolving the matching element, or `undefined` if the element could not be found.
 
 @example
 ```
@@ -54,14 +69,41 @@ import elementReady = require('element-ready');
 */
 declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
 	selector: ElementName,
+	options?: elementReady.OptionsWithUndefinedCancellable
+): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
+declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
+	selector: ElementName,
+	options?: elementReady.OptionsWithNonCancellable
+): Promise<HTMLElementTagNameMap[ElementName] | never>;
+declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
+	selector: ElementName,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
+
+declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
+	selector: ElementName,
+	options?: elementReady.OptionsWithUndefinedCancellable
+): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
+declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
+	selector: ElementName,
+	options?: elementReady.OptionsWithNonCancellable
+): Promise<SVGElementTagNameMap[ElementName] | never>;
 declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
+
+declare function elementReady<ElementName extends Element = Element>(
+	selector: string,
+	options?: elementReady.OptionsWithUndefinedCancellable
+): elementReady.StoppablePromise<ElementName | undefined>;
+declare function elementReady<ElementName extends Element = Element>(
+	selector: string,
+	options?: elementReady.OptionsWithNonCancellable
+): Promise<ElementName | never>;
 declare function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<ElementName | undefined>;
+
 export = elementReady;
