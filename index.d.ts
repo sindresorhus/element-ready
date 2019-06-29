@@ -24,6 +24,10 @@ declare namespace elementReady {
 		readonly stopOnDomReady?: boolean;
 	}
 
+	interface OptionsWithInfiniteTimeout extends Options {
+		readonly timeout: undefined;
+	}
+
 	type StoppablePromise<T> = Promise<T> & {
 		/**
 		Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
@@ -54,14 +58,29 @@ import elementReady = require('element-ready');
 */
 declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
 	selector: ElementName,
+	options?: elementReady.OptionsWithInfiniteTimeout
+): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | never>;
+declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
+	selector: ElementName,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
+
+declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
+	selector: ElementName,
+	options?: elementReady.OptionsWithInfiniteTimeout
+): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | never>;
 declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
 	selector: ElementName,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
+
+declare function elementReady<ElementName extends Element = Element>(
+	selector: string,
+	options?: elementReady.OptionsWithInfiniteTimeout
+): elementReady.StoppablePromise<ElementName | never>;
 declare function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<ElementName | undefined>;
+
 export = elementReady;
