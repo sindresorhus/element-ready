@@ -24,6 +24,15 @@ declare namespace elementReady {
 		readonly stopOnDomReady?: boolean;
 	}
 
+  type Stoppable = {
+    /**
+     Stop checking for new elements.
+
+     Calling it multiple times does nothing.
+     */
+    stop(): void;
+  };
+
 	type StoppablePromise<T> = Promise<T> & {
 		/**
 		Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
@@ -57,19 +66,19 @@ declare namespace elementReady {
     selector: ElementName,
     cb: elementReady.SubscribeCallback<HTMLElementTagNameMap[ElementName]>,
     options?: elementReady.Options
-  ): () => void;
+  ): Stoppable;
 
   function subscribe<ElementName extends keyof SVGElementTagNameMap>(
     selector: ElementName,
     cb: elementReady.SubscribeCallback<SVGElementTagNameMap[ElementName]>,
     options?: elementReady.Options
-  ): () => void;
+  ): Stoppable;
 
   function subscribe<ElementName extends Element = Element>(
     selector: string,
     cb: elementReady.SubscribeCallback<ElementName>,
     options?: elementReady.Options
-  ): () => void;
+  ): Stoppable;
 }
 
 /**

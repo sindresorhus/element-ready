@@ -13,7 +13,7 @@ expectType<elementReady.StoppablePromise<HTMLDivElement | undefined>>(elementRea
 expectType<elementReady.StoppablePromise<SVGElement | undefined>>(elementReady('text'));
 
 
-const stop = elementReady.subscribe(".unicorn", e => null);
+const {stop} = elementReady.subscribe(".unicorn", e => null);
 elementReady.subscribe(".unicorn", e => null, {target: document});
 elementReady.subscribe(".unicorn", e => null, {target: document.documentElement});
 elementReady.subscribe(".unicorn", e => null, {stopOnDomReady: false});

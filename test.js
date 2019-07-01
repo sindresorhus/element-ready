@@ -232,7 +232,7 @@ test('subscribe: stop should work', async t => {
 		document.body.append(elements[2]);
 	})();
 
-	const stop = elementReady.subscribe('.happy-unicorn', el => seen.push(el), {stopOnDomReady: false});
+	const {stop} = elementReady.subscribe('.happy-unicorn', el => seen.push(el), {stopOnDomReady: false});
 	await delay(100);
 	stop();
 	await delay(300);

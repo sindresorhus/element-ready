@@ -62,7 +62,7 @@ elementReady.subscribe = (selector, cb, {
 	const seen = new WeakMap();
 
 	let rafId;
-	let checkNum = 1;
+	let checkFrame = true;
 
 	const stop = () => {
 		cancelAnimationFrame(rafId);
@@ -80,7 +80,7 @@ elementReady.subscribe = (selector, cb, {
 	}
 
 	(function check() {
-		if (checkNum % 2) {
+		if (checkFrame) {
 			const allElements = target.querySelectorAll(selector);
 
 			for (let i = 0; i < allElements.length; ++i) {
@@ -96,10 +96,10 @@ elementReady.subscribe = (selector, cb, {
 		}
 
 		rafId = requestAnimationFrame(check);
-		checkNum += 1;
+		checkFrame = !checkFrame;
 	})();
 
-	return stop;
+	return {stop};
 };
 
 module.exports = elementReady;

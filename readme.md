@@ -73,7 +73,7 @@ Calling it after the promise has settled or multiple times does nothing.
 
 Detect elements as they are added to the DOM.
 
-Returns a function to cancel subscription.
+Returns a stoppable to cancel subscription.
 
 #### selector
 
@@ -91,6 +91,14 @@ Callback function to be called on each of the discovered elements.
 #### options
 
 Same as `elementReady` options.
+
+#### elementReady.subscribe()#stop()
+
+Type: `Function`
+
+Stop checking for new elements.
+
+Calling it multiple times does nothing.
 
 ## Related
 
