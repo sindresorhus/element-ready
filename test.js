@@ -187,3 +187,56 @@ test('ensure different promises are returned on second call with the same select
 	document.querySelector('.unicorn').remove();
 	t.is(prependElement(), await elementReady('.unicorn'));
 });
+
+test('subscribe: check if elements are detected', async t => {
+	const e = () => {
+		const element = document.createElement('p');
+		element.className = 'rainbow';
+		return element;
+	};
+
+	const elements = [e(), e(), e()];
+	const seen = [];
+
+	(async () => {
+		document.body.append(elements[0]);
+		await delay(200);
+		document.body.append(elements[1]);
+		await delay(100);
+		document.body.append(elements[2]);
+	})();
+
+	elementReady.subscribe('.rainbow', el => seen.push(el), {stopOnDomReady: false});
+	await delay(400);
+
+	t.is(seen[0], elements[0]);
+	t.is(seen[1], elements[1]);
+	t.is(seen[2], elements[2]);
+});
+
+test('subscribe: stop should work', async t => {
+	const e = () => {
+		const element = document.createElement('p');
+		element.className = 'happy-unicorn';
+		return element;
+	};
+
+	const elements = [e(), e(), e()];
+	const seen = [];
+
+	(async () => {
+		document.body.append(elements[0]);
+		await delay(200);
+		document.body.append(elements[1]);
+		await delay(100);
+		document.body.append(elements[2]);
+	})();
+
+	const stop = elementReady.subscribe('.happy-unicorn', el => seen.push(el), {stopOnDomReady: false});
+	await delay(100);
+	stop();
+	await delay(300);
+
+	t.is(seen.length, 1);
+	t.is(seen[0], elements[0]);
+});

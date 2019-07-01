@@ -54,4 +54,52 @@ const elementReady = (selector, {
 	return Object.assign(promise, {stop});
 };
 
+elementReady.subscribe = (selector, cb, {
+	target = document,
+	stopOnDomReady = true,
+	timeout = Infinity
+} = {}) => {
+	const seen = new WeakMap();
+
+	let rafId;
+	let checkNum = 1;
+
+	const stop = () => {
+		cancelAnimationFrame(rafId);
+	};
+
+	if (stopOnDomReady) {
+		(async () => {
+			await domLoaded;
+			stop();
+		})();
+	}
+
+	if (timeout !== Infinity) {
+		setTimeout(stop, timeout);
+	}
+
+	(function check() {
+		if (checkNum % 2) {
+			const allElements = target.querySelectorAll(selector);
+
+			for (let i = 0; i < allElements.length; ++i) {
+				const element = allElements[i];
+
+				if (seen.has(element)) {
+					continue;
+				}
+
+				cb(element);
+				seen.set(element, true);
+			}
+		}
+
+		rafId = requestAnimationFrame(check);
+		checkNum += 1;
+	})();
+
+	return stop;
+};
+
 module.exports = elementReady;

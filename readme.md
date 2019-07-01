@@ -69,6 +69,28 @@ Stop checking for the element to be ready. The stop is synchronous and the origi
 
 Calling it after the promise has settled or multiple times does nothing.
 
+### elementReady.subscribe(selector, cb, options?)
+
+Detect elements as they are added to the DOM.
+
+Returns a function to cancel subscription.
+
+#### selector
+
+Type: `string`
+
+[CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
+
+#### cb
+
+Type: `Function`<br>
+Signature: `(element: Element) => any`
+
+Callback function to be called on each of the discovered elements.
+
+#### options
+
+Same as `elementReady` options.
 
 ## Related
 

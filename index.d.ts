@@ -32,6 +32,44 @@ declare namespace elementReady {
 		*/
 		stop(): void;
 	}
+
+  /**
+  Called on each new element that matches the selector in the DOM.
+  */
+  type SubscribeCallback<T> = (el: T) => any;
+
+  /**
+  Detect elements as they are added to the DOM.
+
+  @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
+  @param cb Callback that is called for each new element.
+  @returns The unsubscribe function.
+
+  @example
+  ```
+  import elementReady = require('element-ready');
+  elementReady.subscribe('a', (element) => {
+    console.log(element.id)
+  })
+  ```
+  */
+  function subscribe<ElementName extends keyof HTMLElementTagNameMap>(
+    selector: ElementName,
+    cb: elementReady.SubscribeCallback<HTMLElementTagNameMap[ElementName]>,
+    options?: elementReady.Options
+  ): () => void;
+
+  function subscribe<ElementName extends keyof SVGElementTagNameMap>(
+    selector: ElementName,
+    cb: elementReady.SubscribeCallback<SVGElementTagNameMap[ElementName]>,
+    options?: elementReady.Options
+  ): () => void;
+
+  function subscribe<ElementName extends Element = Element>(
+    selector: string,
+    cb: elementReady.SubscribeCallback<ElementName>,
+    options?: elementReady.Options
+  ): () => void;
 }
 
 /**
