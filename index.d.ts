@@ -24,14 +24,14 @@ declare namespace elementReady {
 		readonly stopOnDomReady?: boolean;
 	}
 
-  type Stoppable = {
-    /**
-     Stop checking for new elements.
+	type Stoppable = {
+		/**
+		 Stop checking for new elements.
 
-     Calling it multiple times does nothing.
-     */
-    stop(): void;
-  };
+		 Calling it multiple times does nothing.
+		 */
+		stop(): void;
+	};
 
 	type StoppablePromise<T> = Promise<T> & {
 		/**

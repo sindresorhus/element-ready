@@ -59,7 +59,7 @@ elementReady.subscribe = (selector, cb, {
 	stopOnDomReady = true,
 	timeout = Infinity
 } = {}) => {
-	const seen = new WeakMap();
+	const seen = new WeakSet();
 
 	let rafId;
 	let checkFrame = true;
@@ -91,7 +91,7 @@ elementReady.subscribe = (selector, cb, {
 				}
 
 				cb(element);
-				seen.set(element, true);
+				seen.add(element);
 			}
 		}
 
