@@ -20,6 +20,11 @@ const elementReady = require('element-ready');
 
 	console.log(element.id);
 	//=> 'unicorn'
+
+	elementReady.subscribe('.rainbow', element => {
+		console.log(element.classList);
+		//=> ['rainbow',...]
+	});
 })();
 ```
 
@@ -69,7 +74,9 @@ Stop checking for the element to be ready. The stop is synchronous and the origi
 
 Calling it after the promise has settled or multiple times does nothing.
 
-### elementReady.subscribe(selector, cb, options?)
+<hr>
+
+### elementReady.subscribe(selector, callback, options?)
 
 Detect elements as they are added to the DOM.
 
@@ -81,18 +88,39 @@ Type: `string`
 
 [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
 
-#### cb
+#### callback
 
 Type: `Function`<br>
-Signature: `(element: Element) => any`
+Signature: `(element: Element) => void`
 
-Callback function to be called on each of the discovered elements.
+Callback function to be called on each one of the discovered elements.
 
 #### options
 
-Same as `elementReady` options.
+##### target
 
-#### elementReady.subscribe()#stop()
+Type: `Element | document`<br>
+Default: `document`
+
+The element that's expected to contain a match.
+
+##### stopOnDomReady
+
+Type: `boolean`<br>
+Default: `false`
+
+Automatically stop searching for new elements after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event).
+
+If this is true, and `subscribe` function is being called after the DOM ready event, it just detects the elements that are currently in the DOM and then stops searching for new elements immediately.
+
+##### timeout
+
+Type: `number`<br>
+Default: `Infinity`
+
+Milliseconds to wait before stopping the search.
+
+#### stoppable#stop()
 
 Type: `Function`
 

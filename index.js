@@ -54,12 +54,12 @@ const elementReady = (selector, {
 	return Object.assign(promise, {stop});
 };
 
-elementReady.subscribe = (selector, cb, {
+elementReady.subscribe = (selector, callback, {
 	target = document,
-	stopOnDomReady = true,
+	stopOnDomReady = false,
 	timeout = Infinity
 } = {}) => {
-	const seen = new WeakSet();
+	const seenElements = new WeakSet();
 
 	let rafId;
 	let checkFrame = true;
@@ -83,15 +83,13 @@ elementReady.subscribe = (selector, cb, {
 		if (checkFrame) {
 			const allElements = target.querySelectorAll(selector);
 
-			for (let i = 0; i < allElements.length; ++i) {
-				const element = allElements[i];
-
-				if (seen.has(element)) {
+			for (const element of allElements) {
+				if (seenElements.has(element)) {
 					continue;
 				}
 
-				cb(element);
-				seen.add(element);
+				callback(element);
+				seenElements.add(element);
 			}
 		}
 

@@ -24,12 +24,36 @@ declare namespace elementReady {
 		readonly stopOnDomReady?: boolean;
 	}
 
+	interface SubscribeOptions {
+		/**
+		The element that's expected to contain a match.
+
+		@default document
+		*/
+		readonly target?: Element | Document;
+
+		/**
+		Milliseconds to wait before stopping the search.
+
+		@default Infinity
+		*/
+		readonly timeout?: number
+
+		/**
+		Automatically stop searching for new elements after the DOM ready event.
+		If this is true, and `subscribe` function is being called after the DOM ready event, it just detects the elements that are currently in the DOM and then stops searching for new elements immediately.
+
+		@default false
+		*/
+		readonly stopOnDomReady?: boolean;
+	}
+
 	type Stoppable = {
 		/**
-		 Stop checking for new elements.
+		Stop checking for new elements.
 
-		 Calling it multiple times does nothing.
-		 */
+		Calling it multiple times does nothing.
+		*/
 		stop(): void;
 	};
 
@@ -45,14 +69,14 @@ declare namespace elementReady {
   /**
   Called on each new element that matches the selector in the DOM.
   */
-  type SubscribeCallback<T> = (el: T) => any;
+  type SubscribeCallback<T> = (element: T) => void;
 
   /**
   Detect elements as they are added to the DOM.
 
   @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
-  @param cb Callback that is called for each new element.
-  @returns The unsubscribe function.
+  @param callback - Callback to be called for each new element.
+  @returns A stoppable that can be used to unsubscribe to this event.
 
   @example
   ```
@@ -64,20 +88,20 @@ declare namespace elementReady {
   */
   function subscribe<ElementName extends keyof HTMLElementTagNameMap>(
     selector: ElementName,
-    cb: elementReady.SubscribeCallback<HTMLElementTagNameMap[ElementName]>,
-    options?: elementReady.Options
+    callback: elementReady.SubscribeCallback<HTMLElementTagNameMap[ElementName]>,
+    options?: elementReady.SubscribeOptions
   ): Stoppable;
 
   function subscribe<ElementName extends keyof SVGElementTagNameMap>(
     selector: ElementName,
-    cb: elementReady.SubscribeCallback<SVGElementTagNameMap[ElementName]>,
-    options?: elementReady.Options
+    callback: elementReady.SubscribeCallback<SVGElementTagNameMap[ElementName]>,
+    options?: elementReady.SubscribeOptions
   ): Stoppable;
 
   function subscribe<ElementName extends Element = Element>(
     selector: string,
-    cb: elementReady.SubscribeCallback<ElementName>,
-    options?: elementReady.Options
+    callback: elementReady.SubscribeCallback<ElementName>,
+    options?: elementReady.SubscribeOptions
   ): Stoppable;
 }
 

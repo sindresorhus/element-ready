@@ -189,13 +189,13 @@ test('ensure different promises are returned on second call with the same select
 });
 
 test('subscribe: check if elements are detected', async t => {
-	const e = () => {
+	const createElement = () => {
 		const element = document.createElement('p');
 		element.className = 'rainbow';
 		return element;
 	};
 
-	const elements = [e(), e(), e()];
+	const elements = [createElement(), createElement(), createElement()];
 	const seen = [];
 
 	(async () => {
@@ -215,13 +215,13 @@ test('subscribe: check if elements are detected', async t => {
 });
 
 test('subscribe: stop should work', async t => {
-	const e = () => {
+	const createElement = () => {
 		const element = document.createElement('p');
 		element.className = 'happy-unicorn';
 		return element;
 	};
 
-	const elements = [e(), e(), e()];
+	const elements = [createElement(), createElement(), createElement()];
 	const seen = [];
 
 	(async () => {
@@ -232,7 +232,7 @@ test('subscribe: stop should work', async t => {
 		document.body.append(elements[2]);
 	})();
 
-	const {stop} = elementReady.subscribe('.happy-unicorn', el => seen.push(el), {stopOnDomReady: false});
+	const {stop} = elementReady.subscribe('.happy-unicorn', el => seen.push(el));
 	await delay(100);
 	stop();
 	await delay(300);
