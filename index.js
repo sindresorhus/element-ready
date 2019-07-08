@@ -56,7 +56,7 @@ const elementReady = (selector, {
 
 elementReady.subscribe = (selector, callback, {
 	target = document,
-	stopOnDomReady = false,
+	stopOnDomReady = true,
 	timeout = Infinity
 } = {}) => {
 	const seenElements = new WeakSet();

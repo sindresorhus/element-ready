@@ -107,7 +107,7 @@ The element that's expected to contain a match.
 ##### stopOnDomReady
 
 Type: `boolean`<br>
-Default: `false`
+Default: `true`
 
 Automatically stop searching for new elements after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event).
 
@@ -120,7 +120,7 @@ Default: `Infinity`
 
 Milliseconds to wait before stopping the search.
 
-#### stoppable#stop()
+### stoppable#stop()
 
 Type: `Function`
 
