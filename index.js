@@ -18,35 +18,37 @@ const elementReady = (selector, {
 		return cachedPromise;
 	}
 
-	let stop;
-	const promise = new Promise(resolve => {
-		let rafId;
-		stop = () => {
-			cancelAnimationFrame(rafId);
-			cache.delete(cacheKeys, promise);
-			resolve();
-		};
-
-		if (timeout !== Infinity) {
-			setTimeout(stop, timeout);
-		}
-
-		// Query the `target` on every frame
-		(function check() {
-			const element = target.querySelector(selector);
-
-			if (element) {
-				resolve(element);
-				stop();
-			} else if (stopOnDomReady && isDomReady()) {
-				stop();
-			} else {
-				rafId = requestAnimationFrame(check);
-			}
-		})();
+	let resolve;
+	const promise = new Promise(r => { // eslint-disable-line promise/param-names
+		resolve = r;
 	});
-
 	cache.set(cacheKeys, promise);
+
+	let rafId;
+	const stop = () => {
+		cancelAnimationFrame(rafId);
+		cache.delete(cacheKeys, promise);
+		resolve();
+	};
+
+	if (timeout !== Infinity) {
+		setTimeout(stop, timeout);
+	}
+
+	// Query the `target` on every frame
+	(function check() {
+		const element = target.querySelector(selector);
+
+		if (element) {
+			resolve(element);
+			stop();
+		} else if (stopOnDomReady && isDomReady()) {
+			stop();
+		} else {
+			rafId = requestAnimationFrame(check);
+		}
+	})();
+
 	return Object.assign(promise, {stop});
 };
 
