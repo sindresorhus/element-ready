@@ -32,6 +32,8 @@ const elementReady = (selector, {
 		(async () => {
 			await domLoaded;
 
+			// #27
+			// Do the query for the last time and cancel the previous `requestAnimationFrame`
 			const element = target.querySelector(selector);
 			if (element) {
 				deferred.resolve(element);
