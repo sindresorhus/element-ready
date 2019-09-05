@@ -34,6 +34,7 @@
 		"domready"
 	],
 	"dependencies": {
+		"dom-loaded": "^1.1.0",
 		"many-keys-map": "^1.0.1"
 	},
 	"devDependencies": {

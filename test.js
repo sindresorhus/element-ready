@@ -8,6 +8,7 @@ global.document = window.document;
 global.requestAnimationFrame = fn => setTimeout(fn, 16);
 global.cancelAnimationFrame = id => clearTimeout(id);
 
+// `dom-loaded` immediately uses `global.document`, so it needs to be called after its definition
 const elementReady = require('.');
 
 test('check if element ready', async t => {
