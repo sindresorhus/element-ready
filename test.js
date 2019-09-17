@@ -1,15 +1,13 @@
 import test from 'ava';
 import {JSDOM} from 'jsdom';
 import delay from 'delay';
+import elementReady from '.';
 
 const {window} = new JSDOM();
 global.window = window;
 global.document = window.document;
 global.requestAnimationFrame = fn => setTimeout(fn, 16);
 global.cancelAnimationFrame = id => clearTimeout(id);
-
-// `dom-loaded` immediately uses `global.document`, so it needs to be called after its definition
-const elementReady = require('.');
 
 test('check if element ready', async t => {
 	const elementCheck = elementReady('#unicorn', {stopOnDomReady: false});
