@@ -3,10 +3,7 @@ const ManyKeysMap = require('many-keys-map');
 const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
-
-const isDomReady = () => {
-	return document.readyState === 'interactive' || document.readyState === 'complete';
-};
+const isDomReady = () => document.readyState === 'interactive' || document.readyState === 'complete';
 
 const elementReady = (selector, {
 	target = document,
@@ -35,7 +32,7 @@ const elementReady = (selector, {
 		setTimeout(stop, timeout);
 	}
 
-	// Interval to keep checking for it to come into the DOM
+	// Interval to keep checking for it to come into the DOM.
 	(function check() {
 		const element = target.querySelector(selector);
 
