@@ -1,6 +1,6 @@
 {
 	"name": "element-ready",
-	"version": "4.1.0",
+	"version": "4.1.1",
 	"description": "Detect when an element is ready in the DOM",
 	"license": "MIT",
 	"repository": "sindresorhus/element-ready",
@@ -34,15 +34,14 @@
 		"domready"
 	],
 	"dependencies": {
-		"dom-loaded": "^1.1.0",
 		"many-keys-map": "^1.0.1",
-		"p-defer": "^2.1.0"
+		"p-defer": "^3.0.0"
 	},
 	"devDependencies": {
-		"ava": "^1.4.1",
-		"delay": "^4.1.0",
+		"ava": "^2.4.0",
+		"delay": "^4.3.0",
 		"jsdom": "^15.1.0",
-		"tsd": "^0.7.3",
+		"tsd": "^0.7.4",
 		"xo": "^0.24.0"
 	},
 	"xo": {
