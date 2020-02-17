@@ -63,13 +63,6 @@ elementReady.subscribe = (selector, callback, {
 		cancelAnimationFrame(rafId);
 	};
 
-	if (stopOnDomReady) {
-		(async () => {
-			await domLoaded;
-			stop();
-		})();
-	}
-
 	if (timeout !== Infinity) {
 		setTimeout(stop, timeout);
 	}
@@ -88,8 +81,10 @@ elementReady.subscribe = (selector, callback, {
 			}
 		}
 
-		rafId = requestAnimationFrame(check);
-		checkFrame = !checkFrame;
+		if (!(stopOnDomReady && isDomReady())) {
+			rafId = requestAnimationFrame(check);
+			checkFrame = !checkFrame;
+		}
 	})();
 
 	return {stop};
