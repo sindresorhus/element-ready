@@ -3,7 +3,9 @@ const ManyKeysMap = require('many-keys-map');
 const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
-const isDomReady = () => document.readyState === 'interactive' || document.readyState === 'complete';
+const isDomReady = target =>
+	(target.ownerDocument || target).readyState === 'interactive' ||
+	(target.ownerDocument || target).readyState === 'complete';
 
 const elementReady = (selector, {
 	target = document,
@@ -39,7 +41,7 @@ const elementReady = (selector, {
 
 		if (element) {
 			// If the document has finished loading, the elements are always "fully loaded"
-			if (!expectEntireElement || isDomReady()) {
+			if (!expectEntireElement || isDomReady(target)) {
 				deferred.resolve(element);
 				stop();
 				return;
@@ -55,7 +57,7 @@ const elementReady = (selector, {
 
 				parent = element.parentElement;
 			}
-		} else if (stopOnDomReady && isDomReady()) {
+		} else if (stopOnDomReady && isDomReady(target)) {
 			stop();
 			return;
 		}
