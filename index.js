@@ -38,6 +38,7 @@ const elementReady = (selector, {
 		const element = target.querySelector(selector);
 
 		if (element) {
+			// If the document has finished loading, the elements are always "fully loaded"
 			if (!expectEntireElement || isDomReady()) {
 				deferred.resolve(element);
 				stop();
