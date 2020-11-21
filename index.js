@@ -47,16 +47,16 @@ const elementReady = (selector, {
 				return;
 			}
 
-			let parent = element.parentElement;
-			while (parent) {
-				if (parent.nextSibling) {
+			let current = element;
+			do {
+				if (current.nextSibling) {
 					deferred.resolve(element);
 					stop();
 					return;
 				}
 
-				parent = element.parentElement;
-			}
+				current = current.parentElement;
+			} while (current);
 		} else if (stopOnDomReady && isDomReady(target)) {
 			stop();
 			return;
