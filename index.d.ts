@@ -22,6 +22,13 @@ declare namespace elementReady {
 		@default true
 		*/
 		readonly stopOnDomReady?: boolean;
+
+		/**
+		Explicitly wait for entire element to be loaded instead of just its opening HMTL tag. If this is set to false, a `elementReady('nav')` promise could resolve before the last menu item has been downloaded. Note: This is unrelated to the loading of images, videos, scripts, etc. It only follows the loading of the current document.
+
+		@default true
+		*/
+		readonly expectEntireElement?: boolean;
 	}
 
 	type StoppablePromise<T> = Promise<T> & {
