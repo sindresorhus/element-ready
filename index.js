@@ -8,6 +8,7 @@ const isDomReady = () => document.readyState === 'interactive' || document.ready
 const elementReady = (selector, {
 	target = document,
 	stopOnDomReady = true,
+	expectEntireElement = true,
 	timeout = Infinity
 } = {}) => {
 	const cacheKeys = [target, selector, stopOnDomReady, timeout];
@@ -37,13 +38,28 @@ const elementReady = (selector, {
 		const element = target.querySelector(selector);
 
 		if (element) {
-			deferred.resolve(element);
-			stop();
+			if (!expectEntireElement || isDomReady()) {
+				deferred.resolve(element);
+				stop();
+				return;
+			}
+
+			let parent = element.parentElement;
+			while (parent) {
+				if (parent.nextSibling) {
+					deferred.resolve(element);
+					stop();
+					return;
+				}
+
+				parent = element.parentElement;
+			}
 		} else if (stopOnDomReady && isDomReady()) {
 			stop();
-		} else {
-			rafId = requestAnimationFrame(check);
+			return;
 		}
+
+		rafId = requestAnimationFrame(check);
 	})();
 
 	return Object.assign(promise, {stop});
