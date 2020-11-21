@@ -185,3 +185,45 @@ test('ensure different promises are returned on second call with the same select
 	document.querySelector('.unicorn').remove();
 	t.is(prependElement(), await elementReady('.unicorn'));
 });
+
+test('ensure that the whole element has loaded', async t => {
+	const {window} = new JSDOM('<nav class="loading-html-fixture">');
+	const {document} = window;
+
+	// Fake the pre-DOM-ready state
+	const state = 'loading';
+	Object.defineProperty(document, 'readyState', {
+		get: () => state
+	});
+
+	let partialCheck;
+	(async () => {
+		partialCheck = await elementReady('nav', {
+			target: document,
+			expectEntireElement: false
+		});
+	})();
+
+	let entireCheck;
+	(async () => {
+		entireCheck = await elementReady('nav', {
+			target: document,
+			expectEntireElement: true
+		});
+	})();
+
+	await delay(500);
+	t.not(partialCheck, undefined, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
+	const expectation = 'elementReady can’t guarantee the element has loaded in full';
+	t.is(entireCheck, undefined, expectation);
+
+	partialCheck.innerHTML = '<ul><li>Home</li><li>About</li></ul>';
+	t.is(entireCheck, undefined, expectation);
+
+	partialCheck.insertAdjacentHTML('beforebegin', '<h1>Site title</h1>');
+	t.is(entireCheck, undefined, expectation);
+
+	partialCheck.after('Some other part of the page, even a text node');
+	await delay(500);
+	t.is(entireCheck, partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
+});
