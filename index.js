@@ -24,10 +24,10 @@ const elementReady = (selector, {
 
 	cache.set(cacheKeys, promise);
 
-	const stop = () => {
+	const stop = element => {
 		cancelAnimationFrame(rafId);
 		cache.delete(cacheKeys, promise);
-		deferred.resolve();
+		(element);
 	};
 
 	if (timeout !== Infinity) {
@@ -41,16 +41,14 @@ const elementReady = (selector, {
 		if (element) {
 			// If the document has finished loading, the elements are always "fully loaded"
 			if (!expectEntireElement || isDomReady(target)) {
-				deferred.resolve(element);
-				stop();
+				stop(element);
 				return;
 			}
 
 			let current = element;
 			do {
 				if (current.nextSibling) {
-					deferred.resolve(element);
-					stop();
+					stop(element);
 					return;
 				}
 
