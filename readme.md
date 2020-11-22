@@ -61,6 +61,15 @@ Default: `Infinity`
 
 Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
 
+##### expectEntireElement
+
+Type: `boolean`<br>
+Default: `true`
+
+Explicitly wait for the entire element to be loaded instead of just its opening HMTL tag. If this is set to `false`, a `elementReady('nav')` promise could resolve before the last menu item has been downloaded.
+
+Note: This is unrelated to the loading of images, videos, scripts, etc. It only follows the loading of the current document.
+
 ### elementReadyPromise#stop()
 
 Type: `Function`
