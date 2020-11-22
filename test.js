@@ -1,6 +1,7 @@
 import test from 'ava';
-import {JSDOM} from 'jsdom';
 import delay from 'delay';
+import {promiseStateSync} from 'p-state';
+import {JSDOM} from 'jsdom';
 import elementReady from '.';
 
 const {window} = new JSDOM();
@@ -191,39 +192,31 @@ test('ensure that the whole element has loaded', async t => {
 	const {document} = window;
 
 	// Fake the pre-DOM-ready state
-	const state = 'loading';
 	Object.defineProperty(document, 'readyState', {
-		get: () => state
+		get: () => 'loading'
 	});
 
-	let partialCheck;
-	(async () => {
-		partialCheck = await elementReady('nav', {
-			target: document,
-			expectEntireElement: false
-		});
-	})();
+	const nav = document.querySelector('nav');
+	const partialCheck = elementReady('nav', {
+		target: document,
+		expectEntireElement: false
+	});
 
-	let entireCheck;
-	(async () => {
-		entireCheck = await elementReady('nav', {
-			target: document,
-			expectEntireElement: true
-		});
-	})();
+	const entireCheck = elementReady('nav', {
+		target: document,
+		expectEntireElement: true
+	});
 
-	await delay(500);
-	t.not(partialCheck, undefined, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
+	t.is(await partialCheck, nav, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
 	const expectation = 'elementReady can’t guarantee the element has loaded in full';
-	t.is(entireCheck, undefined, expectation);
+	t.is(promiseStateSync(entireCheck), 'pending', expectation);
 
-	partialCheck.innerHTML = '<ul><li>Home</li><li>About</li></ul>';
-	t.is(entireCheck, undefined, expectation);
+	nav.innerHTML = '<ul><li>Home</li><li>About</li></ul>';
+	t.is(promiseStateSync(entireCheck), 'pending', expectation);
 
-	partialCheck.insertAdjacentHTML('beforebegin', '<h1>Site title</h1>');
-	t.is(entireCheck, undefined, expectation);
+	nav.insertAdjacentHTML('beforebegin', '<h1>Site title</h1>');
+	t.is(promiseStateSync(entireCheck), 'pending', expectation);
 
-	partialCheck.after('Some other part of the page, even a text node');
-	await delay(500);
-	t.is(entireCheck, partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
+	nav.after('Some other part of the page, even a text node');
+	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
 });
