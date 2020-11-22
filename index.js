@@ -27,7 +27,7 @@ const elementReady = (selector, {
 	const stop = element => {
 		cancelAnimationFrame(rafId);
 		cache.delete(cacheKeys, promise);
-		(element);
+		deferred.resolve(element);
 	};
 
 	if (timeout !== Infinity) {

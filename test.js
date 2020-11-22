@@ -1,7 +1,7 @@
 import test from 'ava';
 import delay from 'delay';
-import {promiseStateSync} from 'p-state';
 import {JSDOM} from 'jsdom';
+import {promiseStateSync} from 'p-state';
 import elementReady from '.';
 
 const {window} = new JSDOM();
