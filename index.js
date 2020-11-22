@@ -13,7 +13,7 @@ const elementReady = (selector, {
 	expectEntireElement = true,
 	timeout = Infinity
 } = {}) => {
-	const cacheKeys = [target, selector, stopOnDomReady, timeout];
+	const cacheKeys = [selector, stopOnDomReady, timeout, expectEntireElement, target];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
