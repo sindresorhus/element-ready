@@ -4,8 +4,7 @@ const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
 const isDomReady = target =>
-	(target.ownerDocument || target).readyState === 'interactive' ||
-	(target.ownerDocument || target).readyState === 'complete';
+	['interactive', 'complete'].includes((target.ownerDocument || target).readyState);
 
 const elementReady = (selector, {
 	target = document,
