@@ -34,8 +34,7 @@
 		"domready"
 	],
 	"dependencies": {
-		"many-keys-map": "^1.0.1",
-		"p-defer": "^3.0.0"
+		"many-keys-map": "^1.0.1"
 	},
 	"devDependencies": {
 		"ava": "^2.4.0",

@@ -161,6 +161,7 @@ test('ensure different promises are returned on second call with the same select
 	const elementCheck1 = elementReady('.unicorn', {stopOnDomReady: false});
 
 	elementCheck1.stop();
+	await elementCheck1;
 
 	const elementCheck2 = elementReady('.unicorn', {stopOnDomReady: false});
 

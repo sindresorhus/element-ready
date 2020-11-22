@@ -1,6 +1,5 @@
 'use strict';
 const ManyKeysMap = require('many-keys-map');
-const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
 const isDomReady = target =>
@@ -13,56 +12,58 @@ const elementReady = (selector, {
 	expectEntireElement = true,
 	timeout = Infinity
 } = {}) => {
-	const cacheKeys = [target, selector, stopOnDomReady, timeout];
+	const cacheKeys = [expectEntireElement, target, selector, stopOnDomReady, timeout];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
 	}
 
 	let rafId;
-	const deferred = pDefer();
-	const {promise} = deferred;
+	let stop;
+	const promise = new Promise(resolve => {
+		stop = () => {
+			cancelAnimationFrame(rafId);
+			resolve();
+		};
 
-	cache.set(cacheKeys, promise);
+		if (timeout !== Infinity) {
+			setTimeout(stop, timeout);
+		}
 
-	const stop = () => {
-		cancelAnimationFrame(rafId);
-		cache.delete(cacheKeys, promise);
-		deferred.resolve();
-	};
+		// Interval to keep checking for it to come into the DOM.
+		(function check() {
+			const element = target.querySelector(selector);
 
-	if (timeout !== Infinity) {
-		setTimeout(stop, timeout);
-	}
+			if (element) {
+				// If the document has finished loading, the elements are always "fully loaded"
+				console.log(selector, expectEntireElement, isDomReady(target));
+				if (!expectEntireElement || isDomReady(target)) {
+					resolve(element);
+					return;
+				}
 
-	// Interval to keep checking for it to come into the DOM.
-	(function check() {
-		const element = target.querySelector(selector);
+				let current = element;
+				do {
+					if (current.nextSibling) {
+						resolve(element);
+						return;
+					}
 
-		if (element) {
-			// If the document has finished loading, the elements are always "fully loaded"
-			if (!expectEntireElement || isDomReady(target)) {
-				deferred.resolve(element);
+					current = current.parentElement;
+				} while (current);
+			} else if (stopOnDomReady && isDomReady(target)) {
 				stop();
 				return;
 			}
 
-			let current = element;
-			do {
-				if (current.nextSibling) {
-					deferred.resolve(element);
-					stop();
-					return;
-				}
+			rafId = requestAnimationFrame(check);
+		})();
+	});
 
-				current = current.parentElement;
-			} while (current);
-		} else if (stopOnDomReady && isDomReady(target)) {
-			stop();
-			return;
-		}
-
-		rafId = requestAnimationFrame(check);
+	cache.set(cacheKeys, promise);
+	(async () => {
+		await promise;
+		cache.delete(cacheKeys, promise);
 	})();
 
 	return Object.assign(promise, {stop});
