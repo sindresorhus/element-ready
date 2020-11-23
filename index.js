@@ -57,7 +57,7 @@ const elementReady = (selector, {
 		rafId = requestAnimationFrame(check);
 	})();
 
-	return Object.assign(promise, {stop});
+	return Object.assign(promise, {stop: () => stop()});
 };
 
 module.exports = elementReady;
