@@ -36,23 +36,17 @@ const elementReady = (selector, {
 
 	// Interval to keep checking for it to come into the DOM
 	(function check() {
-		const element = target.querySelector(selector) || undefined;
-		const isReady = isDomReady(target);
+		const element = target.querySelector(selector);
 
-		// Regardless of presence, follow the option
-		if (stopOnDomReady && isReady) {
-			stop(element);
-			return;
-		}
-
-		if (element && (isReady || !expectEntireElement)) {
-			stop(element);
+		// When it's ready, only stop if requested or found
+		if (isDomReady(target) && (stopOnDomReady || element)) {
+			stop(element || undefined); // No `null`
 			return;
 		}
 
 		let current = element;
 		while (current) {
-			if (current.nextSibling) {
+			if (!expectEntireElement || current.nextSibling) {
 				stop(element);
 				return;
 			}
