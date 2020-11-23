@@ -34,29 +34,30 @@ const elementReady = (selector, {
 		setTimeout(stop, timeout);
 	}
 
-	// Interval to keep checking for it to come into the DOM.
+	// Interval to keep checking for it to come into the DOM
 	(function check() {
-		const element = target.querySelector(selector);
+		const element = target.querySelector(selector) || undefined;
+		const isReady = isDomReady(target);
 
-		if (element) {
-			// If the document has finished loading, the elements are always "fully loaded"
-			if (!expectEntireElement || isDomReady(target)) {
+		// Regardless of presence, follow the option
+		if (stopOnDomReady && isReady) {
+			stop(element);
+			return;
+		}
+
+		if (element && (isReady || !expectEntireElement)) {
+			stop(element);
+			return;
+		}
+
+		let current = element;
+		while (current) {
+			if (current.nextSibling) {
 				stop(element);
 				return;
 			}
 
-			let current = element;
-			do {
-				if (current.nextSibling) {
-					stop(element);
-					return;
-				}
-
-				current = current.parentElement;
-			} while (current);
-		} else if (stopOnDomReady && isDomReady(target)) {
-			stop();
-			return;
+			current = current.parentElement;
 		}
 
 		rafId = requestAnimationFrame(check);
