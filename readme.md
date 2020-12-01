@@ -1,14 +1,12 @@
-# element-ready [![Build Status](https://travis-ci.org/sindresorhus/element-ready.svg?branch=master)](https://travis-ci.org/sindresorhus/element-ready)
+# element-ready
 
 > Detect when an element is ready in the DOM
-
 
 ## Install
 
 ```
 $ npm install element-ready
 ```
-
 
 ## Usage
 
@@ -22,7 +20,6 @@ const elementReady = require('element-ready');
 	//=> 'unicorn'
 })();
 ```
-
 
 ## API
 
@@ -42,21 +39,21 @@ Type: `object`
 
 ##### target
 
-Type: `Element | document`<br>
+Type: `Element | document`\
 Default: `document`
 
 The element that's expected to contain a match.
 
 ##### stopOnDomReady
 
-Type: `boolean`<br>
+Type: `boolean`\
 Default: `true`
 
 Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
 
 ##### timeout
 
-Type: `number`<br>
+Type: `number`\
 Default: `Infinity`
 
 Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
@@ -68,7 +65,6 @@ Type: `Function`
 Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
 
 Calling it after the promise has settled or multiple times does nothing.
-
 
 ## Related
 
