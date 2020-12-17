@@ -63,9 +63,11 @@ Milliseconds to wait before stopping the search and resolving the promise to `un
 Type: `boolean`\
 Default: `true`
 
-Explicitly wait for the entire element to be loaded instead of just its opening HMTL tag. If this is set to `false`, a `elementReady('nav')` promise could resolve before the last menu item has been downloaded.
+Since the current document’s HTML is downloaded and parsed gradually, elements may appear in the DOM before _all_ of their children are "ready."
 
-Note: This is unrelated to the loading of images, videos, scripts, etc. It only follows the loading of the current document.
+By default, `element-ready` guarantees the element and all of its children have been parsed. This is useful if you want to interact with them or if you want to `.append()` something inside.
+
+By setting this to `false`, `element-ready` will resolve the promise as soon as it finds the requested selector, regardless of its content. This is ok if you're just checking if the element exists or if you want to read/change its attributes.
 
 ### elementReadyPromise#stop()
 
