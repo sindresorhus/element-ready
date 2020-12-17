@@ -32,7 +32,7 @@ declare namespace elementReady {
 
 		@default true
 		*/
-		readonly expectEntireElement?: boolean;
+		readonly waitForChildren?: boolean;
 	}
 
 	type StoppablePromise<T> = Promise<T> & {

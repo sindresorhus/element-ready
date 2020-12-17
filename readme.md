@@ -58,7 +58,7 @@ Default: `Infinity`
 
 Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
 
-##### expectEntireElement
+##### waitForChildren
 
 Type: `boolean`\
 Default: `true`

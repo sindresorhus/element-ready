@@ -199,12 +199,12 @@ test('ensure that the whole element has loaded', async t => {
 	const nav = document.querySelector('nav');
 	const partialCheck = elementReady('nav', {
 		target: document,
-		expectEntireElement: false
+		waitForChildren: false
 	});
 
 	const entireCheck = elementReady('nav', {
 		target: document,
-		expectEntireElement: true
+		waitForChildren: true
 	});
 
 	t.is(await partialCheck, nav, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');

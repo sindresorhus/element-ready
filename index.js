@@ -9,10 +9,10 @@ const isDomReady = target =>
 const elementReady = (selector, {
 	target = document,
 	stopOnDomReady = true,
-	expectEntireElement = true,
+	waitForChildren = true,
 	timeout = Infinity
 } = {}) => {
-	const cacheKeys = [selector, stopOnDomReady, timeout, expectEntireElement, target];
+	const cacheKeys = [selector, stopOnDomReady, timeout, waitForChildren, target];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
@@ -46,7 +46,7 @@ const elementReady = (selector, {
 
 		let current = element;
 		while (current) {
-			if (!expectEntireElement || current.nextSibling) {
+			if (!waitForChildren || current.nextSibling) {
 				stop(element);
 				return;
 			}
