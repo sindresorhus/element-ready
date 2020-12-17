@@ -60,7 +60,7 @@ Milliseconds to wait before stopping the search and resolving the promise to `un
 
 ##### expectEntireElement
 
-Type: `boolean`<br>
+Type: `boolean`\
 Default: `true`
 
 Explicitly wait for the entire element to be loaded instead of just its opening HMTL tag. If this is set to `false`, a `elementReady('nav')` promise could resolve before the last menu item has been downloaded.
