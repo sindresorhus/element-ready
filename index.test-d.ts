@@ -10,6 +10,6 @@ elementReady('#unicorn', {stopOnDomReady: false});
 
 expectType<elementReady.StoppablePromise<Element | undefined>>(promise);
 expectType<elementReady.StoppablePromise<HTMLDivElement | undefined>>(elementReady('div'));
-expectType<elementReady.StoppablePromise<SVGElement | undefined>>(elementReady('text'));
+expectType<elementReady.StoppablePromise<SVGTextElement | undefined>>(elementReady('text'));
 
 promise.stop();

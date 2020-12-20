@@ -14,7 +14,7 @@ declare namespace elementReady {
 
 		@default Infinity
 		*/
-		readonly timeout?: number
+		readonly timeout?: number;
 
 		/**
 		Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
@@ -42,7 +42,7 @@ declare namespace elementReady {
 		Calling it after the promise has settled or multiple times does nothing.
 		*/
 		stop(): void;
-	}
+	};
 }
 
 /**
