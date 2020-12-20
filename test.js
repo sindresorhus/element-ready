@@ -1,6 +1,7 @@
 import test from 'ava';
-import {JSDOM} from 'jsdom';
 import delay from 'delay';
+import {JSDOM} from 'jsdom';
+import {promiseStateSync} from 'p-state';
 import elementReady from '.';
 
 const {window} = new JSDOM();
@@ -184,4 +185,38 @@ test('ensure different promises are returned on second call with the same select
 
 	document.querySelector('.unicorn').remove();
 	t.is(prependElement(), await elementReady('.unicorn'));
+});
+
+test('ensure that the whole element has loaded', async t => {
+	const {window} = new JSDOM('<nav class="loading-html-fixture">');
+	const {document} = window;
+
+	// Fake the pre-DOM-ready state
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'loading'
+	});
+
+	const nav = document.querySelector('nav');
+	const partialCheck = elementReady('nav', {
+		target: document,
+		waitForChildren: false
+	});
+
+	const entireCheck = elementReady('nav', {
+		target: document,
+		waitForChildren: true
+	});
+
+	t.is(await partialCheck, nav, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
+	const expectation = 'elementReady can’t guarantee the element has loaded in full';
+	t.is(promiseStateSync(entireCheck), 'pending', expectation);
+
+	nav.innerHTML = '<ul><li>Home</li><li>About</li></ul>';
+	t.is(promiseStateSync(entireCheck), 'pending', expectation);
+
+	nav.insertAdjacentHTML('beforebegin', '<h1>Site title</h1>');
+	t.is(promiseStateSync(entireCheck), 'pending', expectation);
+
+	nav.after('Some other part of the page, even a text node');
+	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
 });

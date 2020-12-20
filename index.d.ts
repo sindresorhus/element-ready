@@ -22,6 +22,17 @@ declare namespace elementReady {
 		@default true
 		*/
 		readonly stopOnDomReady?: boolean;
+
+		/**
+		Since the current document’s HTML is downloaded and parsed gradually, elements may appear in the DOM before _all_ of their children are “ready”.
+
+		By default, `element-ready` guarantees the element and all of its children have been parsed. This is useful if you want to interact with them or if you want to `.append()` something inside.
+
+		By setting this to `false`, `element-ready` will resolve the promise as soon as it finds the requested selector, regardless of its content. This is ok if you're just checking if the element exists or if you want to read/change its attributes.
+
+		@default true
+		*/
+		readonly waitForChildren?: boolean;
 	}
 
 	type StoppablePromise<T> = Promise<T> & {

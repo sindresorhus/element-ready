@@ -3,14 +3,16 @@ const ManyKeysMap = require('many-keys-map');
 const pDefer = require('p-defer');
 
 const cache = new ManyKeysMap();
-const isDomReady = () => document.readyState === 'interactive' || document.readyState === 'complete';
+const isDomReady = target =>
+	['interactive', 'complete'].includes((target.ownerDocument || target).readyState);
 
 const elementReady = (selector, {
 	target = document,
 	stopOnDomReady = true,
+	waitForChildren = true,
 	timeout = Infinity
 } = {}) => {
-	const cacheKeys = [target, selector, stopOnDomReady, timeout];
+	const cacheKeys = [selector, stopOnDomReady, timeout, waitForChildren, target];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
 		return cachedPromise;
@@ -22,31 +24,40 @@ const elementReady = (selector, {
 
 	cache.set(cacheKeys, promise);
 
-	const stop = () => {
+	const stop = element => {
 		cancelAnimationFrame(rafId);
 		cache.delete(cacheKeys, promise);
-		deferred.resolve();
+		deferred.resolve(element);
 	};
 
 	if (timeout !== Infinity) {
 		setTimeout(stop, timeout);
 	}
 
-	// Interval to keep checking for it to come into the DOM.
+	// Interval to keep checking for it to come into the DOM
 	(function check() {
 		const element = target.querySelector(selector);
 
-		if (element) {
-			deferred.resolve(element);
-			stop();
-		} else if (stopOnDomReady && isDomReady()) {
-			stop();
-		} else {
-			rafId = requestAnimationFrame(check);
+		// When it's ready, only stop if requested or found
+		if (isDomReady(target) && (stopOnDomReady || element)) {
+			stop(element || undefined); // No `null`
+			return;
 		}
+
+		let current = element;
+		while (current) {
+			if (!waitForChildren || current.nextSibling) {
+				stop(element);
+				return;
+			}
+
+			current = current.parentElement;
+		}
+
+		rafId = requestAnimationFrame(check);
 	})();
 
-	return Object.assign(promise, {stop});
+	return Object.assign(promise, {stop: () => stop()});
 };
 
 module.exports = elementReady;
