@@ -24,7 +24,7 @@ declare namespace elementReady {
 		readonly stopOnDomReady?: boolean;
 
 		/**
-		Since the current document’s HTML is downloaded and parsed gradually, elements may appear in the DOM before _all_ of their children are "ready."
+		Since the current document’s HTML is downloaded and parsed gradually, elements may appear in the DOM before _all_ of their children are “ready”.
 
 		By default, `element-ready` guarantees the element and all of its children have been parsed. This is useful if you want to interact with them or if you want to `.append()` something inside.
 
