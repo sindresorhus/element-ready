@@ -69,7 +69,7 @@ declare function elementReady<
 	Selector extends string,
 	TElement extends Element = QuerySelector<Selector>
 >(
-	selector: string,
+	selector: Selector,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<TElement | undefined>;
 export = elementReady;
