@@ -1,5 +1,7 @@
 /// <reference lib="dom"/>
 
+type QuerySelector = ParentNode['querySelector'];
+
 declare namespace elementReady {
 	interface Options {
 		/**
@@ -63,16 +65,11 @@ import elementReady = require('element-ready');
 })();
 ```
 */
-declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
-	selector: ElementName,
-	options?: elementReady.Options
-): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
-declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
-	selector: ElementName,
-	options?: elementReady.Options
-): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
-declare function elementReady<ElementName extends Element = Element>(
+declare function elementReady<
+	Selector extends string,
+	TElement extends Element = QuerySelector<Selector>
+>(
 	selector: string,
 	options?: elementReady.Options
-): elementReady.StoppablePromise<ElementName | undefined>;
+): elementReady.StoppablePromise<TElement | undefined>;
 export = elementReady;
