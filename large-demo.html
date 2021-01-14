@@ -7,7 +7,7 @@
 		setTimeout(() => {
 			document.querySelector('#HUGE')?.append(document.createElement('article'));
 		})
-		(async () => {
+		;(async () => {
 			const el = await elementReady('#HUGE');
 			el.append(document.createElement('section'))
 		})();
