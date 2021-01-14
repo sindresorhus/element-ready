@@ -2,8 +2,8 @@
 <script type="module" async>
   import elementReady from "https://cdn.skypack.dev/element-ready@5.0.0";
   
-  document.querySelector('#HUGE').append(document.createElement('article'))
   
+  document.querySelector('#HUGE').append(document.createElement('article'));
   (async () => {
     const el = await elementReady('#HUGE');
     el.append(document.createElement('section'))
