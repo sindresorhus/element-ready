@@ -35,7 +35,8 @@
 	],
 	"dependencies": {
 		"many-keys-map": "^1.0.3",
-		"p-defer": "^3.0.0"
+		"p-defer": "^3.0.0",
+		"typed-query-selector": "^2.4.1"
 	},
 	"devDependencies": {
 		"ava": "^2.4.0",

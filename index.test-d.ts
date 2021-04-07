@@ -12,4 +12,10 @@ expectType<elementReady.StoppablePromise<Element | undefined>>(promise);
 expectType<elementReady.StoppablePromise<HTMLDivElement | undefined>>(elementReady('div'));
 expectType<elementReady.StoppablePromise<SVGTextElement | undefined>>(elementReady('text'));
 
+expectType<elementReady.StoppablePromise<HTMLElement | undefined>>(elementReady('.class'));
+expectType<elementReady.StoppablePromise<HTMLDivElement | undefined>>(elementReady('div.class'));
+expectType<elementReady.StoppablePromise<HTMLAnchorElement | undefined>>(elementReady('a#id'));
+expectType<elementReady.StoppablePromise<HTMLInputElement | undefined>>(elementReady('input[type="checkbox"]'));
+expectType<elementReady.StoppablePromise<HTMLButtonElement | undefined>>(elementReady(':root > button'));
+
 promise.stop();

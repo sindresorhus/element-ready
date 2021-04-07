@@ -1,4 +1,5 @@
 /// <reference lib="dom"/>
+import type {ParseSelector} from 'typed-query-selector/parser';
 
 declare namespace elementReady {
 	interface Options {
@@ -63,14 +64,10 @@ import elementReady = require('element-ready');
 })();
 ```
 */
-declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
-	selector: ElementName,
+declare function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector>>(
+	selector: Selector,
 	options?: elementReady.Options
-): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
-declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
-	selector: ElementName,
-	options?: elementReady.Options
-): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
+): elementReady.StoppablePromise<ElementName | undefined>;
 declare function elementReady<ElementName extends Element = Element>(
 	selector: string,
 	options?: elementReady.Options
