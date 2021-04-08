@@ -31,7 +31,7 @@ Returns a promise for a matching element.
 
 Type: `string`
 
-[CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
+[CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix with the element type to get a better return type, e.g. `button.my-btn` instead of `.my-btn`.
 
 #### options
 
