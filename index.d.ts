@@ -8,7 +8,7 @@ declare namespace elementReady {
 
 		@default document
 		*/
-		readonly target?: Element | Document;
+		readonly target?: HTMLElement | Document;
 
 		/**
 		Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
@@ -64,11 +64,11 @@ import elementReady = require('element-ready');
 })();
 ```
 */
-declare function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector>>(
+declare function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
 	selector: Selector,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<ElementName | undefined>;
-declare function elementReady<ElementName extends Element = Element>(
+declare function elementReady<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<ElementName | undefined>;

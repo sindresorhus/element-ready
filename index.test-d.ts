@@ -8,7 +8,7 @@ elementReady('#unicorn', {timeout: 1000000});
 
 elementReady('#unicorn', {stopOnDomReady: false});
 
-expectType<elementReady.StoppablePromise<Element | undefined>>(promise);
+expectType<elementReady.StoppablePromise<HTMLElement | undefined>>(promise);
 expectType<elementReady.StoppablePromise<HTMLDivElement | undefined>>(elementReady('div'));
 expectType<elementReady.StoppablePromise<SVGTextElement | undefined>>(elementReady('text'));
 
