@@ -49,7 +49,7 @@ declare namespace elementReady {
 /**
 Detect when an element is ready in the DOM.
 
-@param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix with the element type to get a better return type, e.g. `button.my-btn` instead of `.my-btn`.
+@param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
 @returns The matching element, or `undefined` if the element could not be found.
 
 @example
