@@ -1,4 +1,5 @@
 /// <reference lib="dom"/>
+import type {ParseSelector} from 'typed-query-selector/parser';
 
 declare namespace elementReady {
 	interface Options {
@@ -7,7 +8,7 @@ declare namespace elementReady {
 
 		@default document
 		*/
-		readonly target?: Element | Document;
+		readonly target?: HTMLElement | Document;
 
 		/**
 		Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
@@ -48,7 +49,7 @@ declare namespace elementReady {
 /**
 Detect when an element is ready in the DOM.
 
-@param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
+@param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
 @returns The matching element, or `undefined` if the element could not be found.
 
 @example
@@ -63,15 +64,11 @@ import elementReady = require('element-ready');
 })();
 ```
 */
-declare function elementReady<ElementName extends keyof HTMLElementTagNameMap>(
-	selector: ElementName,
+declare function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector,
 	options?: elementReady.Options
-): elementReady.StoppablePromise<HTMLElementTagNameMap[ElementName] | undefined>;
-declare function elementReady<ElementName extends keyof SVGElementTagNameMap>(
-	selector: ElementName,
-	options?: elementReady.Options
-): elementReady.StoppablePromise<SVGElementTagNameMap[ElementName] | undefined>;
-declare function elementReady<ElementName extends Element = Element>(
+): elementReady.StoppablePromise<ElementName | undefined>;
+declare function elementReady<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: elementReady.Options
 ): elementReady.StoppablePromise<ElementName | undefined>;

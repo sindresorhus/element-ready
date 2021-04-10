@@ -33,6 +33,8 @@ Type: `string`
 
 [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
 
+Prefix the element type to get a better TypeScript return type. For example, `button.my-btn` instead of `.my-btn`.
+
 #### options
 
 Type: `object`
