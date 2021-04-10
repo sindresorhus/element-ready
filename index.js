@@ -1,17 +1,17 @@
-'use strict';
-const ManyKeysMap = require('many-keys-map');
-const pDefer = require('p-defer');
+import ManyKeysMap from 'many-keys-map';
+import pDefer from 'p-defer';
 
 const cache = new ManyKeysMap();
+
 const isDomReady = target =>
 	['interactive', 'complete'].includes((target.ownerDocument || target).readyState);
 
-const elementReady = (selector, {
+export default function elementReady(selector, {
 	target = document,
 	stopOnDomReady = true,
 	waitForChildren = true,
-	timeout = Infinity
-} = {}) => {
+	timeout = Number.POSITIVE_INFINITY
+} = {}) {
 	const cacheKeys = [selector, stopOnDomReady, timeout, waitForChildren, target];
 	const cachedPromise = cache.get(cacheKeys);
 	if (cachedPromise) {
@@ -30,7 +30,7 @@ const elementReady = (selector, {
 		deferred.resolve(element);
 	};
 
-	if (timeout !== Infinity) {
+	if (timeout !== Number.POSITIVE_INFINITY) {
 		setTimeout(stop, timeout);
 	}
 
@@ -58,6 +58,4 @@ const elementReady = (selector, {
 	})();
 
 	return Object.assign(promise, {stop: () => stop()});
-};
-
-module.exports = elementReady;
+}

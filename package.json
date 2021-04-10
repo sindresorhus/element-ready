@@ -4,13 +4,16 @@
 	"description": "Detect when an element is ready in the DOM",
 	"license": "MIT",
 	"repository": "sindresorhus/element-ready",
+	"funding": "https://github.com/sindresorhus/element-ready?sponsor=1",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
 		"url": "https://sindresorhus.com"
 	},
+	"type": "module",
+	"exports": "./index.js",
 	"engines": {
-		"node": ">=10"
+		"node": ">=12"
 	},
 	"scripts": {
 		"test": "xo && ava && tsd"
@@ -35,21 +38,28 @@
 	],
 	"dependencies": {
 		"many-keys-map": "^1.0.3",
-		"p-defer": "^3.0.0",
+		"p-defer": "^4.0.0",
 		"typed-query-selector": "^2.4.1"
 	},
 	"devDependencies": {
-		"ava": "^2.4.0",
-		"delay": "^4.4.0",
-		"jsdom": "^16.4.0",
-		"p-state": "^0.1.1",
+		"ava": "^3.15.0",
+		"delay": "^5.0.0",
+		"jsdom": "^16.5.2",
+		"p-state": "^0.2.0",
 		"tsd": "^0.14.0",
-		"xo": "^0.36.1"
+		"xo": "^0.38.2"
 	},
 	"xo": {
 		"envs": [
 			"node",
 			"browser"
 		]
+	},
+	"tsd": {
+		"compilerOptions": {
+			"lib": [
+				"dom"
+			]
+		}
 	}
 }

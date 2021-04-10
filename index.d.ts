@@ -1,50 +1,48 @@
-/// <reference lib="dom"/>
+/* eslint-disable import/export */
 import type {ParseSelector} from 'typed-query-selector/parser';
 
-declare namespace elementReady {
-	interface Options {
-		/**
-		The element that's expected to contain a match.
+export interface Options {
+	/**
+	The element that's expected to contain a match.
 
-		@default document
-		*/
-		readonly target?: HTMLElement | Document;
+	@default document
+	*/
+	readonly target?: HTMLElement | Document;
 
-		/**
-		Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
+	/**
+	Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
 
-		@default Infinity
-		*/
-		readonly timeout?: number;
+	@default Infinity
+	*/
+	readonly timeout?: number;
 
-		/**
-		Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
+	/**
+	Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
 
-		@default true
-		*/
-		readonly stopOnDomReady?: boolean;
+	@default true
+	*/
+	readonly stopOnDomReady?: boolean;
 
-		/**
-		Since the current document’s HTML is downloaded and parsed gradually, elements may appear in the DOM before _all_ of their children are “ready”.
+	/**
+	Since the current document’s HTML is downloaded and parsed gradually, elements may appear in the DOM before _all_ of their children are “ready”.
 
-		By default, `element-ready` guarantees the element and all of its children have been parsed. This is useful if you want to interact with them or if you want to `.append()` something inside.
+	By default, `element-ready` guarantees the element and all of its children have been parsed. This is useful if you want to interact with them or if you want to `.append()` something inside.
 
-		By setting this to `false`, `element-ready` will resolve the promise as soon as it finds the requested selector, regardless of its content. This is ok if you're just checking if the element exists or if you want to read/change its attributes.
+	By setting this to `false`, `element-ready` will resolve the promise as soon as it finds the requested selector, regardless of its content. This is ok if you're just checking if the element exists or if you want to read/change its attributes.
 
-		@default true
-		*/
-		readonly waitForChildren?: boolean;
-	}
-
-	type StoppablePromise<T> = Promise<T> & {
-		/**
-		Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
-
-		Calling it after the promise has settled or multiple times does nothing.
-		*/
-		stop(): void;
-	};
+	@default true
+	*/
+	readonly waitForChildren?: boolean;
 }
+
+export type StoppablePromise<T> = Promise<T> & {
+	/**
+	Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
+
+	Calling it after the promise has settled or multiple times does nothing.
+	*/
+	stop(): void;
+};
 
 /**
 Detect when an element is ready in the DOM.
@@ -54,22 +52,19 @@ Detect when an element is ready in the DOM.
 
 @example
 ```
-import elementReady = require('element-ready');
+import elementReady from 'element-ready';
 
-(async () => {
-	const element = await elementReady('#unicorn');
+const element = await elementReady('#unicorn');
 
-	console.log(element.id);
-	//=> 'unicorn'
-})();
+console.log(element.id);
+//=> 'unicorn'
 ```
 */
-declare function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
+export default function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
 	selector: Selector,
-	options?: elementReady.Options
-): elementReady.StoppablePromise<ElementName | undefined>;
-declare function elementReady<ElementName extends Element = HTMLElement>(
+	options?: Options
+): StoppablePromise<ElementName | undefined>;
+export default function elementReady<ElementName extends Element = HTMLElement>(
 	selector: string,
-	options?: elementReady.Options
-): elementReady.StoppablePromise<ElementName | undefined>;
-export = elementReady;
+	options?: Options
+): StoppablePromise<ElementName | undefined>;

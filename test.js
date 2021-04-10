@@ -2,7 +2,7 @@ import test from 'ava';
 import delay from 'delay';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
-import elementReady from '.';
+import elementReady from './index.js';
 
 const {window} = new JSDOM();
 global.window = window;

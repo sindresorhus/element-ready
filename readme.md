@@ -11,14 +11,12 @@ $ npm install element-ready
 ## Usage
 
 ```js
-const elementReady = require('element-ready');
+import elementReady from 'element-ready';
 
-(async () => {
-	const element = await elementReady('#unicorn');
+const element = await elementReady('#unicorn');
 
-	console.log(element.id);
-	//=> 'unicorn'
-})();
+console.log(element.id);
+//=> 'unicorn'
 ```
 
 ## API
