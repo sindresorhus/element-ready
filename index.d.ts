@@ -36,8 +36,6 @@ export interface Options {
 	readonly waitForChildren?: boolean;
 }
 
-export type SubscribeOptions = Options;
-
 export type StoppablePromise<T> = Promise<T> & {
 	/**
 	Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
@@ -90,9 +88,9 @@ observeReadyElements('#unicorn').subscribe(element => {
 */
 export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
 	selector: Selector,
-	options?: SubscribeOptions
+	options?: Options
 ): ObservableLike;
 export function observeReadyElements<ElementName extends Element = HTMLElement>(
 	selector: string,
-	options?: SubscribeOptions
+	options?: Options
 ): ObservableLike;
