@@ -35,13 +35,19 @@ export interface Options {
 	readonly waitForChildren?: boolean;
 }
 
-export type StoppablePromise<T> = Promise<T> & {
-	/**
-	Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
+/**
+Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
 
-	Calling it after the promise has settled or multiple times does nothing.
-	*/
-	stop(): void;
+Calling it after the promise has settled or multiple times does nothing.
+*/
+declare function stop(): void;
+
+export type StoppablePromise<T> = Promise<T> & {
+	stop: typeof stop;
+};
+
+export type StoppableAsyncIterableIterator<ValueType> = AsyncIterableIterator<ValueType> & {
+	stop: typeof stop;
 };
 
 /**
@@ -88,8 +94,8 @@ for await (const element of observeReadyElements('#unicorn')) {
 export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
 	selector: Selector,
 	options?: Options
-): AsyncIterableIterator<ElementName>;
+): StoppableAsyncIterableIterator<ElementName>;
 export function observeReadyElements<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: Options
-): AsyncIterableIterator<ElementName>;
+): StoppableAsyncIterableIterator<ElementName>;
