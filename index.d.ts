@@ -73,7 +73,7 @@ export default function elementReady<ElementName extends Element = HTMLElement>(
 ): StoppablePromise<ElementName | undefined>;
 
 /**
-Detect when elements are ready in the DOM.
+Detect when elements are ready in the DOM. Useful to for example, url shorten `<a>` tags as they are added or to click buttons when they are clickable.
 
 @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
 @returns Returns an observable for each new matching element.

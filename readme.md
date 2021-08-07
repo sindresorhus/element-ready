@@ -27,7 +27,7 @@ Returns a promise for a matching element.
 
 ### observeReadyElements(selector, options?)
 
-Returns an observable for each new matching element.
+Returns an observable for each new matching element. Useful to for example, url shorten `<a>` tags as they are added or to click buttons when they are clickable.
 
 ```js
 import {observeReadyElements} from 'element-ready';
