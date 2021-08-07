@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import {expectType} from 'tsd';
-import {ObservableLike} from 'type-fest';
 import elementReady, {StoppablePromise, observeReadyElements} from './index.js';
 
 const promise = elementReady('#unicorn');
@@ -22,4 +21,4 @@ expectType<StoppablePromise<HTMLButtonElement | undefined>>(elementReady(':root 
 
 promise.stop();
 
-expectType<ObservableLike>(observeReadyElements('#unicorn'));
+expectType<AsyncIterableIterator<HTMLElement>>(observeReadyElements('#unicorn'));

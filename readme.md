@@ -27,15 +27,15 @@ Returns a promise for a matching element.
 
 ### observeReadyElements(selector, options?)
 
-Returns an observable for each new matching element. Useful to for example, url shorten `<a>` tags as they are added or to click buttons when they are clickable.
+Returns an async iterator which yields with each new matching element. Useful to for example, url shorten `<a>` tags as they are added or to click buttons when they are clickable.
 
 ```js
 import {observeReadyElements} from 'element-ready';
 
-observeReadyElements('#unicorn').subscribe(element => {
+for await (const element of observeReadyElements('#unicorn')) {
 	console.log(element.id);
 	//=> 'unicorn'
-});
+}
 ```
 
 #### selector

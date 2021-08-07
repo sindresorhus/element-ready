@@ -1,6 +1,62 @@
 import ManyKeysMap from 'many-keys-map';
 import pDefer from 'p-defer';
-import Observable from 'zen-observable';
+import Queue from 'yocto-queue';
+
+function createAsyncIterator() {
+	const queue = new Queue();
+	let isComplete = false;
+	const onNextCallbacks = new Set();
+
+	function next(value) {
+		queue.enqueue(value);
+		for (const callback of onNextCallbacks) {
+			callback();
+		}
+
+		onNextCallbacks.clear();
+	}
+
+	function complete() {
+		isComplete = true;
+	}
+
+	function onNext() {
+		const {promise, resolve} = pDefer();
+		onNextCallbacks.add(resolve);
+		return promise;
+	}
+
+	return {
+		next,
+		complete,
+		iterator: {
+			[Symbol.asyncIterator]() {
+				return {
+					async next() {
+						if (queue.size > 0) {
+							return {
+								done: false,
+								value: queue.dequeue()
+							};
+						}
+
+						if (isComplete) {
+							return {
+								done: true
+							};
+						}
+
+						await onNext();
+						return {
+							done: false,
+							value: queue.dequeue()
+						};
+					}
+				};
+			}
+		}
+	};
+}
 
 const cache = new ManyKeysMap();
 
@@ -67,58 +123,62 @@ export function observeReadyElements(selector, {
 	waitForChildren = true,
 	timeout = Number.POSITIVE_INFINITY
 } = {}) {
-	return new Observable(subscriber => {
-		const handleMutations = mutations => {
-			for (const {addedNodes} of mutations) {
-				for (const element of addedNodes) {
-					if (element.nodeType !== 1) {
+	const {next, complete, iterator} = createAsyncIterator();
+
+	const handleMutations = mutations => {
+		for (const {addedNodes} of mutations) {
+			for (const element of addedNodes) {
+				if (element.nodeType !== 1) {
+					continue;
+				}
+
+				if (element.matches(selector)) {
+					// When it's ready, only stop if requested or found
+					if (isDomReady(target) && element) {
+						next(element);
 						continue;
 					}
 
-					if (element.matches(selector)) {
-						// When it's ready, only stop if requested or found
-						if (isDomReady(target) && element) {
-							subscriber.next(element);
+					let current = element;
+					while (current) {
+						if (!waitForChildren || current.nextSibling) {
+							next(element);
 							continue;
 						}
 
-						let current = element;
-						while (current) {
-							if (!waitForChildren || current.nextSibling) {
-								subscriber.next(element);
-								continue;
-							}
-
-							current = current.parentElement;
-						}
+						current = current.parentElement;
 					}
 				}
 			}
-		};
-
-		const observer = new MutationObserver(handleMutations);
-
-		observer.observe(target, {
-			childList: true,
-			subtree: true
-		});
-
-		const unsubscribe = () => {
-			handleMutations(observer.takeRecords());
-			observer.disconnect();
-			subscriber.complete();
-		};
-
-		if (stopOnDomReady) {
-			target.addEventListener('DOMContentLoaded', () => {
-				unsubscribe();
-			});
 		}
+	};
 
-		if (timeout !== Number.POSITIVE_INFINITY) {
-			setTimeout(unsubscribe, timeout);
-		}
+	const observer = new MutationObserver(handleMutations);
 
-		return unsubscribe;
+	observer.observe(target, {
+		childList: true,
+		subtree: true
 	});
+
+	const stop = () => {
+		handleMutations(observer.takeRecords());
+		observer.disconnect();
+		complete();
+	};
+
+	if (stopOnDomReady) {
+		target.addEventListener('DOMContentLoaded', () => {
+			console.log('loaded');
+			stop();
+		});
+	}
+
+	if (timeout !== Number.POSITIVE_INFINITY) {
+		setTimeout(stop, timeout);
+	}
+
+	return {
+		...iterator,
+		stop
+	};
 }

@@ -2,7 +2,6 @@ import test from 'ava';
 import delay from 'delay';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
-import observableToPromise from 'observable-to-promise';
 import elementReady, {observeReadyElements} from './index.js';
 
 const {window} = new JSDOM();
@@ -226,14 +225,15 @@ test('ensure that the whole element has loaded', async t => {
 test('subscribe to newly added elements that match a selector', async t => {
 	const readyElements = observeReadyElements('#unicorn');
 
-	const [element] = await Promise.all([
-		observableToPromise(readyElements),
-		(async () => {
-			const element = document.createElement('p');
-			element.id = 'unicorn';
-			document.body.append(element);
-		})()
-	]);
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		document.body.append(element);
+	})();
 
-	t.is(element.id, 'unicorn');
+	for await (const element of readyElements) {
+		t.is(element.id, 'unicorn');
+		readyElements.stop();
+	}
 });

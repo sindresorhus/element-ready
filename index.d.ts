@@ -1,6 +1,5 @@
 /* eslint-disable import/export */
 import type {ParseSelector} from 'typed-query-selector/parser';
-import {ObservableLike} from 'type-fest';
 
 export interface Options {
 	/**
@@ -74,23 +73,23 @@ export default function elementReady<ElementName extends Element = HTMLElement>(
 Detect when elements are ready in the DOM. Useful to for example, url shorten `<a>` tags as they are added or to click buttons when they are clickable.
 
 @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
-@returns Returns an observable for each new matching element.
+@returns An async iterator which yields with each new matching element.
 
 @example
 ```
 import {observeReadyElements} from 'element-ready';
 
-observeReadyElements('#unicorn').subscribe(element => {
+for await (const element of observeReadyElements('#unicorn')) {
 	console.log(element.id);
 	//=> 'unicorn'
-});
+}
 ```
 */
 export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
 	selector: Selector,
 	options?: Options
-): ObservableLike;
+): AsyncIterableIterator<ElementName>;
 export function observeReadyElements<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: Options
-): ObservableLike;
+): AsyncIterableIterator<ElementName>;

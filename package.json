@@ -37,21 +37,18 @@
 		"domready"
 	],
 	"dependencies": {
-		"any-observable": "^0.5.1",
 		"many-keys-map": "^1.0.3",
 		"p-defer": "^4.0.0",
-		"type-fest": "^2.0.0",
-		"typed-query-selector": "^2.4.1"
+		"typed-query-selector": "^2.4.1",
+		"yocto-queue": "^0.1.0"
 	},
 	"devDependencies": {
 		"ava": "^3.15.0",
 		"delay": "^5.0.0",
 		"jsdom": "^16.5.2",
-		"observable-to-promise": "^1.0.0",
 		"p-state": "^0.2.0",
 		"tsd": "^0.14.0",
-		"xo": "^0.38.2",
-		"zen-observable": "^0.8.15"
+		"xo": "^0.38.2"
 	},
 	"xo": {
 		"envs": [
