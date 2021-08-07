@@ -2,13 +2,15 @@ import test from 'ava';
 import delay from 'delay';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
-import elementReady from './index.js';
+import observableToPromise from 'observable-to-promise';
+import elementReady, {observeReadyElements} from './index.js';
 
 const {window} = new JSDOM();
 global.window = window;
 global.document = window.document;
 global.requestAnimationFrame = fn => setTimeout(fn, 16);
 global.cancelAnimationFrame = id => clearTimeout(id);
+global.MutationObserver = window.MutationObserver;
 
 test('check if element ready', async t => {
 	const elementCheck = elementReady('#unicorn', {stopOnDomReady: false});
@@ -219,4 +221,18 @@ test('ensure that the whole element has loaded', async t => {
 
 	nav.after('Some other part of the page, even a text node');
 	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
+});
+
+test('subscribe to newly added elements that match a selector', async t => {
+	const readyElements = observeReadyElements('#unicorn');
+
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		document.body.append(element);
+	})();
+
+	const element = await observableToPromise(readyElements);
+	t.is(element.id, 'unicorn');
 });

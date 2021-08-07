@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import {expectType} from 'tsd';
-import elementReady, {StoppablePromise} from './index.js';
+import {ObservableLike} from 'type-fest';
+import elementReady, {StoppablePromise, observeReadyElements} from './index.js';
 
 const promise = elementReady('#unicorn');
 elementReady('#unicorn', {target: document});
@@ -20,3 +21,5 @@ expectType<StoppablePromise<HTMLInputElement | undefined>>(elementReady('input[t
 expectType<StoppablePromise<HTMLButtonElement | undefined>>(elementReady(':root > button'));
 
 promise.stop();
+
+expectType<ObservableLike>(observeReadyElements('#unicorn'));

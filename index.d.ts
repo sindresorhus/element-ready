@@ -1,5 +1,6 @@
 /* eslint-disable import/export */
 import type {ParseSelector} from 'typed-query-selector/parser';
+import {ObservableLike} from 'type-fest';
 
 export interface Options {
 	/**
@@ -35,6 +36,8 @@ export interface Options {
 	readonly waitForChildren?: boolean;
 }
 
+export type SubscribeOptions = Options;
+
 export type StoppablePromise<T> = Promise<T> & {
 	/**
 	Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
@@ -68,3 +71,28 @@ export default function elementReady<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: Options
 ): StoppablePromise<ElementName | undefined>;
+
+/**
+Detect when elements are ready in the DOM.
+
+@param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
+@returns Returns an observable for each new matching element.
+
+@example
+```
+import {observeReadyElements} from 'element-ready';
+
+observeReadyElements('#unicorn').subscribe(element => {
+	console.log(element.id);
+	//=> 'unicorn'
+});
+```
+*/
+export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector,
+	options?: SubscribeOptions
+): ObservableLike;
+export function observeReadyElements<ElementName extends Element = HTMLElement>(
+	selector: string,
+	options?: SubscribeOptions
+): ObservableLike;

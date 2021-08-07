@@ -25,6 +25,19 @@ console.log(element.id);
 
 Returns a promise for a matching element.
 
+### observeReadyElements(selector, options?)
+
+Returns an observable for each new matching element.
+
+```js
+import {observeReadyElements} from 'element-ready';
+
+observeReadyElements('#unicorn').subscribe(element => {
+	console.log(element.id);
+	//=> 'unicorn'
+});
+```
+
 #### selector
 
 Type: `string`
