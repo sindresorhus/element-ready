@@ -226,13 +226,14 @@ test('ensure that the whole element has loaded', async t => {
 test('subscribe to newly added elements that match a selector', async t => {
 	const readyElements = observeReadyElements('#unicorn');
 
-	(async () => {
-		await delay(500);
-		const element = document.createElement('p');
-		element.id = 'unicorn';
-		document.body.append(element);
-	})();
+	const [element] = await Promise.all([
+		observableToPromise(readyElements),
+		(async () => {
+			const element = document.createElement('p');
+			element.id = 'unicorn';
+			document.body.append(element);
+		})()
+	]);
 
-	const element = await observableToPromise(readyElements);
 	t.is(element.id, 'unicorn');
 });
