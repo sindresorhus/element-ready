@@ -47,6 +47,7 @@ function createAsyncIterator() {
 						}
 
 						await onNext();
+
 						return {
 							done: false,
 							value: queue.dequeue()
