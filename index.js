@@ -129,26 +129,24 @@ export function observeReadyElements(selector, {
 	const handleMutations = mutations => {
 		for (const {addedNodes} of mutations) {
 			for (const element of addedNodes) {
-				if (element.nodeType !== 1) {
+				if (element.nodeType !== 1 || !element.matches(selector)) {
 					continue;
 				}
 
-				if (element.matches(selector)) {
-					// When it's ready, only stop if requested or found
-					if (isDomReady(target) && element) {
+				// When it's ready, only stop if requested or found
+				if (isDomReady(target) && element) {
+					next(element);
+					continue;
+				}
+
+				let current = element;
+				while (current) {
+					if (!waitForChildren || current.nextSibling) {
 						next(element);
 						continue;
 					}
 
-					let current = element;
-					while (current) {
-						if (!waitForChildren || current.nextSibling) {
-							next(element);
-							continue;
-						}
-
-						current = current.parentElement;
-					}
+					current = current.parentElement;
 				}
 			}
 		}
@@ -169,7 +167,6 @@ export function observeReadyElements(selector, {
 
 	if (stopOnDomReady) {
 		target.addEventListener('DOMContentLoaded', () => {
-			console.log('loaded');
 			stop();
 		}, {once: true});
 	}
