@@ -171,7 +171,7 @@ export function observeReadyElements(selector, {
 		target.addEventListener('DOMContentLoaded', () => {
 			console.log('loaded');
 			stop();
-		});
+		}, {once: true});
 	}
 
 	if (timeout !== Number.POSITIVE_INFINITY) {
