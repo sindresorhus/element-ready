@@ -69,10 +69,12 @@ export default function elementReady<ElementName extends Element = HTMLElement>(
 ): StoppablePromise<ElementName | undefined>;
 
 /**
-Detect when elements are ready in the DOM. Returns an async iterator which yields with each new matching element. Useful for user-scripts that modify elements when they are added.
+Detect when elements are ready in the DOM.
+
+Useful for user-scripts that modify elements when they are added.
 
 @param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
-@returns An async iterator which yields with each new matching element.
+@returns An async iterable which yields with each new matching element.
 
 @example
 ```
@@ -95,4 +97,4 @@ export function observeReadyElements<Selector extends string, ElementName extend
 export function observeReadyElements<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: Options
-): AsyncIterableIterator<ElementName>;
+): AsyncIterable<ElementName>;

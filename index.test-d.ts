@@ -23,4 +23,4 @@ promise.stop();
 
 const readyElements = observeReadyElements('#unicorn');
 
-expectType<AsyncIterableIterator<HTMLElement>>(readyElements);
+expectType<AsyncIterable<HTMLElement>>(readyElements);

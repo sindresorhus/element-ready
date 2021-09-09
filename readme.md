@@ -27,7 +27,7 @@ Returns a promise for a matching element.
 
 ### observeReadyElements(selector, options?)
 
-Returns an async iterator which yields with each new matching element. Useful for user-scripts that modify elements when they are added.
+Returns an async iterable which yields with each new matching element. Useful for user-scripts that modify elements when they are added.
 
 ```js
 import {observeReadyElements} from 'element-ready';
