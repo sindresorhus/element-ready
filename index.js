@@ -95,7 +95,7 @@ export function observeReadyElements(selector, {
 						}
 					}
 				}
-			};
+			}
 
 			const observer = new MutationObserver(handleMutations);
 
