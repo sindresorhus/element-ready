@@ -27,7 +27,7 @@ Returns a promise for a matching element.
 
 ### observeReadyElements(selector, options?)
 
-Returns an async iterator which yields with each new matching element. Useful to for example, url shorten `<a>` tags as they are added or to click buttons when they are clickable.
+Returns an async iterator which yields with each new matching element. Useful for user-scripts that modify elements when they are added.
 
 ```js
 import {observeReadyElements} from 'element-ready';
@@ -35,6 +35,10 @@ import {observeReadyElements} from 'element-ready';
 for await (const element of observeReadyElements('#unicorn')) {
 	console.log(element.id);
 	//=> 'unicorn'
+
+	if (element.id === 'elephant') {
+		break;
+	}
 }
 ```
 

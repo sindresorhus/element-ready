@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import {expectType} from 'tsd';
-import elementReady, {StoppablePromise, StoppableAsyncIterableIterator, observeReadyElements} from './index.js';
+import elementReady, {StoppablePromise, observeReadyElements} from './index.js';
 
 const promise = elementReady('#unicorn');
 elementReady('#unicorn', {target: document});
 elementReady('#unicorn', {target: document.documentElement});
-elementReady('#unicorn', {timeout: 1000000});
+elementReady('#unicorn', {timeout: 1_000_000});
 
 elementReady('#unicorn', {stopOnDomReady: false});
 
@@ -23,6 +23,5 @@ promise.stop();
 
 const readyElements = observeReadyElements('#unicorn');
 
-expectType<StoppableAsyncIterableIterator<HTMLElement>>(readyElements);
+expectType<AsyncIterableIterator<HTMLElement>>(readyElements);
 
-readyElements.stop();

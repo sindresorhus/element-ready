@@ -29,7 +29,7 @@ test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
 	const elementCheck = elementReady('#unicorn', {
 		target,
-		stopOnDomReady: false
+		stopOnDomReady: false,
 	});
 
 	(async () => {
@@ -47,12 +47,12 @@ test('check if different elements ready inside different targets with same selec
 	const target1 = document.createElement('p');
 	const elementCheck1 = elementReady('.unicorn', {
 		target: target1,
-		stopOnDomReady: false
+		stopOnDomReady: false,
 	});
 	const target2 = document.createElement('span');
 	const elementCheck2 = elementReady('.unicorn', {
 		target: target2,
-		stopOnDomReady: false
+		stopOnDomReady: false,
 	});
 
 	(async () => {
@@ -77,7 +77,7 @@ test('check if different elements ready inside different targets with same selec
 
 test('check if element ready after dom loaded', async t => {
 	const elementCheck = elementReady('#bio', {
-		stopOnDomReady: true
+		stopOnDomReady: true,
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
@@ -85,7 +85,7 @@ test('check if element ready after dom loaded', async t => {
 		const element = document.createElement('p');
 		element.id = 'bio';
 		document.body.append(element);
-	}, 50000);
+	}, 50_000);
 
 	const element = await elementCheck;
 	t.is(element, undefined);
@@ -97,7 +97,7 @@ test('check if element ready before dom loaded', async t => {
 	document.body.append(element);
 
 	const elementCheck = elementReady('#history', {
-		stopOnDomReady: true
+		stopOnDomReady: true,
 	});
 
 	t.is(await elementCheck, element);
@@ -106,7 +106,7 @@ test('check if element ready before dom loaded', async t => {
 test('check if element ready after timeout', async t => {
 	const elementCheck = elementReady('#cheezburger', {
 		stopOnDomReady: false,
-		timeout: 1000
+		timeout: 1000,
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
@@ -114,7 +114,7 @@ test('check if element ready after timeout', async t => {
 		const element = document.createElement('p');
 		element.id = 'cheezburger';
 		document.body.append(element);
-	}, 50000);
+	}, 50_000);
 
 	const element = await elementCheck;
 	t.is(element, undefined);
@@ -127,7 +127,7 @@ test('check if element ready before timeout', async t => {
 
 	const elementCheck = elementReady('#thunders', {
 		stopOnDomReady: false,
-		timeout: 10
+		timeout: 10,
 	});
 
 	t.is(await elementCheck, element);
@@ -194,18 +194,18 @@ test('ensure that the whole element has loaded', async t => {
 
 	// Fake the pre-DOM-ready state
 	Object.defineProperty(document, 'readyState', {
-		get: () => 'loading'
+		get: () => 'loading',
 	});
 
 	const nav = document.querySelector('nav');
 	const partialCheck = elementReady('nav', {
 		target: document,
-		waitForChildren: false
+		waitForChildren: false,
 	});
 
 	const entireCheck = elementReady('nav', {
 		target: document,
-		waitForChildren: true
+		waitForChildren: true,
 	});
 
 	t.is(await partialCheck, nav, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
@@ -223,17 +223,41 @@ test('ensure that the whole element has loaded', async t => {
 });
 
 test('subscribe to newly added elements that match a selector', async t => {
-	const readyElements = observeReadyElements('#unicorn');
-
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
 		element.id = 'unicorn';
 		document.body.append(element);
+
+		const element2 = document.createElement('p');
+		element2.id = 'unicorn';
+		document.body.append(element2);
+
+		await delay(500);
+
+		const element3 = document.createElement('p');
+		element3.id = 'unicorn3';
+		document.body.append(element3);
 	})();
 
+	const readyElements = observeReadyElements('#unicorn');
+	let readyElementsCount = 0;
+
 	for await (const element of readyElements) {
+		readyElementsCount++;
 		t.is(element.id, 'unicorn');
-		readyElements.stop();
+
+		if (readyElementsCount === 2) {
+			break;
+		}
+	}
+
+	for await (const element of readyElements) {
+		readyElementsCount++;
+		t.is(element.id, 'unicorn3');
+
+		if (readyElementsCount === 3) {
+			break;
+		}
 	}
 });
