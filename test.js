@@ -110,7 +110,7 @@ test('check if element ready after timeout', async t => {
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
-	setTimeout(() => {
+	const timeoutId = setTimeout(() => {
 		const element = document.createElement('p');
 		element.id = 'cheezburger';
 		document.body.append(element);
@@ -118,6 +118,7 @@ test('check if element ready after timeout', async t => {
 
 	const element = await elementCheck;
 	t.is(element, undefined);
+	clearTimeout(timeoutId);
 });
 
 test('check if element ready before timeout', async t => {
@@ -240,7 +241,7 @@ test('subscribe to newly added elements that match a selector', async t => {
 		document.body.append(element3);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn');
+	const readyElements = observeReadyElements('#unicorn, #unicorn3');
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
