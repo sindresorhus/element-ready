@@ -71,7 +71,7 @@ export function observeReadyElements(selector, {
 		[Symbol.asyncIterator]() {
 			const {next, complete, onCleanup, iterator} = createDeferredAsyncIterator();
 
-			const handleMutations = mutations => {
+			function handleMutations(mutations) {
 				for (const {addedNodes} of mutations) {
 					for (const element of addedNodes) {
 						if (element.nodeType !== 1 || !element.matches(selector)) {
