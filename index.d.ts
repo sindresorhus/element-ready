@@ -34,15 +34,13 @@ export interface Options {
 	readonly waitForChildren?: boolean;
 }
 
-/**
-Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
-
-Calling it after the promise has settled or multiple times does nothing.
-*/
-declare function stop(): void;
-
 export type StoppablePromise<T> = Promise<T> & {
-	stop: typeof stop;
+	/**
+	Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
+
+	Calling it after the promise has settled or multiple times does nothing.
+	*/
+	stop(): void;
 };
 
 /**
