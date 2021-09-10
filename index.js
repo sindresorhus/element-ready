@@ -72,27 +72,25 @@ export function observeReadyElements(selector, {
 			const {next, complete, onCleanup, iterator} = createDeferredAsyncIterator();
 
 			function handleMutations(mutations) {
-				for (const {addedNodes} of mutations) {
-					for (const element of addedNodes) {
-						if (element.nodeType !== 1 || !element.matches(selector)) {
-							continue;
-						}
+				for (const element of mutations.flatMap(({addedNodes}) => addedNodes)) {
+					if (element.nodeType !== 1 || !element.matches(selector)) {
+						continue;
+					}
 
-						// When it's ready, only stop if requested or found
-						if (isDomReady(target) && element) {
+					// When it's ready, only stop if requested or found
+					if (isDomReady(target) && element) {
+						next(element);
+						continue;
+					}
+
+					let current = element;
+					while (current) {
+						if (!waitForChildren || current.nextSibling) {
 							next(element);
 							continue;
 						}
 
-						let current = element;
-						while (current) {
-							if (!waitForChildren || current.nextSibling) {
-								next(element);
-								continue;
-							}
-
-							current = current.parentElement;
-						}
+						current = current.parentElement;
 					}
 				}
 			}
