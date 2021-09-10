@@ -37,6 +37,7 @@
 		"domready"
 	],
 	"dependencies": {
+		"deferred-async-iterator": "^1.0.1",
 		"many-keys-map": "^1.0.3",
 		"p-defer": "^4.0.0",
 		"typed-query-selector": "^2.4.1"
@@ -45,9 +46,9 @@
 		"ava": "^3.15.0",
 		"delay": "^5.0.0",
 		"jsdom": "^16.5.2",
-		"p-state": "^0.2.0",
-		"tsd": "^0.14.0",
-		"xo": "^0.38.2"
+		"p-state": "^0.2.1",
+		"tsd": "^0.16.0",
+		"xo": "^0.44.0"
 	},
 	"xo": {
 		"envs": [

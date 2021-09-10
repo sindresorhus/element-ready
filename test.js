@@ -2,13 +2,14 @@ import test from 'ava';
 import delay from 'delay';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
-import elementReady from './index.js';
+import elementReady, {observeReadyElements} from './index.js';
 
 const {window} = new JSDOM();
 global.window = window;
 global.document = window.document;
 global.requestAnimationFrame = fn => setTimeout(fn, 16);
 global.cancelAnimationFrame = id => clearTimeout(id);
+global.MutationObserver = window.MutationObserver;
 
 test('check if element ready', async t => {
 	const elementCheck = elementReady('#unicorn', {stopOnDomReady: false});
@@ -28,7 +29,7 @@ test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
 	const elementCheck = elementReady('#unicorn', {
 		target,
-		stopOnDomReady: false
+		stopOnDomReady: false,
 	});
 
 	(async () => {
@@ -46,12 +47,12 @@ test('check if different elements ready inside different targets with same selec
 	const target1 = document.createElement('p');
 	const elementCheck1 = elementReady('.unicorn', {
 		target: target1,
-		stopOnDomReady: false
+		stopOnDomReady: false,
 	});
 	const target2 = document.createElement('span');
 	const elementCheck2 = elementReady('.unicorn', {
 		target: target2,
-		stopOnDomReady: false
+		stopOnDomReady: false,
 	});
 
 	(async () => {
@@ -76,7 +77,7 @@ test('check if different elements ready inside different targets with same selec
 
 test('check if element ready after dom loaded', async t => {
 	const elementCheck = elementReady('#bio', {
-		stopOnDomReady: true
+		stopOnDomReady: true,
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
@@ -84,7 +85,7 @@ test('check if element ready after dom loaded', async t => {
 		const element = document.createElement('p');
 		element.id = 'bio';
 		document.body.append(element);
-	}, 50000);
+	}, 50_000);
 
 	const element = await elementCheck;
 	t.is(element, undefined);
@@ -96,7 +97,7 @@ test('check if element ready before dom loaded', async t => {
 	document.body.append(element);
 
 	const elementCheck = elementReady('#history', {
-		stopOnDomReady: true
+		stopOnDomReady: true,
 	});
 
 	t.is(await elementCheck, element);
@@ -105,18 +106,19 @@ test('check if element ready before dom loaded', async t => {
 test('check if element ready after timeout', async t => {
 	const elementCheck = elementReady('#cheezburger', {
 		stopOnDomReady: false,
-		timeout: 1000
+		timeout: 1000,
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
-	setTimeout(() => {
+	const timeoutId = setTimeout(() => {
 		const element = document.createElement('p');
 		element.id = 'cheezburger';
 		document.body.append(element);
-	}, 50000);
+	}, 50_000);
 
 	const element = await elementCheck;
 	t.is(element, undefined);
+	clearTimeout(timeoutId);
 });
 
 test('check if element ready before timeout', async t => {
@@ -126,7 +128,7 @@ test('check if element ready before timeout', async t => {
 
 	const elementCheck = elementReady('#thunders', {
 		stopOnDomReady: false,
-		timeout: 10
+		timeout: 10,
 	});
 
 	t.is(await elementCheck, element);
@@ -193,18 +195,18 @@ test('ensure that the whole element has loaded', async t => {
 
 	// Fake the pre-DOM-ready state
 	Object.defineProperty(document, 'readyState', {
-		get: () => 'loading'
+		get: () => 'loading',
 	});
 
 	const nav = document.querySelector('nav');
 	const partialCheck = elementReady('nav', {
 		target: document,
-		waitForChildren: false
+		waitForChildren: false,
 	});
 
 	const entireCheck = elementReady('nav', {
 		target: document,
-		waitForChildren: true
+		waitForChildren: true,
 	});
 
 	t.is(await partialCheck, nav, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
@@ -219,4 +221,44 @@ test('ensure that the whole element has loaded', async t => {
 
 	nav.after('Some other part of the page, even a text node');
 	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
+});
+
+test('subscribe to newly added elements that match a selector', async t => {
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		document.body.append(element);
+
+		const element2 = document.createElement('p');
+		element2.id = 'unicorn';
+		document.body.append(element2);
+
+		await delay(500);
+
+		const element3 = document.createElement('p');
+		element3.id = 'unicorn3';
+		document.body.append(element3);
+	})();
+
+	const readyElements = observeReadyElements('#unicorn, #unicorn3');
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		readyElementsCount++;
+		t.is(element.id, 'unicorn');
+
+		if (readyElementsCount === 2) {
+			break;
+		}
+	}
+
+	for await (const element of readyElements) {
+		readyElementsCount++;
+		t.is(element.id, 'unicorn3');
+
+		if (readyElementsCount === 3) {
+			break;
+		}
+	}
 });

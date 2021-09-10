@@ -1,4 +1,3 @@
-/* eslint-disable import/export */
 import type {ParseSelector} from 'typed-query-selector/parser';
 
 export interface Options {
@@ -68,3 +67,34 @@ export default function elementReady<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: Options
 ): StoppablePromise<ElementName | undefined>;
+
+/**
+Detect when elements are ready in the DOM.
+
+Useful for user-scripts that modify elements when they are added.
+
+@param selector - [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors) Prefix the element type to get a better return type. For example, `button.my-btn` instead of `.my-btn`.
+@returns An async iterable which yields with each new matching element.
+
+@example
+```
+import {observeReadyElements} from 'element-ready';
+
+for await (const element of observeReadyElements('#unicorn')) {
+	console.log(element.id);
+	//=> 'unicorn'
+
+	if (element.id === 'elephant') {
+		break;
+	}
+}
+```
+*/
+export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector,
+	options?: Options
+): AsyncIterable<ElementName>;
+export function observeReadyElements<ElementName extends Element = HTMLElement>(
+	selector: string,
+	options?: Options
+): AsyncIterable<ElementName>;

@@ -25,6 +25,23 @@ console.log(element.id);
 
 Returns a promise for a matching element.
 
+### observeReadyElements(selector, options?)
+
+Returns an async iterable which yields with each new matching element. Useful for user-scripts that modify elements when they are added.
+
+```js
+import {observeReadyElements} from 'element-ready';
+
+for await (const element of observeReadyElements('#unicorn')) {
+	console.log(element.id);
+	//=> 'unicorn'
+
+	if (element.id === 'elephant') {
+		break;
+	}
+}
+```
+
 #### selector
 
 Type: `string`
