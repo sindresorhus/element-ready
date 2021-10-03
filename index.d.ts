@@ -32,6 +32,31 @@ export interface Options {
 	@default true
 	*/
 	readonly waitForChildren?: boolean;
+
+	/**
+	A predicate function will be called for each element that matches the selector. If it returns `true`, the element will be returned.
+
+	For example, if the content is dynamic or a selector cannot be specific enough, you could check `.textContent` of each element and only match the one that has the required text.
+
+	@example
+	```html
+	<ul id="country-list">
+		<li>country a</li>
+		...
+		<li>wanted country</li>
+		...
+	</ul>
+	```
+
+	```js
+	const wantedCountryEl = await elementReady('#country-list li', {
+		predicate: listItemElement => listItemElement.textContent === 'wanted country'
+	});
+	```
+
+	@default undefined
+	*/
+	predicate?(element: HTMLElement): boolean;
 }
 
 export type StoppablePromise<T> = Promise<T> & {
