@@ -37,7 +37,7 @@ test('check elements against a predicate', async t => {
 		for (const text of ['some text', 'wanted text']) {
 			const li = document.createElement('li');
 			li.textContent = text;
-			listElement.appendChild(li);
+			listElement.append(li);
 		}
 
 		document.body.append(listElement);
