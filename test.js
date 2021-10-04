@@ -37,14 +37,14 @@ test('check elements against a predicate', async t => {
 		for (const text of ['some text', 'wanted text']) {
 			const li = document.createElement('li');
 			li.textContent = text;
-			listElement.append(li);
+			listElement.appendChild(li);
 		}
 
-		document.body.append(element);
+		document.body.append(listElement);
 	})();
 
 	const element = await elementCheck;
-	t.is(element.text, 'wanted text');
+	t.is(element.textContent, 'wanted text');
 });
 
 test('check if element ready inside target', async t => {
