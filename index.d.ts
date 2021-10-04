@@ -35,7 +35,7 @@ export interface Options {
 
 	/**
 	A predicate function will be called for each element that matches the selector. If it returns `true`, the element will be returned.
-	
+
 	@default undefined
 
 	For example, if the content is dynamic or a selector cannot be specific enough, you could check `.textContent` of each element and only match the one that has the required text.
