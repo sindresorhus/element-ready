@@ -49,6 +49,8 @@ export interface Options {
 	```
 
 	```js
+	import elementReady from 'element-ready';
+
 	const wantedCountryEl = await elementReady('#country-list li', {
 		predicate: listItemElement => listItemElement.textContent === 'wanted country'
 	});
