@@ -12,6 +12,7 @@ export default function elementReady(selector, {
 	stopOnDomReady = true,
 	waitForChildren = true,
 	timeout = Number.POSITIVE_INFINITY,
+	predicate,
 } = {}) {
 	const cacheKeys = [selector, stopOnDomReady, timeout, waitForChildren, target];
 	const cachedPromise = cache.get(cacheKeys);
@@ -37,7 +38,7 @@ export default function elementReady(selector, {
 
 	// Interval to keep checking for it to come into the DOM
 	(function check() {
-		const element = target.querySelector(selector);
+		const element = getMatchingElement({target, selector, predicate});
 
 		// When it's ready, only stop if requested or found
 		if (isDomReady(target) && (stopOnDomReady || element)) {
@@ -66,6 +67,7 @@ export function observeReadyElements(selector, {
 	stopOnDomReady = true,
 	waitForChildren = true,
 	timeout = Number.POSITIVE_INFINITY,
+	predicate,
 } = {}) {
 	return {
 		[Symbol.asyncIterator]() {
@@ -74,7 +76,7 @@ export function observeReadyElements(selector, {
 			function handleMutations(mutations) {
 				for (const {addedNodes} of mutations) {
 					for (const element of addedNodes) {
-						if (element.nodeType !== 1 || !element.matches(selector)) {
+						if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
 							continue;
 						}
 
@@ -124,4 +126,13 @@ export function observeReadyElements(selector, {
 			return iterator;
 		},
 	};
+}
+
+function getMatchingElement({target, selector, predicate} = {}) {
+	if (predicate) {
+		const elements = target.querySelectorAll(selector);
+		return [...elements].find(element => predicate(element));
+	}
+
+	return target.querySelector(selector);
 }

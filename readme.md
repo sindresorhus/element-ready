@@ -86,6 +86,32 @@ By default, `element-ready` guarantees the element and all of its children have 
 
 By setting this to `false`, `element-ready` will resolve the promise as soon as it finds the requested selector, regardless of its content. This is ok if you're just checking if the element exists or if you want to read/change its attributes.
 
+##### predicate
+
+Type: `(element: HTMLElement) => boolean`\
+Default: `undefined`
+
+A predicate function will be called for each element that matches the selector. If it returns `true`, the element will be returned.
+
+For example, if the content is dynamic or a selector cannot be specific enough, you could check `.textContent` of each element and only match the one that has the required text.
+
+```html
+<ul id="country-list">
+	<li>country a</li>
+	...
+	<li>wanted country</li>
+	...
+</ul>
+```
+
+```js
+import elementReady from 'element-ready';
+
+const wantedCountryElement = await elementReady('#country-list li', {
+	predicate: listItemElement => listItemElement.textContent === 'wanted country'
+});
+```
+
 ### elementReadyPromise#stop()
 
 Type: `Function`

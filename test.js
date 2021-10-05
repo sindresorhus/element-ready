@@ -25,6 +25,28 @@ test('check if element ready', async t => {
 	t.is(element.id, 'unicorn');
 });
 
+test('check elements against a predicate', async t => {
+	const elementCheck = elementReady('li', {
+		stopOnDomReady: false,
+		predicate: element => element.textContent && element.textContent.match(/wanted/i),
+	});
+
+	(async () => {
+		await delay(500);
+		const listElement = document.createElement('ul');
+		for (const text of ['some text', 'wanted text']) {
+			const li = document.createElement('li');
+			li.textContent = text;
+			listElement.append(li);
+		}
+
+		document.body.append(listElement);
+	})();
+
+	const element = await elementCheck;
+	t.is(element.textContent, 'wanted text');
+});
+
 test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
 	const elementCheck = elementReady('#unicorn', {
@@ -258,6 +280,39 @@ test('subscribe to newly added elements that match a selector', async t => {
 		t.is(element.id, 'unicorn3');
 
 		if (readyElementsCount === 3) {
+			break;
+		}
+	}
+});
+
+test('subscribe to newly added elements that match a predicate', async t => {
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.textContent = 'unicorn';
+		document.body.append(element);
+
+		const element2 = document.createElement('p');
+		element2.textContent = 'horse';
+		document.body.append(element2);
+
+		await delay(500);
+
+		const element3 = document.createElement('p');
+		element3.textContent = 'penguin';
+		document.body.append(element3);
+	})();
+
+	const readyElements = observeReadyElements('p', {
+		predicate: element => element.textContent && element.textContent.match(/penguin|unicorn/),
+	});
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		readyElementsCount++;
+		t.regex(element.textContent, /unicorn|penguin/);
+
+		if (readyElementsCount === 2) {
 			break;
 		}
 	}
