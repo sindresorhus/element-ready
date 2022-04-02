@@ -37,18 +37,18 @@
 		"domready"
 	],
 	"dependencies": {
-		"deferred-async-iterator": "^1.0.1",
+		"deferred-async-iterator": "^2.0.0",
 		"many-keys-map": "^1.0.3",
 		"p-defer": "^4.0.0",
-		"typed-query-selector": "^2.4.1"
+		"typed-query-selector": "^2.6.1"
 	},
 	"devDependencies": {
-		"ava": "^3.15.0",
-		"delay": "^5.0.0",
-		"jsdom": "^16.5.2",
-		"p-state": "^0.2.1",
-		"tsd": "^0.16.0",
-		"xo": "^0.44.0"
+		"ava": "^4.1.0",
+		"jsdom": "^19.0.0",
+		"p-state": "^1.0.0",
+		"tsd": "^0.20.0",
+		"xo": "^0.48.0",
+		"yoctodelay": "^2.0.0"
 	},
 	"xo": {
 		"envs": [

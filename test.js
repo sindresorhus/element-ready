@@ -1,5 +1,5 @@
 import test from 'ava';
-import delay from 'delay';
+import delay from 'yoctodelay';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
 import elementReady, {observeReadyElements} from './index.js';
