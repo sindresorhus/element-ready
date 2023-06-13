@@ -1,4 +1,4 @@
-import type {ParseSelector} from 'typed-query-selector/parser';
+import type {ParseSelector} from 'typed-query-selector/parser.js';
 
 export interface Options {
 	/**
