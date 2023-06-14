@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import {expectType} from 'tsd';
-import elementReady, {StoppablePromise, observeReadyElements} from './index.js';
+import elementReady, {type StoppablePromise, observeReadyElements} from './index.js';
 
 const promise = elementReady('#unicorn');
 elementReady('#unicorn', {target: document});
