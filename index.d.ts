@@ -1,4 +1,4 @@
-import type {ParseSelector} from 'typed-query-selector/parser';
+import type {ParseSelector} from 'typed-query-selector/parser.js';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- TODO: Fix in the next breaking version
 export interface Options {
