@@ -1,6 +1,6 @@
 {
 	"name": "element-ready",
-	"version": "6.2.2",
+	"version": "7.0.0",
 	"description": "Detect when an element is ready in the DOM",
 	"license": "MIT",
 	"repository": "sindresorhus/element-ready",
