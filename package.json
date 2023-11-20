@@ -11,9 +11,13 @@
 		"url": "https://sindresorhus.com"
 	},
 	"type": "module",
-	"exports": "./index.js",
+	"exports": {
+		"types": "./index.d.ts",
+		"default": "./index.js"
+	},
+	"sideEffects": false,
 	"engines": {
-		"node": ">=12"
+		"node": ">=18"
 	},
 	"scripts": {
 		"test": "xo && ava && tsd"
@@ -37,17 +41,17 @@
 		"domready"
 	],
 	"dependencies": {
-		"deferred-async-iterator": "^2.0.0",
-		"many-keys-map": "^1.0.3",
+		"deferred-async-iterator": "^3.0.0",
+		"many-keys-map": "^2.0.1",
 		"p-defer": "^4.0.0",
-		"typed-query-selector": "^2.6.1"
+		"typed-query-selector": "^2.11.0"
 	},
 	"devDependencies": {
-		"ava": "^4.1.0",
-		"jsdom": "^19.0.0",
-		"p-state": "^1.0.0",
-		"tsd": "^0.20.0",
-		"xo": "^0.54.2",
+		"ava": "^5.3.1",
+		"jsdom": "^22.1.0",
+		"p-state": "^2.0.0",
+		"tsd": "^0.29.0",
+		"xo": "^0.56.0",
 		"yoctodelay": "^2.0.0"
 	},
 	"xo": {
@@ -55,12 +59,5 @@
 			"node",
 			"browser"
 		]
-	},
-	"tsd": {
-		"compilerOptions": {
-			"lib": [
-				"dom"
-			]
-		}
 	}
 }

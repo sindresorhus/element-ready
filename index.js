@@ -5,7 +5,7 @@ import createDeferredAsyncIterator from 'deferred-async-iterator';
 const cache = new ManyKeysMap();
 
 const isDomReady = target =>
-	['interactive', 'complete'].includes((target.ownerDocument || target).readyState);
+	['interactive', 'complete'].includes((target.ownerDocument ?? target).readyState);
 
 export default function elementReady(selector, {
 	target = document,
@@ -42,7 +42,7 @@ export default function elementReady(selector, {
 
 		// When it's ready, only stop if requested or found
 		if (isDomReady(target) && (stopOnDomReady || element)) {
-			stop(element || undefined); // No `null`
+			stop(element ?? undefined); // No `null`
 			return;
 		}
 
@@ -106,14 +106,15 @@ export function observeReadyElements(selector, {
 				subtree: true,
 			});
 
+			(async () => {
+				await onCleanup;
+				observer.disconnect();
+			})();
+
 			function stop() {
 				handleMutations(observer.takeRecords());
 				complete();
 			}
-
-			onCleanup(() => {
-				observer.disconnect();
-			});
 
 			if (stopOnDomReady) {
 				target.addEventListener('DOMContentLoaded', stop, {once: true});

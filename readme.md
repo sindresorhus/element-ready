@@ -4,8 +4,8 @@
 
 ## Install
 
-```
-$ npm install element-ready
+```sh
+npm install element-ready
 ```
 
 ## Usage
