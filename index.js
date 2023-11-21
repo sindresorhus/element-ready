@@ -1,6 +1,6 @@
 import ManyKeysMap from 'many-keys-map';
-import pDefer from 'p-defer';
-import createDeferredAsyncIterator from 'deferred-async-iterator';
+import requestAnimationFrames from 'request-animation-frames';
+import domMutations from 'dom-mutations';
 
 const cache = new ManyKeysMap();
 
@@ -14,22 +14,17 @@ export default function elementReady(selector, {
 	timeout = Number.POSITIVE_INFINITY,
 	predicate,
 } = {}) {
-	const cacheKeys = [selector, stopOnDomReady, timeout, waitForChildren, target];
-	const cachedPromise = cache.get(cacheKeys);
+	const cacheKey = [selector, stopOnDomReady, timeout, waitForChildren, target];
+	const cachedPromise = cache.get(cacheKey);
 	if (cachedPromise) {
 		return cachedPromise;
 	}
 
-	let rafId;
-	const deferred = pDefer();
-	const {promise} = deferred;
+	let shouldStop = false;
 
-	cache.set(cacheKeys, promise);
-
-	const stop = element => {
-		cancelAnimationFrame(rafId);
-		cache.delete(cacheKeys, promise);
-		deferred.resolve(element);
+	const stop = () => {
+		cache.delete(cacheKey, promise);
+		shouldStop = true;
 	};
 
 	if (timeout !== Number.POSITIVE_INFINITY) {
@@ -37,29 +32,39 @@ export default function elementReady(selector, {
 	}
 
 	// Interval to keep checking for it to come into the DOM
-	(function check() {
-		const element = getMatchingElement({target, selector, predicate});
+	const promise = (async () => {
+		try {
+			for await (const _ of requestAnimationFrames()) { // eslint-disable-line no-unused-vars
+				if (shouldStop) {
+					return;
+				}
 
-		// When it's ready, only stop if requested or found
-		if (isDomReady(target) && (stopOnDomReady || element)) {
-			stop(element ?? undefined); // No `null`
-			return;
-		}
+				const element = getMatchingElement({target, selector, predicate});
 
-		let current = element;
-		while (current) {
-			if (!waitForChildren || current.nextSibling) {
-				stop(element);
-				return;
+				// When it's ready, only stop if requested or found
+				if (isDomReady(target) && (stopOnDomReady || element)) {
+					return element ?? undefined; // No `null`
+				}
+
+				let current = element;
+				while (current) {
+					if (!waitForChildren || current.nextSibling) {
+						return element;
+					}
+
+					current = current.parentElement;
+				}
 			}
-
-			current = current.parentElement;
+		} finally {
+			cache.delete(cacheKey, promise);
 		}
-
-		rafId = requestAnimationFrame(check);
 	})();
 
-	return Object.assign(promise, {stop: () => stop()});
+	promise.stop = stop;
+
+	cache.set(cacheKey, promise);
+
+	return promise;
 }
 
 export function observeReadyElements(selector, {
@@ -70,61 +75,44 @@ export function observeReadyElements(selector, {
 	predicate,
 } = {}) {
 	return {
-		[Symbol.asyncIterator]() {
-			const {next, complete, onCleanup, iterator} = createDeferredAsyncIterator();
-
-			function handleMutations(mutations) {
-				for (const {addedNodes} of mutations) {
-					for (const element of addedNodes) {
-						if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
-							continue;
-						}
-
-						// When it's ready, only stop if requested or found
-						if (isDomReady(target) && element) {
-							next(element);
-							continue;
-						}
-
-						let current = element;
-						while (current) {
-							if (!waitForChildren || current.nextSibling) {
-								next(element);
-								continue;
-							}
-
-							current = current.parentElement;
-						}
-					}
-				}
-			}
-
-			const observer = new MutationObserver(handleMutations);
-
-			observer.observe(target, {
-				childList: true,
-				subtree: true,
-			});
-
-			(async () => {
-				await onCleanup;
-				observer.disconnect();
-			})();
-
-			function stop() {
-				handleMutations(observer.takeRecords());
-				complete();
-			}
+		async * [Symbol.asyncIterator]() {
+			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
-				target.addEventListener('DOMContentLoaded', stop, {once: true});
+				target.addEventListener('DOMContentLoaded', () => {
+					iterator.return();
+				}, {once: true});
 			}
 
 			if (timeout !== Number.POSITIVE_INFINITY) {
-				setTimeout(stop, timeout);
+				setTimeout(() => {
+					iterator.return();
+				}, timeout);
 			}
 
-			return iterator;
+			for await (const {addedNodes} of iterator) {
+				for (const element of addedNodes) {
+					if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
+						continue;
+					}
+
+					// When it's ready, only stop if requested or found
+					if (isDomReady(target) && element) {
+						yield element;
+						continue;
+					}
+
+					let current = element;
+					while (current) {
+						if (!waitForChildren || current.nextSibling) {
+							yield element;
+							break;
+						}
+
+						current = current.parentElement;
+					}
+				}
+			}
 		},
 	};
 }

@@ -7,8 +7,6 @@ import elementReady, {observeReadyElements} from './index.js';
 const {window} = new JSDOM();
 global.window = window;
 global.document = window.document;
-global.requestAnimationFrame = fn => setTimeout(fn, 16);
-global.cancelAnimationFrame = id => clearTimeout(id);
 global.MutationObserver = window.MutationObserver;
 
 test('check if element ready', async t => {
@@ -189,9 +187,8 @@ test('ensure different promises are returned on second call with the same select
 
 	const elementCheck2 = elementReady('.unicorn', {stopOnDomReady: false});
 
-	t.is(await elementCheck1, undefined);
-
 	t.not(elementCheck1, elementCheck2);
+	t.is(await elementCheck1, undefined);
 });
 
 test('ensure different promises are returned on second call with the same selector when first was found', async t => {
