@@ -260,7 +260,7 @@ test('subscribe to newly added elements that match a selector', async t => {
 		document.body.append(element3);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn, #unicorn3');
+	const readyElements = observeReadyElements('#unicorn, #unicorn3', {stopOnDomReady: false});
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
@@ -301,6 +301,7 @@ test('subscribe to newly added elements that match a predicate', async t => {
 	})();
 
 	const readyElements = observeReadyElements('p', {
+		stopOnDomReady: false,
 		predicate: element => element.textContent && element.textContent.match(/penguin|unicorn/),
 	});
 	let readyElementsCount = 0;
