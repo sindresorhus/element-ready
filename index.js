@@ -126,7 +126,7 @@ function getMatchingElement({target, selector, predicate}) {
 		return target.querySelector(selector);
 	}
 
-	for (const element of target.querySelectorAll(selector) {
+	for (const element of target.querySelectorAll(selector)} {
 		if (predicate(element)) {
 			return element;
 		}
