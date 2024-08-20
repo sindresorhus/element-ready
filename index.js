@@ -121,11 +121,14 @@ export function observeReadyElements(selector, {
 	};
 }
 
-function getMatchingElement({target, selector, predicate} = {}) {
-	if (predicate) {
-		const elements = target.querySelectorAll(selector);
-		return [...elements].find(element => predicate(element));
+function getMatchingElement({target, selector, predicate}) {
+	if (!predicate) {
+		return target.querySelector(selector);
 	}
 
-	return target.querySelector(selector);
+	for (const element of target.querySelectorAll(selector) {
+		if (predicate(element)) {
+			return element;
+		}
+	}
 }
