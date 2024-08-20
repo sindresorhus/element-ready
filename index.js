@@ -20,6 +20,12 @@ export default function elementReady(selector, {
 		return cachedPromise;
 	}
 
+	if (stopOnDomReady && isDomReady(target)) {
+		const promise = Promise.resolve(getMatchingElement({target, selector, predicate}));
+		promise.stop = () => {};
+		return promise;
+	}
+
 	let shouldStop = false;
 
 	const stop = () => {
