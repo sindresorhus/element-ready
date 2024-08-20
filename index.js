@@ -43,7 +43,7 @@ export default function elementReady(selector, {
 
 				// When it's ready, only stop if requested or found
 				if (isDomReady(target) && (stopOnDomReady || element)) {
-					return element ?? undefined; // No `null`
+					return element;
 				}
 
 				let current = element;
@@ -121,11 +121,14 @@ export function observeReadyElements(selector, {
 	};
 }
 
-function getMatchingElement({target, selector, predicate} = {}) {
-	if (predicate) {
-		const elements = target.querySelectorAll(selector);
-		return [...elements].find(element => predicate(element));
+function getMatchingElement({target, selector, predicate}) {
+	if (!predicate) {
+		return target.querySelector(selector) ?? undefined; // No `null`
 	}
 
-	return target.querySelector(selector);
+	for (const element of target.querySelectorAll(selector)) {
+		if (predicate(element)) {
+			return element;
+		}
+	}
 }
