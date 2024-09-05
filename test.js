@@ -123,6 +123,14 @@ test('check if element ready before dom loaded', async t => {
 	t.is(await elementCheck, element);
 });
 
+test('shop checking if DOM was already ready', async t => {
+	const elementCheck = elementReady('#no-gonna-get-us', {
+		stopOnDomReady: true,
+	});
+
+	t.is(await elementCheck, undefined);
+});
+
 test('check if element ready after timeout', async t => {
 	const elementCheck = elementReady('#cheezburger', {
 		stopOnDomReady: false,

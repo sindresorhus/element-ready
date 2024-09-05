@@ -20,6 +20,7 @@ export default function elementReady(selector, {
 		return cachedPromise;
 	}
 
+	// Not necessary, it just acts faster and avoids cache/listener setup
 	if (stopOnDomReady && isDomReady(target)) {
 		const promise = Promise.resolve(getMatchingElement({target, selector, predicate}));
 		promise.stop = () => {};
