@@ -30,7 +30,7 @@ export default function elementReady(selector, {
 
 	// Interval to keep checking for it to come into the DOM
 	const promise = (async () => {
-		for await (const _ of requestAnimationFrames()) { // eslint-disable-line no-unused-vars
+		for await (const _ of requestAnimationFrames()) {
 			if (shouldStop) {
 				return;
 			}
