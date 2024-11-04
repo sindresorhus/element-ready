@@ -162,18 +162,6 @@ test('check if element ready before timeout', async t => {
 	t.is(await elementCheck, element);
 });
 
-test('ensure only one promise is returned on multiple calls passing the same selector', t => {
-	const elementCheck = elementReady('#not-found', {stopOnDomReady: false});
-
-	for (let i = 0; i <= 10; i++) {
-		if (elementReady('#not-found', {stopOnDomReady: false}) !== elementCheck) {
-			t.fail();
-		}
-	}
-
-	t.pass();
-});
-
 test('check if wait can be stopped', async t => {
 	const elementCheck = elementReady('#dofle', {stopOnDomReady: false});
 

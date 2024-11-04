@@ -42,7 +42,6 @@
 	],
 	"dependencies": {
 		"dom-mutations": "^0.2.0",
-		"many-keys-map": "^2.0.1",
 		"request-animation-frames": "^0.1.1",
 		"typed-query-selector": "^2.11.0"
 	},

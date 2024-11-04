@@ -1,8 +1,5 @@
-import ManyKeysMap from 'many-keys-map';
 import requestAnimationFrames from 'request-animation-frames';
 import domMutations from 'dom-mutations';
-
-const cache = new ManyKeysMap();
 
 const isDomReady = target =>
 	['interactive', 'complete'].includes((target.ownerDocument ?? target).readyState);
@@ -14,13 +11,7 @@ export default function elementReady(selector, {
 	timeout = Number.POSITIVE_INFINITY,
 	predicate,
 } = {}) {
-	const cacheKey = [selector, stopOnDomReady, timeout, waitForChildren, target];
-	const cachedPromise = cache.get(cacheKey);
-	if (cachedPromise) {
-		return cachedPromise;
-	}
-
-	// Not necessary, it just acts faster and avoids cache/listener setup
+	// Not necessary, it just acts faster and avoids listener setup
 	if (stopOnDomReady && isDomReady(target)) {
 		const promise = Promise.resolve(getMatchingElement({target, selector, predicate}));
 		promise.stop = () => {};
@@ -30,7 +21,6 @@ export default function elementReady(selector, {
 	let shouldStop = false;
 
 	const stop = () => {
-		cache.delete(cacheKey, promise);
 		shouldStop = true;
 	};
 
@@ -40,36 +30,30 @@ export default function elementReady(selector, {
 
 	// Interval to keep checking for it to come into the DOM
 	const promise = (async () => {
-		try {
-			for await (const _ of requestAnimationFrames()) { // eslint-disable-line no-unused-vars
-				if (shouldStop) {
-					return;
-				}
+		for await (const _ of requestAnimationFrames()) { // eslint-disable-line no-unused-vars
+			if (shouldStop) {
+				return;
+			}
 
-				const element = getMatchingElement({target, selector, predicate});
+			const element = getMatchingElement({target, selector, predicate});
 
-				// When it's ready, only stop if requested or found
-				if (isDomReady(target) && (stopOnDomReady || element)) {
+			// When it's ready, only stop if requested or found
+			if (isDomReady(target) && (stopOnDomReady || element)) {
+				return element;
+			}
+
+			let current = element;
+			while (current) {
+				if (!waitForChildren || current.nextSibling) {
 					return element;
 				}
 
-				let current = element;
-				while (current) {
-					if (!waitForChildren || current.nextSibling) {
-						return element;
-					}
-
-					current = current.parentElement;
-				}
+				current = current.parentElement;
 			}
-		} finally {
-			cache.delete(cacheKey, promise);
 		}
 	})();
 
 	promise.stop = stop;
-
-	cache.set(cacheKey, promise);
 
 	return promise;
 }
