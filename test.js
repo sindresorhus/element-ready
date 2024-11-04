@@ -1,13 +1,13 @@
+import {setTimeout as delay} from 'node:timers/promises';
 import test from 'ava';
-import delay from 'yoctodelay';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
 import elementReady, {observeReadyElements} from './index.js';
 
 const {window} = new JSDOM();
-global.window = window;
-global.document = window.document;
-global.MutationObserver = window.MutationObserver;
+globalThis.window = window;
+globalThis.document = window.document;
+globalThis.MutationObserver = window.MutationObserver;
 
 test('check if element ready', async t => {
 	const elementCheck = elementReady('#unicorn', {stopOnDomReady: false});
@@ -213,7 +213,7 @@ test('ensure that the whole element has loaded', async t => {
 		get: () => 'loading',
 	});
 
-	const nav = document.querySelector('nav');
+	const navigationElement = document.querySelector('nav');
 	const partialCheck = elementReady('nav', {
 		target: document,
 		waitForChildren: false,
@@ -224,17 +224,17 @@ test('ensure that the whole element has loaded', async t => {
 		waitForChildren: true,
 	});
 
-	t.is(await partialCheck, nav, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
+	t.is(await partialCheck, navigationElement, '<nav> appears in the loading document, so it should be found whether it’s loaded fully or not');
 	const expectation = 'elementReady can’t guarantee the element has loaded in full';
 	t.is(promiseStateSync(entireCheck), 'pending', expectation);
 
-	nav.innerHTML = '<ul><li>Home</li><li>About</li></ul>';
+	navigationElement.innerHTML = '<ul><li>Home</li><li>About</li></ul>';
 	t.is(promiseStateSync(entireCheck), 'pending', expectation);
 
-	nav.insertAdjacentHTML('beforebegin', '<h1>Site title</h1>');
+	navigationElement.insertAdjacentHTML('beforebegin', '<h1>Site title</h1>');
 	t.is(promiseStateSync(entireCheck), 'pending', expectation);
 
-	nav.after('Some other part of the page, even a text node');
+	navigationElement.after('Some other part of the page, even a text node');
 	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
 });
 

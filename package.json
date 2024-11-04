@@ -17,7 +17,7 @@
 	},
 	"sideEffects": false,
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
 	"scripts": {
 		"test": "xo && ava && tsd"
@@ -41,17 +41,16 @@
 		"domready"
 	],
 	"dependencies": {
-		"dom-mutations": "^0.2.0",
-		"request-animation-frames": "^0.1.1",
-		"typed-query-selector": "^2.11.0"
+		"dom-mutations": "^1.0.0",
+		"request-animation-frames": "^1.0.0",
+		"typed-query-selector": "^2.12.0"
 	},
 	"devDependencies": {
 		"ava": "^5.3.1",
-		"jsdom": "^22.1.0",
-		"p-state": "^2.0.0",
-		"tsd": "^0.29.0",
-		"xo": "^0.56.0",
-		"yoctodelay": "^2.0.0"
+		"jsdom": "^26.1.0",
+		"p-state": "^2.0.1",
+		"tsd": "^0.32.0",
+		"xo": "^0.60.0"
 	},
 	"xo": {
 		"envs": [

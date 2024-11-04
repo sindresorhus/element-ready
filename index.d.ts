@@ -1,7 +1,6 @@
 import type {ParseSelector} from 'typed-query-selector/parser.js';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- TODO: Fix in the next breaking version
-export interface Options {
+export type Options = {
 	/**
 	The element that's expected to contain a match.
 
@@ -60,7 +59,7 @@ export interface Options {
 	```
 	*/
 	predicate?(element: HTMLElement): boolean;
-}
+};
 
 export type StoppablePromise<T> = Promise<T> & {
 	/**
