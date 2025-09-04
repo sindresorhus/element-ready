@@ -2,6 +2,7 @@ import {setTimeout as delay} from 'node:timers/promises';
 import test from 'ava';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
+import timeoutSignal from 'timeout-signal';
 import elementReady, {observeReadyElements} from './index.js';
 
 const {window} = new JSDOM();
@@ -134,7 +135,7 @@ test('stop checking if DOM was already ready', async t => {
 test('check if element ready after timeout', async t => {
 	const elementCheck = elementReady('#cheezburger', {
 		stopOnDomReady: false,
-		timeout: 1000,
+		signal: timeoutSignal(1000),
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
@@ -156,17 +157,19 @@ test('check if element ready before timeout', async t => {
 
 	const elementCheck = elementReady('#thunders', {
 		stopOnDomReady: false,
-		timeout: 10,
+		signal: timeoutSignal(10),
 	});
 
 	t.is(await elementCheck, element);
 });
 
 test('check if wait can be stopped', async t => {
-	const elementCheck = elementReady('#dofle', {stopOnDomReady: false});
+	const controller = new AbortController();
+
+	const elementCheck = elementReady('#dofle', {stopOnDomReady: false, signal: controller.signal});
 
 	await delay(200);
-	elementCheck.stop();
+	controller.abort();
 
 	await delay(500);
 	const element = document.createElement('p');
@@ -177,9 +180,11 @@ test('check if wait can be stopped', async t => {
 });
 
 test('ensure different promises are returned on second call with the same selector when first was stopped', async t => {
-	const elementCheck1 = elementReady('.unicorn', {stopOnDomReady: false});
+	const controller = new AbortController();
 
-	elementCheck1.stop();
+	const elementCheck1 = elementReady('.unicorn', {stopOnDomReady: false, signal: controller.signal});
+
+	controller.abort();
 
 	const elementCheck2 = elementReady('.unicorn', {stopOnDomReady: false});
 

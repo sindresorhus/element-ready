@@ -9,11 +9,9 @@ export type Options = {
 	readonly target?: HTMLElement | Document;
 
 	/**
-	Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
-
-	@default Infinity
+	`AbortSignal` for stopping the search and resolving the promise to `undefined`.
 	*/
-	readonly timeout?: number;
+	readonly signal?: AbortSignal;
 
 	/**
 	Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
@@ -61,15 +59,6 @@ export type Options = {
 	predicate?(element: HTMLElement): boolean;
 };
 
-export type StoppablePromise<T> = Promise<T> & {
-	/**
-	Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
-
-	Calling it after the promise has settled or multiple times does nothing.
-	*/
-	stop(): void;
-};
-
 /**
 Detect when an element is ready in the DOM.
 
@@ -89,11 +78,11 @@ console.log(element.id);
 export default function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
 	selector: Selector,
 	options?: Options
-): StoppablePromise<ElementName | undefined>;
+): Promise<ElementName | undefined>;
 export default function elementReady<ElementName extends Element = HTMLElement>(
 	selector: string,
 	options?: Options
-): StoppablePromise<ElementName | undefined>;
+): Promise<ElementName | undefined>;
 
 /**
 Detect when elements are ready in the DOM.
