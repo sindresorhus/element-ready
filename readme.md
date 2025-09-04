@@ -109,14 +109,6 @@ const wantedCountryElement = await elementReady('#country-list li', {
 });
 ```
 
-### elementReadyPromise#stop()
-
-Type: `Function`
-
-Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
-
-Calling it after the promise has settled or multiple times does nothing.
-
 ## Related
 
 - [dom-loaded](https://github.com/sindresorhus/dom-loaded) - Check when the DOM is loaded like `DOMContentLoaded`
