@@ -10,6 +10,22 @@ export type Options = {
 
 	/**
 	`AbortSignal` for stopping the search and resolving the promise to `undefined`.
+
+	@example
+	```
+	import elementReady from 'element-ready';
+
+	const controller = new AbortController();
+
+	// 5-second timeout
+	const timeoutId = setTimeout(() => {
+		controller.abort();
+	}, 5000);
+
+	const element = await elementReady('.unicorn', {signal: controller.signal});
+
+	clearTimeout(timeoutId);
+	```
 	*/
 	readonly signal?: AbortSignal;
 

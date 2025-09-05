@@ -72,6 +72,21 @@ Automatically stop checking for the element to be ready after the [DOM ready eve
 
 [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) for stopping the search and resolving the promise to `undefined`.
 
+```js
+import elementReady from 'element-ready';
+
+const controller = new AbortController();
+
+// 5-second timeout
+const timeoutId = setTimeout(() => {
+	controller.abort();
+}, 5000);
+
+const element = await elementReady('.unicorn', {signal: controller.signal});
+
+clearTimeout(timeoutId);
+```
+
 ##### waitForChildren
 
 Type: `boolean`\
