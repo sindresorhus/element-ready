@@ -311,3 +311,25 @@ test('subscribe to newly added elements that match a predicate', async t => {
 		}
 	}
 });
+
+test('subscribe to elements that eventually match a selector', async t => {
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		document.body.append(element);
+		await delay(1000);
+		element.id = 'unicorn2';
+	})();
+
+	const readyElements = observeReadyElements('#unicorn2', {stopOnDomReady: false});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.id, 'unicorn2');
+		readyElementsCount++;
+		break; // eslint-disable-line no-unreachable-loop
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
