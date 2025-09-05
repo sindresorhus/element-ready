@@ -11,6 +11,10 @@ export default async function elementReady(selector, {
 	signal,
 	predicate,
 } = {}) {
+	if (signal?.aborted) {
+		return;
+	}
+
 	// Not necessary, it just acts faster and avoids listener setup
 	if (stopOnDomReady && isDomReady(target)) {
 		return getMatchingElement({target, selector, predicate});
@@ -49,6 +53,10 @@ export function observeReadyElements(selector, {
 } = {}) {
 	return {
 		async * [Symbol.asyncIterator]() {
+			if (signal?.aborted) {
+				return;
+			}
+
 			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
