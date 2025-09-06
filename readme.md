@@ -68,12 +68,25 @@ Default: `true`
 
 Automatically stop checking for the element to be ready after the [DOM ready event](https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event). The promise is then resolved to `undefined`.
 
-##### timeout
+##### signal
 
-Type: `number`\
-Default: `Infinity`
+[`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) for stopping the search and resolving the promise to `undefined`.
 
-Milliseconds to wait before stopping the search and resolving the promise to `undefined`.
+```js
+import elementReady from 'element-ready';
+
+// 5-second delay
+const element = await elementReady('.unicorn', {signal: AbortSignal.timeout(5_000)});
+```
+
+```js
+import elementReady from 'element-ready';
+
+// For additional abort conditions
+const controller = new AbortController();
+
+const element = await elementReady('.unicorn', {signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5_000)])});
+```
 
 ##### waitForChildren
 
@@ -111,14 +124,6 @@ const wantedCountryElement = await elementReady('#country-list li', {
 	predicate: listItemElement => listItemElement.textContent === 'wanted country'
 });
 ```
-
-### elementReadyPromise#stop()
-
-Type: `Function`
-
-Stop checking for the element to be ready. The stop is synchronous and the original promise is then resolved to `undefined`.
-
-Calling it after the promise has settled or multiple times does nothing.
 
 ## Related
 

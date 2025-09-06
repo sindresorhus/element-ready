@@ -1,25 +1,26 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import {expectType} from 'tsd';
-import elementReady, {type StoppablePromise, observeReadyElements} from './index.js';
+import elementReady, {observeReadyElements} from './index.js';
 
 const promise = elementReady('#unicorn');
 elementReady('#unicorn', {target: document});
 elementReady('#unicorn', {target: document.documentElement});
-elementReady('#unicorn', {timeout: 1_000_000});
+
+const controller = new AbortController();
+
+elementReady('#unicorn', {signal: controller.signal});
 
 elementReady('#unicorn', {stopOnDomReady: false});
 
-expectType<StoppablePromise<HTMLElement | undefined>>(promise);
-expectType<StoppablePromise<HTMLDivElement | undefined>>(elementReady('div'));
-expectType<StoppablePromise<SVGTextElement | undefined>>(elementReady('text'));
+expectType<Promise<HTMLElement | undefined>>(promise);
+expectType<Promise<HTMLDivElement | undefined>>(elementReady('div'));
+expectType<Promise<SVGTextElement | undefined>>(elementReady('text'));
 
-expectType<StoppablePromise<HTMLElement | undefined>>(elementReady('.class'));
-expectType<StoppablePromise<HTMLDivElement | undefined>>(elementReady('div.class'));
-expectType<StoppablePromise<HTMLAnchorElement | undefined>>(elementReady('a#id'));
-expectType<StoppablePromise<HTMLInputElement | undefined>>(elementReady('input[type="checkbox"]'));
-expectType<StoppablePromise<HTMLButtonElement | undefined>>(elementReady(':root > button'));
-
-promise.stop();
+expectType<Promise<HTMLElement | undefined>>(elementReady('.class'));
+expectType<Promise<HTMLDivElement | undefined>>(elementReady('div.class'));
+expectType<Promise<HTMLAnchorElement | undefined>>(elementReady('a#id'));
+expectType<Promise<HTMLInputElement | undefined>>(elementReady('input[type="checkbox"]'));
+expectType<Promise<HTMLButtonElement | undefined>>(elementReady(':root > button'));
 
 const readyElements = observeReadyElements('#unicorn');
 
