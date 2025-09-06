@@ -60,10 +60,10 @@ async function * consumeAsyncIteratorWithAbortSignal(iterator, signal) {
 		const next = await Promise.race([iterator.next(), abortPromise]); // eslint-disable-line no-await-in-loop
 
 		if (next === aborted || next.done) {
-			return {isAborted: true};
+			return;
 		}
 
-		yield {isAborted: false, value: next.value};
+		yield next.value;
 	}
 }
 
@@ -92,12 +92,8 @@ export function observeReadyElements(selector, {
 				signal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
 			}
 
-			for await (const {isAborted, value: mutation} of consumeAsyncIteratorWithAbortSignal(iterator, signal)) {
-				if (isAborted) {
-					return;
-				}
-
-				for (const element of mutation.addedNodes) {
+			for await (const {addedNodes} of consumeAsyncIteratorWithAbortSignal(iterator, signal)) {
+				for (const element of addedNodes) {
 					if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
 						continue;
 					}
