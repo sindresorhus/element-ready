@@ -53,17 +53,13 @@ export function observeReadyElements(selector, {
 } = {}) {
 	return {
 		async * [Symbol.asyncIterator]() {
-			if (signal?.aborted) {
+			if (signal?.aborted || (stopOnDomReady && isDomReady(target))) {
 				return;
 			}
 
 			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
-				if (isDomReady(target)) {
-					return;
-				}
-
 				target.addEventListener('DOMContentLoaded', () => {
 					iterator.return();
 				}, {once: true});
