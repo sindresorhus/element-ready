@@ -50,7 +50,7 @@ async function * consumeAsyncIteratorWithAbortSignal(iterator, signal) {
 	const abortPromise = new Promise(resolve => {
 		if (signal) {
 			signal.addEventListener('abort', () => {
-				iterator.return();
+				iterator.return(); // Stop iterator from producing values after the next one
 				resolve(aborted);
 			});
 		}
