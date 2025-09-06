@@ -242,6 +242,18 @@ test('ensure that the whole element has loaded', async t => {
 	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
 });
 
+test('check if elements from multiple selectors are ready', async t => {
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		document.body.append(element);
+	})();
+
+	const unicorn = await elementReady(['#unicorn', '#dragon'], {stopOnDomReady: false});
+	t.is(unicorn.id, 'unicorn', 'should catch the unicorn');
+});
+
 test('subscribe to newly added elements that match a selector', async t => {
 	(async () => {
 		await delay(500);
