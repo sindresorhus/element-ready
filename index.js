@@ -94,7 +94,7 @@ export function observeReadyElements(selector, {
 					}
 				}
 			} catch (error) {
-				if (!signal.aborted) {
+				if (error.name === 'AbortError' && !signal.aborted) {
 					throw error;
 				}
 			}
