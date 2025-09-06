@@ -335,20 +335,21 @@ test('subscribe to newly added elements that match a predicate', async t => {
 });
 
 test('subscribe to elements that eventually match a selector', async t => {
+	const id = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
 		document.body.append(element);
 		await delay(1000);
-		element.id = 'unicorn2';
+		element.id = id;
 	})();
 
-	const readyElements = observeReadyElements('#unicorn2', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
-		t.is(element.id, 'unicorn2');
+		t.is(element.id, id);
 		readyElementsCount++;
 	}
 
@@ -356,23 +357,25 @@ test('subscribe to elements that eventually match a selector', async t => {
 });
 
 test('subscribe to element that eventually matches a complex selector: has', async t => {
+	const parentId = composeElementId();
+	const childId = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('div');
-		element.id = 'unicorn3';
+		element.id = parentId;
 		document.body.append(element);
 		await delay(500);
 		const child = document.createElement('p');
-		child.id = 'unicorn4';
+		child.id = childId;
 		element.append(child);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn3:has(#unicorn4)', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${parentId}:has(#${childId})`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
-		t.is(element.id, 'unicorn4');
+		t.is(element.id, childId);
 		readyElementsCount++;
 	}
 
@@ -380,21 +383,23 @@ test('subscribe to element that eventually matches a complex selector: has', asy
 });
 
 test('subscribe to element that eventually matches a complex selector: not has, valid-invalid-valid', async t => {
+	const parentId = composeElementId();
+	const childId = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('div');
-		element.id = 'unicorn9';
+		element.id = parentId;
 		document.body.append(element);
 		await delay(500);
 		const child = document.createElement('p');
-		child.id = 'unicorn8';
+		child.id = childId;
 		child.textContent = 'horse';
 		element.append(child);
 		await delay(500);
 		child.remove();
 	})();
 
-	const readyElements = observeReadyElements('#unicorn9:not(:has(#unicorn8))', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
@@ -407,12 +412,14 @@ test('subscribe to element that eventually matches a complex selector: not has, 
 });
 
 test('subscribe to element that eventually matches a complex selcetor: not has, invalid-valid', async t => {
+	const parentId = composeElementId();
+	const childId = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('div');
-		element.id = 'unicorn6';
+		element.id = parentId;
 		const child = document.createElement('p');
-		child.id = 'unicorn9';
+		child.id = childId;
 		child.textContent = 'horse';
 		element.append(child);
 		document.body.append(element);
@@ -420,7 +427,7 @@ test('subscribe to element that eventually matches a complex selcetor: not has, 
 		child.remove();
 	})();
 
-	const readyElements = observeReadyElements('#unicorn6:not(:has(#unicorn9))', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
@@ -433,23 +440,25 @@ test('subscribe to element that eventually matches a complex selcetor: not has, 
 });
 
 test('subscribe to element that eventually matches a complex selcetor: +', async t => {
+	const firstId = composeElementId();
+	const secondId = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('div');
-		element.id = 'unicorn4';
+		element.id = firstId;
 		document.body.append(element);
 		await delay(500);
 		const sibling = document.createElement('p');
-		sibling.id = 'unicorn5';
+		sibling.id = secondId;
 		element.after(sibling);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn4 + #unicorn5', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
-		t.is(element.id, 'unicorn5');
+		t.is(element.id, secondId);
 		readyElementsCount++;
 	}
 
@@ -457,23 +466,25 @@ test('subscribe to element that eventually matches a complex selcetor: +', async
 });
 
 test('subscribe to element that eventually matches a complex selcetor: +, first added second', async t => {
+	const firstId = composeElementId();
+	const secondId = composeElementId();
 	(async () => {
 		await delay(500);
 		const sibling = document.createElement('p');
-		sibling.id = 'unicorn6';
+		sibling.id = secondId;
 		document.body.append(sibling);
 		await delay(500);
 		const element = document.createElement('div');
-		element.id = 'unicorn7';
+		element.id = firstId;
 		sibling.before(element);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn7 + #unicorn6', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
-		t.is(element.id, 'unicorn6');
+		t.is(element.id, secondId);
 		readyElementsCount++;
 	}
 
@@ -481,23 +492,25 @@ test('subscribe to element that eventually matches a complex selcetor: +, first 
 });
 
 test('subscribe to elements that eventually match a complex selector: ~', async t => {
+	const firstId = composeElementId();
+	const secondId = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('div');
-		element.id = 'unicorn6';
+		element.id = firstId;
 		document.body.append(element);
 		await delay(500);
 		const sibling = document.createElement('p');
-		sibling.id = 'unicorn7';
+		sibling.id = secondId;
 		element.after(sibling);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn6 ~ #unicorn7', {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+	const readyElements = observeReadyElements(`#${firstId} ~ #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
 
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
-		t.is(element.id, 'unicorn7');
+		t.is(element.id, secondId);
 		readyElementsCount++;
 	}
 
@@ -505,10 +518,11 @@ test('subscribe to elements that eventually match a complex selector: ~', async 
 });
 
 test('subscribe to elements that eventually match a predicate', async t => {
+	const id = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn3';
+		element.id = id;
 		element.textContent = 'unicorn';
 		document.body.append(element);
 
@@ -516,7 +530,7 @@ test('subscribe to elements that eventually match a predicate', async t => {
 		element.textContent = 'penguin';
 	})();
 
-	const readyElements = observeReadyElements('unicorn3', {
+	const readyElements = observeReadyElements(id, {
 		stopOnDomReady: false,
 		predicate: element => element.textContent && element.textContent.match(/penguin/),
 		signal: AbortSignal.timeout(2000),
