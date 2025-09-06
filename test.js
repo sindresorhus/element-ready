@@ -2,7 +2,6 @@ import {setTimeout as delay} from 'node:timers/promises';
 import test from 'ava';
 import {JSDOM} from 'jsdom';
 import {promiseStateSync} from 'p-state';
-import timeoutSignal from 'timeout-signal';
 import elementReady, {observeReadyElements} from './index.js';
 
 const {window} = new JSDOM();
@@ -135,7 +134,7 @@ test('stop checking if DOM was already ready', async t => {
 test('check if element ready after timeout', async t => {
 	const elementCheck = elementReady('#cheezburger', {
 		stopOnDomReady: false,
-		signal: timeoutSignal(1000),
+		signal: AbortSignal.timeout(1000),
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
@@ -157,7 +156,7 @@ test('check if element ready before timeout', async t => {
 
 	const elementCheck = elementReady('#thunders', {
 		stopOnDomReady: false,
-		signal: timeoutSignal(10),
+		signal: AbortSignal.timeout(10),
 	});
 
 	t.is(await elementCheck, element);

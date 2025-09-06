@@ -75,16 +75,17 @@ Automatically stop checking for the element to be ready after the [DOM ready eve
 ```js
 import elementReady from 'element-ready';
 
+// 5-second delay
+const element = await elementReady('.unicorn', {signal: AbortSignal.timeout(5_000)});
+```
+
+```js
+import elementReady from 'element-ready';
+
+// For additional abort conditions
 const controller = new AbortController();
 
-// 5-second timeout
-const timeoutId = setTimeout(() => {
-	controller.abort();
-}, 5000);
-
-const element = await elementReady('.unicorn', {signal: controller.signal});
-
-clearTimeout(timeoutId);
+const element = await elementReady('.unicorn', {signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5_000)])});
 ```
 
 ##### waitForChildren
