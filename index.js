@@ -4,69 +4,59 @@ import domMutations from 'dom-mutations';
 const isDomReady = target =>
 	['interactive', 'complete'].includes((target.ownerDocument ?? target).readyState);
 
-export default function elementReady(selector, {
+export default async function elementReady(selector, {
 	target = document,
 	stopOnDomReady = true,
 	waitForChildren = true,
-	timeout = Number.POSITIVE_INFINITY,
+	signal,
 	predicate,
 } = {}) {
-	// Not necessary, it just acts faster and avoids listener setup
-	if (stopOnDomReady && isDomReady(target)) {
-		const promise = Promise.resolve(getMatchingElement({target, selector, predicate}));
-		promise.stop = () => {};
-		return promise;
+	if (signal?.aborted) {
+		return;
 	}
 
-	let shouldStop = false;
-
-	const stop = () => {
-		shouldStop = true;
-	};
-
-	if (timeout !== Number.POSITIVE_INFINITY) {
-		setTimeout(stop, timeout);
+	// Not necessary, it just acts faster and avoids listener setup
+	if (stopOnDomReady && isDomReady(target)) {
+		return getMatchingElement({target, selector, predicate});
 	}
 
 	// Interval to keep checking for it to come into the DOM
-	const promise = (async () => {
-		for await (const _ of requestAnimationFrames()) {
-			if (shouldStop) {
-				return;
-			}
+	for await (const _ of requestAnimationFrames()) {
+		if (signal?.aborted) {
+			return;
+		}
 
-			const element = getMatchingElement({target, selector, predicate});
+		const element = getMatchingElement({target, selector, predicate});
 
-			// When it's ready, only stop if requested or found
-			if (isDomReady(target) && (stopOnDomReady || element)) {
+		// When it's ready, only stop if requested or found
+		if (isDomReady(target) && (stopOnDomReady || element)) {
+			return element;
+		}
+
+		let current = element;
+		while (current) {
+			if (!waitForChildren || current.nextSibling) {
 				return element;
 			}
 
-			let current = element;
-			while (current) {
-				if (!waitForChildren || current.nextSibling) {
-					return element;
-				}
-
-				current = current.parentElement;
-			}
+			current = current.parentElement;
 		}
-	})();
-
-	promise.stop = stop;
-
-	return promise;
+	}
 }
 
 export function observeReadyElements(selector, {
 	target = document,
 	stopOnDomReady = true,
 	waitForChildren = true,
-	timeout = Number.POSITIVE_INFINITY,
+	signal,
 	predicate,
 } = {}) {
 	return {
 		async * [Symbol.asyncIterator]() {
+			if (signal?.aborted) {
+				return;
+			}
+
 			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
@@ -79,10 +69,10 @@ export function observeReadyElements(selector, {
 				}, {once: true});
 			}
 
-			if (timeout !== Number.POSITIVE_INFINITY) {
-				setTimeout(() => {
+			if (signal) {
+				signal.addEventListener('abort', () => {
 					iterator.return();
-				}, timeout);
+				}, {once: true});
 			}
 
 			for await (const {addedNodes} of iterator) {
