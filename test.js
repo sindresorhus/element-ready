@@ -72,15 +72,16 @@ test('check if element ready inside target', async t => {
 });
 
 test('check if different elements ready inside different targets with same selector', async t => {
+	const class_ = composeElementId();
 	const target1 = document.createElement('p');
 	const id1 = composeElementId();
-	const elementCheck1 = elementReady('.unicorn', {
+	const elementCheck1 = elementReady(`.${class_}`, {
 		target: target1,
 		stopOnDomReady: false,
 	});
 	const target2 = document.createElement('span');
 	const id2 = composeElementId();
-	const elementCheck2 = elementReady('.unicorn', {
+	const elementCheck2 = elementReady(`.${class_}`, {
 		target: target2,
 		stopOnDomReady: false,
 	});
@@ -89,12 +90,12 @@ test('check if different elements ready inside different targets with same selec
 		await delay(500);
 		const element1 = document.createElement('p');
 		element1.id = id1;
-		element1.className = 'unicorn';
+		element1.className = class_;
 		target1.append(element1);
 
 		const element2 = document.createElement('span');
 		element2.id = id2;
-		element2.className = 'unicorn';
+		element2.className = class_;
 		target2.append(element2);
 	})();
 
@@ -196,32 +197,34 @@ test('check if wait can be stopped', async t => {
 
 test('ensure different promises are returned on second call with the same selector when first was stopped', async t => {
 	const controller = new AbortController();
+	const class_ = composeElementId();
 
-	const elementCheck1 = elementReady('.unicorn', {stopOnDomReady: false, signal: controller.signal});
+	const elementCheck1 = elementReady(`.${class_}`, {stopOnDomReady: false, signal: controller.signal});
 
 	controller.abort();
 
-	const elementCheck2 = elementReady('.unicorn', {stopOnDomReady: false});
+	const elementCheck2 = elementReady(`.${class_}`, {stopOnDomReady: false});
 
 	t.not(elementCheck1, elementCheck2);
 	t.is(await elementCheck1, undefined);
 });
 
 test('ensure different promises are returned on second call with the same selector when first was found', async t => {
+	const class_ = composeElementId();
 	const prependElement = () => {
 		const element = document.createElement('p');
-		element.className = 'unicorn';
+		element.className = class_;
 		document.body.prepend(element);
 		return element;
 	};
 
-	t.is(prependElement(), await elementReady('.unicorn'));
+	t.is(prependElement(), await elementReady(`.${class_}`));
 
-	document.querySelector('.unicorn').remove();
-	t.is(prependElement(), await elementReady('.unicorn'));
+	document.querySelector(`.${class_}`).remove();
+	t.is(prependElement(), await elementReady(`.${class_}`));
 
-	document.querySelector('.unicorn').remove();
-	t.is(prependElement(), await elementReady('.unicorn'));
+	document.querySelector(`.${class_}`).remove();
+	t.is(prependElement(), await elementReady(`.${class_}`));
 });
 
 test('ensure that the whole element has loaded', async t => {
@@ -259,15 +262,17 @@ test('ensure that the whole element has loaded', async t => {
 });
 
 test('check if elements from multiple selectors are ready', async t => {
+	const id1 = composeElementId();
+	const id2 = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn';
+		element.id = id1;
 		document.body.append(element);
 	})();
 
-	const unicorn = await elementReady(['#unicorn', '#dragon'], {stopOnDomReady: false});
-	t.is(unicorn.id, 'unicorn', 'should catch the unicorn');
+	const unicorn = await elementReady([`#${id1}`, `#${id2}`], {stopOnDomReady: false});
+	t.is(unicorn.id, id1, 'should catch the unicorn');
 });
 
 test('subscribe to newly added elements that match a selector', async t => {
@@ -347,18 +352,20 @@ test('subscribe to newly added elements that match a predicate', async t => {
 });
 
 test('subscribe to newly added elements that match one of multiple selectors', async t => {
+	const id1 = composeElementId();
+	const id2 = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn';
+		element.id = id1;
 		document.body.append(element);
 		await delay(500);
 		const element2 = document.createElement('div');
-		element2.id = 'dragon';
+		element2.id = id2;
 		document.body.append(element2);
 	})();
 
-	const readyElements = observeReadyElements(['#unicorn', '#dragon'], {stopOnDomReady: false});
+	const readyElements = observeReadyElements([`#${id1}`, `#${id2}`], {stopOnDomReady: false});
 
 	const readyElementIds = [];
 
@@ -370,5 +377,5 @@ test('subscribe to newly added elements that match one of multiple selectors', a
 		}
 	}
 
-	t.deepEqual(readyElementIds, ['unicorn', 'dragon'], 'should catch elements matching either selector');
+	t.deepEqual(readyElementIds, [id1, id2], 'should catch elements matching either selector');
 });
