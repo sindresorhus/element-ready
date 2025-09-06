@@ -44,6 +44,29 @@ export default async function elementReady(selector, {
 	}
 }
 
+async function * consumeAsyncIteratorWithAbortSignal(iterator, signal) {
+	const aborted = Symbol('aborted');
+
+	const abortPromise = new Promise(resolve => {
+		if (signal) {
+			signal.addEventListener('abort', () => {
+				iterator.return();
+				resolve(aborted);
+			});
+		}
+	});
+
+	while (true) {
+		const next = await Promise.race([iterator.next(), abortPromise]); // eslint-disable-line no-await-in-loop
+
+		if (next === aborted || next.done) {
+			return {isAborted: true};
+		}
+
+		yield {isAborted: false, value: next.value};
+	}
+}
+
 export function observeReadyElements(selector, {
 	target = document,
 	stopOnDomReady = true,
@@ -53,30 +76,28 @@ export function observeReadyElements(selector, {
 } = {}) {
 	return {
 		async * [Symbol.asyncIterator]() {
-			if (signal?.aborted) {
+			if (signal?.aborted || (stopOnDomReady && isDomReady(target))) {
 				return;
 			}
 
 			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
-				if (isDomReady(target)) {
+				const controller = new AbortController();
+
+				target.addEventListener('DOMContentLoaded', () => {
+					controller.abort();
+				}, {once: true});
+
+				signal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
+			}
+
+			for await (const {isAborted, value: mutation} of consumeAsyncIteratorWithAbortSignal(iterator, signal)) {
+				if (isAborted) {
 					return;
 				}
 
-				target.addEventListener('DOMContentLoaded', () => {
-					iterator.return();
-				}, {once: true});
-			}
-
-			if (signal) {
-				signal.addEventListener('abort', () => {
-					iterator.return();
-				}, {once: true});
-			}
-
-			for await (const {addedNodes} of iterator) {
-				for (const element of addedNodes) {
+				for (const element of mutation.addedNodes) {
 					if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
 						continue;
 					}
