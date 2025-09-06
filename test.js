@@ -328,7 +328,7 @@ test('subscribe to newly added elements that match one of multiple selectors', a
 		document.body.append(element2);
 	})();
 
-	const readyElements = observeReadyElements(['#unicorn', '#dragon'], {stopOnDomReady: false})
+	const readyElements = observeReadyElements(['#unicorn', '#dragon'], {stopOnDomReady: false});
 
 	const readyElementIds = [];
 
@@ -340,5 +340,5 @@ test('subscribe to newly added elements that match one of multiple selectors', a
 		}
 	}
 
-	t.deepEqual(readyElementIds, ['unicorn', 'dragon'], 'should catch elements matching either selector')
-})
+	t.deepEqual(readyElementIds, ['unicorn', 'dragon'], 'should catch elements matching either selector');
+});
