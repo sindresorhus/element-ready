@@ -9,18 +9,25 @@ globalThis.window = window;
 globalThis.document = window.document;
 globalThis.MutationObserver = window.MutationObserver;
 
+let index = 0;
+
+function composeElementId() {
+	return `unicorn${index++}`;
+}
+
 test('check if element ready', async t => {
-	const elementCheck = elementReady('#unicorn', {stopOnDomReady: false});
+	const id = composeElementId();
+	const elementCheck = elementReady(`#${id}`, {stopOnDomReady: false});
 
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn';
+		element.id = id;
 		document.body.append(element);
 	})();
 
 	const element = await elementCheck;
-	t.is(element.id, 'unicorn');
+	t.is(element.id, id);
 });
 
 test('check elements against a predicate', async t => {
@@ -47,7 +54,8 @@ test('check elements against a predicate', async t => {
 
 test('check if element ready inside target', async t => {
 	const target = document.createElement('p');
-	const elementCheck = elementReady('#unicorn', {
+	const id = composeElementId();
+	const elementCheck = elementReady(`#${id}`, {
 		target,
 		stopOnDomReady: false,
 	});
@@ -55,21 +63,23 @@ test('check if element ready inside target', async t => {
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn';
+		element.id = id;
 		target.append(element);
 	})();
 
 	const element = await elementCheck;
-	t.is(element.id, 'unicorn');
+	t.is(element.id, id);
 });
 
 test('check if different elements ready inside different targets with same selector', async t => {
 	const target1 = document.createElement('p');
+	const id1 = composeElementId();
 	const elementCheck1 = elementReady('.unicorn', {
 		target: target1,
 		stopOnDomReady: false,
 	});
 	const target2 = document.createElement('span');
+	const id2 = composeElementId();
 	const elementCheck2 = elementReady('.unicorn', {
 		target: target2,
 		stopOnDomReady: false,
@@ -78,32 +88,33 @@ test('check if different elements ready inside different targets with same selec
 	(async () => {
 		await delay(500);
 		const element1 = document.createElement('p');
-		element1.id = 'unicorn1';
+		element1.id = id1;
 		element1.className = 'unicorn';
 		target1.append(element1);
 
 		const element2 = document.createElement('span');
-		element2.id = 'unicorn2';
+		element2.id = id2;
 		element2.className = 'unicorn';
 		target2.append(element2);
 	})();
 
 	const element1 = await elementCheck1;
-	t.is(element1.id, 'unicorn1');
+	t.is(element1.id, id1);
 
 	const element2 = await elementCheck2;
-	t.is(element2.id, 'unicorn2');
+	t.is(element2.id, id2);
 });
 
 test('check if element ready after dom loaded', async t => {
-	const elementCheck = elementReady('#bio', {
+	const id = composeElementId();
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: true,
 	});
 
 	// The element will be added eventually, but we're not around to wait for it
 	setTimeout(() => {
 		const element = document.createElement('p');
-		element.id = 'bio';
+		element.id = id;
 		document.body.append(element);
 	}, 50_000);
 
@@ -113,10 +124,11 @@ test('check if element ready after dom loaded', async t => {
 
 test('check if element ready before dom loaded', async t => {
 	const element = document.createElement('p');
-	element.id = 'history';
+	const id = composeElementId();
+	element.id = id;
 	document.body.append(element);
 
-	const elementCheck = elementReady('#history', {
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: true,
 	});
 
@@ -124,7 +136,8 @@ test('check if element ready before dom loaded', async t => {
 });
 
 test('stop checking if DOM was already ready', async t => {
-	const elementCheck = elementReady('#no-gonna-get-us', {
+	const id = composeElementId();
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: true,
 	});
 
@@ -132,7 +145,8 @@ test('stop checking if DOM was already ready', async t => {
 });
 
 test('check if element ready after timeout', async t => {
-	const elementCheck = elementReady('#cheezburger', {
+	const id = composeElementId();
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: false,
 		signal: AbortSignal.timeout(1000),
 	});
@@ -140,7 +154,7 @@ test('check if element ready after timeout', async t => {
 	// The element will be added eventually, but we're not around to wait for it
 	const timeoutId = setTimeout(() => {
 		const element = document.createElement('p');
-		element.id = 'cheezburger';
+		element.id = id;
 		document.body.append(element);
 	}, 50_000);
 
@@ -151,10 +165,11 @@ test('check if element ready after timeout', async t => {
 
 test('check if element ready before timeout', async t => {
 	const element = document.createElement('p');
-	element.id = 'thunders';
+	const id = composeElementId();
+	element.id = id;
 	document.body.append(element);
 
-	const elementCheck = elementReady('#thunders', {
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: false,
 		signal: AbortSignal.timeout(10),
 	});
@@ -164,15 +179,16 @@ test('check if element ready before timeout', async t => {
 
 test('check if wait can be stopped', async t => {
 	const controller = new AbortController();
+	const id = composeElementId();
 
-	const elementCheck = elementReady('#dofle', {stopOnDomReady: false, signal: controller.signal});
+	const elementCheck = elementReady(`#${id}`, {stopOnDomReady: false, signal: controller.signal});
 
 	await delay(200);
 	controller.abort();
 
 	await delay(500);
 	const element = document.createElement('p');
-	element.id = 'dofle';
+	element.id = id;
 	document.body.append(element);
 
 	t.is(await elementCheck, undefined);
@@ -243,29 +259,31 @@ test('ensure that the whole element has loaded', async t => {
 });
 
 test('subscribe to newly added elements that match a selector', async t => {
+	const id1 = composeElementId();
+	const id3 = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn';
+		element.id = id1;
 		document.body.append(element);
 
 		const element2 = document.createElement('p');
-		element2.id = 'unicorn';
+		element2.id = id1;
 		document.body.append(element2);
 
 		await delay(500);
 
 		const element3 = document.createElement('p');
-		element3.id = 'unicorn3';
+		element3.id = id3;
 		document.body.append(element3);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn, #unicorn3', {stopOnDomReady: false});
+	const readyElements = observeReadyElements(`#${id1}, #${id3}`, {stopOnDomReady: false});
 	let readyElementsCount = 0;
 
 	for await (const element of readyElements) {
 		readyElementsCount++;
-		t.is(element.id, 'unicorn');
+		t.is(element.id, id1);
 
 		if (readyElementsCount === 2) {
 			break;
@@ -274,7 +292,7 @@ test('subscribe to newly added elements that match a selector', async t => {
 
 	for await (const element of readyElements) {
 		readyElementsCount++;
-		t.is(element.id, 'unicorn3');
+		t.is(element.id, id3);
 
 		if (readyElementsCount === 3) {
 			break;
