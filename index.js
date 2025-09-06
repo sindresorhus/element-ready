@@ -44,29 +44,6 @@ export default async function elementReady(selector, {
 	}
 }
 
-async function * consumeAsyncIteratorWithAbortSignal(iterator, signal) {
-	const aborted = Symbol('aborted');
-
-	const abortPromise = new Promise(resolve => {
-		if (signal) {
-			signal.addEventListener('abort', () => {
-				iterator.return(); // Stop iterator from producing values after the next one
-				resolve(aborted);
-			});
-		}
-	});
-
-	while (true) {
-		const next = await Promise.race([iterator.next(), abortPromise]); // eslint-disable-line no-await-in-loop
-
-		if (next === aborted || next.done) {
-			return;
-		}
-
-		yield next.value;
-	}
-}
-
 export function observeReadyElements(selector, {
 	target = document,
 	stopOnDomReady = true,
@@ -80,8 +57,6 @@ export function observeReadyElements(selector, {
 				return;
 			}
 
-			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
-
 			if (stopOnDomReady) {
 				const controller = new AbortController();
 
@@ -92,27 +67,35 @@ export function observeReadyElements(selector, {
 				signal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
 			}
 
-			for await (const {addedNodes} of consumeAsyncIteratorWithAbortSignal(iterator, signal)) {
-				for (const element of addedNodes) {
-					if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
-						continue;
-					}
+			const iterator = domMutations(target, {signal, childList: true, subtree: true})[Symbol.asyncIterator]();
 
-					// When it's ready, only stop if requested or found
-					if (isDomReady(target) && element) {
-						yield element;
-						continue;
-					}
-
-					let current = element;
-					while (current) {
-						if (!waitForChildren || current.nextSibling) {
-							yield element;
-							break;
+			try {
+				for await (const {addedNodes} of iterator) {
+					for (const element of addedNodes) {
+						if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
+							continue;
 						}
 
-						current = current.parentElement;
+						// When it's ready, only stop if requested or found
+						if (isDomReady(target) && element) {
+							yield element;
+							continue;
+						}
+
+						let current = element;
+						while (current) {
+							if (!waitForChildren || current.nextSibling) {
+								yield element;
+								break;
+							}
+
+							current = current.parentElement;
+						}
 					}
+				}
+			} catch (error) {
+				if (!signal.aborted) {
+					throw error;
 				}
 			}
 		},
