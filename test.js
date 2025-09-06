@@ -335,14 +335,15 @@ test('subscribe to newly added elements that match a predicate', async t => {
 });
 
 test('ensure nothing is returned if subscribing to newly added elements but dom is ready', async t => {
+	const id = composeElementId();
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.id = 'unicorn99';
+		element.id = id;
 		document.body.append(element);
 	})();
 
-	const readyElements = observeReadyElements('#unicorn99', {stopOnDomReady: true});
+	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: true});
 
 	let readyElementsCount = 0;
 
