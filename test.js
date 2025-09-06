@@ -315,3 +315,30 @@ test('subscribe to newly added elements that match a predicate', async t => {
 		}
 	}
 });
+
+test('subscribe to newly added elements that match one of multiple selectors', async t => {
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = 'unicorn';
+		document.body.append(element);
+		await delay(500);
+		const element2 = document.createElement('div');
+		element2.id = 'dragon';
+		document.body.append(element2);
+	})();
+
+	const readyElements = observeReadyElements(['#unicorn', '#dragon'], {stopOnDomReady: false})
+
+	const readyElementIds = [];
+
+	for await (const element of readyElements) {
+		readyElementIds.push(element.id);
+
+		if (readyElementIds.length === 2) {
+			break;
+		}
+	}
+
+	t.deepEqual(readyElementIds, ['unicorn', 'dragon'], 'should catch elements matching either selector')
+})

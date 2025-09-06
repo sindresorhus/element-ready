@@ -97,8 +97,12 @@ export default function elementReady<Selector extends string, ElementName extend
 	selector: Selector,
 	options?: Options
 ): Promise<ElementName | undefined>;
+export default function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector[],
+	options?: Options
+): Promise<ElementName | undefined>;
 export default function elementReady<ElementName extends Element = HTMLElement>(
-	selector: string,
+	selector: string | string[],
 	options?: Options
 ): Promise<ElementName | undefined>;
 
@@ -128,7 +132,11 @@ export function observeReadyElements<Selector extends string, ElementName extend
 	selector: Selector,
 	options?: Options
 ): AsyncIterable<ElementName>;
+export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector[],
+	options?: Options
+): AsyncIterable<ElementName>;
 export function observeReadyElements<ElementName extends Element = HTMLElement>(
-	selector: string,
+	selector: string | string[],
 	options?: Options
 ): AsyncIterable<ElementName>;
