@@ -33,7 +33,7 @@ test('check if element ready', async t => {
 test('check elements against a predicate', async t => {
 	const id = composeElementId();
 
-	const elementCheck = elementReady(`#${id}}`, {
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: false,
 		predicate: element => element.textContent && element.textContent.match(/wanted/i),
 	});
@@ -243,12 +243,12 @@ test('ensure that the whole element has loaded', async t => {
 	});
 
 	const navigationElement = document.querySelector(`#${id}}`);
-	const partialCheck = elementReady(`#${id}}`, {
+	const partialCheck = elementReady(`#${id}`, {
 		target: document,
 		waitForChildren: false,
 	});
 
-	const entireCheck = elementReady(`#${id}}`, {
+	const entireCheck = elementReady(`#${id}`, {
 		target: document,
 		waitForChildren: true,
 	});
