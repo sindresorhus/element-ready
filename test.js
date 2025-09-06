@@ -242,7 +242,7 @@ test('ensure that the whole element has loaded', async t => {
 		get: () => 'loading',
 	});
 
-	const navigationElement = document.querySelector(`#${id}}`);
+	const navigationElement = document.querySelector(`#${id}`);
 	const partialCheck = elementReady(`#${id}`, {
 		target: document,
 		waitForChildren: false,
@@ -315,19 +315,19 @@ test('subscribe to newly added elements that match a predicate', async t => {
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
-		element.className = 'unicorn';
+		element.className = class_;
 		element.textContent = 'unicorn';
 		document.body.append(element);
 
 		const element2 = document.createElement('p');
-		element.className = 'unicorn';
+		element2.className = class_;
 		element2.textContent = 'horse';
 		document.body.append(element2);
 
 		await delay(500);
 
 		const element3 = document.createElement('p');
-		element.className = 'unicorn';
+		element3.className = class_;
 		element3.textContent = 'penguin';
 		document.body.append(element3);
 	})();
