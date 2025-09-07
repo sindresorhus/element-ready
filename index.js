@@ -57,45 +57,41 @@ export function observeReadyElements(selector, {
 				return;
 			}
 
+			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
+
 			if (stopOnDomReady) {
-				const controller = new AbortController();
-
 				target.addEventListener('DOMContentLoaded', () => {
-					controller.abort();
+					iterator.return();
 				}, {once: true});
-
-				signal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
 			}
 
-			const iterator = domMutations(target, {signal, childList: true, subtree: true})[Symbol.asyncIterator]();
+			if (signal) {
+				signal.addEventListener('abort', () => {
+					iterator.return();
+				}, {once: true});
+			}
 
-			try {
-				for await (const {addedNodes} of iterator) {
-					for (const element of addedNodes) {
-						if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
-							continue;
-						}
-
-						// When it's ready, only stop if requested or found
-						if (isDomReady(target) && element) {
-							yield element;
-							continue;
-						}
-
-						let current = element;
-						while (current) {
-							if (!waitForChildren || current.nextSibling) {
-								yield element;
-								break;
-							}
-
-							current = current.parentElement;
-						}
+			for await (const {addedNodes} of iterator) {
+				for (const element of addedNodes) {
+					if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
+						continue;
 					}
-				}
-			} catch (error) {
-				if (error.name === 'AbortError' && !signal.aborted) {
-					throw error;
+
+					// When it's ready, only stop if requested or found
+					if (isDomReady(target) && element) {
+						yield element;
+						continue;
+					}
+
+					let current = element;
+					while (current) {
+						if (!waitForChildren || current.nextSibling) {
+							yield element;
+							break;
+						}
+
+						current = current.parentElement;
+					}
 				}
 			}
 		},
