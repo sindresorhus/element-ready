@@ -215,6 +215,7 @@ test('ensure different promises are returned on second call with the same select
 
 test('ensure different promises are returned on second call with the same selector when first was found', async t => {
 	const class_ = composeElementId();
+
 	const prependElement = () => {
 		const element = document.createElement('p');
 		element.className = class_;
