@@ -31,7 +31,9 @@ test('check if element ready', async t => {
 });
 
 test('check elements against a predicate', async t => {
-	const elementCheck = elementReady('li', {
+	const id = composeElementId();
+
+	const elementCheck = elementReady(`#${id}`, {
 		stopOnDomReady: false,
 		predicate: element => element.textContent && element.textContent.match(/wanted/i),
 	});
@@ -41,6 +43,7 @@ test('check elements against a predicate', async t => {
 		const listElement = document.createElement('ul');
 		for (const text of ['some text', 'wanted text']) {
 			const li = document.createElement('li');
+			li.id = id;
 			li.textContent = text;
 			listElement.append(li);
 		}
@@ -72,15 +75,17 @@ test('check if element ready inside target', async t => {
 });
 
 test('check if different elements ready inside different targets with same selector', async t => {
+	const class_ = composeElementId();
+
 	const target1 = document.createElement('p');
 	const id1 = composeElementId();
-	const elementCheck1 = elementReady('.unicorn', {
+	const elementCheck1 = elementReady(`.${class_}`, {
 		target: target1,
 		stopOnDomReady: false,
 	});
 	const target2 = document.createElement('span');
 	const id2 = composeElementId();
-	const elementCheck2 = elementReady('.unicorn', {
+	const elementCheck2 = elementReady(`.${class_}`, {
 		target: target2,
 		stopOnDomReady: false,
 	});
@@ -89,12 +94,12 @@ test('check if different elements ready inside different targets with same selec
 		await delay(500);
 		const element1 = document.createElement('p');
 		element1.id = id1;
-		element1.className = 'unicorn';
+		element1.className = class_;
 		target1.append(element1);
 
 		const element2 = document.createElement('span');
 		element2.id = id2;
-		element2.className = 'unicorn';
+		element2.className = class_;
 		target2.append(element2);
 	})();
 
@@ -208,24 +213,28 @@ test('ensure different promises are returned on second call with the same select
 });
 
 test('ensure different promises are returned on second call with the same selector when first was found', async t => {
+	const class_ = composeElementId();
+
 	const prependElement = () => {
 		const element = document.createElement('p');
-		element.className = 'unicorn';
+		element.className = class_;
 		document.body.prepend(element);
 		return element;
 	};
 
-	t.is(prependElement(), await elementReady('.unicorn'));
+	t.is(prependElement(), await elementReady(`.${class_}`));
 
-	document.querySelector('.unicorn').remove();
-	t.is(prependElement(), await elementReady('.unicorn'));
+	document.querySelector(`.${class_}`).remove();
+	t.is(prependElement(), await elementReady(`.${class_}`));
 
-	document.querySelector('.unicorn').remove();
-	t.is(prependElement(), await elementReady('.unicorn'));
+	document.querySelector(`.${class_}`).remove();
+	t.is(prependElement(), await elementReady(`.${class_}`));
 });
 
 test('ensure that the whole element has loaded', async t => {
-	const {window} = new JSDOM('<nav class="loading-html-fixture">');
+	const id = composeElementId();
+
+	const {window} = new JSDOM(`<nav id="${id}">`);
 	const {document} = window;
 
 	// Fake the pre-DOM-ready state
@@ -233,13 +242,13 @@ test('ensure that the whole element has loaded', async t => {
 		get: () => 'loading',
 	});
 
-	const navigationElement = document.querySelector('nav');
-	const partialCheck = elementReady('nav', {
+	const navigationElement = document.querySelector(`#${id}`);
+	const partialCheck = elementReady(`#${id}`, {
 		target: document,
 		waitForChildren: false,
 	});
 
-	const entireCheck = elementReady('nav', {
+	const entireCheck = elementReady(`#${id}`, {
 		target: document,
 		waitForChildren: true,
 	});
@@ -301,24 +310,29 @@ test('subscribe to newly added elements that match a selector', async t => {
 });
 
 test('subscribe to newly added elements that match a predicate', async t => {
+	const class_ = composeElementId();
+
 	(async () => {
 		await delay(500);
 		const element = document.createElement('p');
+		element.className = class_;
 		element.textContent = 'unicorn';
 		document.body.append(element);
 
 		const element2 = document.createElement('p');
+		element2.className = class_;
 		element2.textContent = 'horse';
 		document.body.append(element2);
 
 		await delay(500);
 
 		const element3 = document.createElement('p');
+		element3.className = class_;
 		element3.textContent = 'penguin';
 		document.body.append(element3);
 	})();
 
-	const readyElements = observeReadyElements('p', {
+	const readyElements = observeReadyElements(`.${class_}`, {
 		stopOnDomReady: false,
 		predicate: element => element.textContent && element.textContent.match(/penguin|unicorn/),
 	});
@@ -332,4 +346,24 @@ test('subscribe to newly added elements that match a predicate', async t => {
 			break;
 		}
 	}
+});
+
+test('ensure nothing is returned if subscribing to newly added elements but dom is ready', async t => {
+	const id = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = id;
+		document.body.append(element);
+	})();
+
+	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: true});
+
+	let readyElementsCount = 0;
+
+	for await (const _ of readyElements) {
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 0);
 });
