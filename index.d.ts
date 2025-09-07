@@ -129,6 +129,6 @@ export function observeReadyElements<Selector extends string, ElementName extend
 	options?: Options
 ): AsyncIterable<ElementName>;
 export function observeReadyElements<ElementName extends Element = HTMLElement>(
-	selector: string | string[],
+	selector: string | readonly string[],
 	options?: Options
 ): AsyncIterable<ElementName>;
