@@ -44,7 +44,7 @@ for await (const element of observeReadyElements('#unicorn')) {
 
 #### selector
 
-Type: `string`
+Type: `string | string[]`
 
 [CSS selector.](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors)
 

@@ -201,12 +201,13 @@ test('check if wait can be stopped', async t => {
 
 test('ensure different promises are returned on second call with the same selector when first was stopped', async t => {
 	const controller = new AbortController();
+	const class_ = composeElementId();
 
-	const elementCheck1 = elementReady('.unicorn', {stopOnDomReady: false, signal: controller.signal});
+	const elementCheck1 = elementReady(`.${class_}`, {stopOnDomReady: false, signal: controller.signal});
 
 	controller.abort();
 
-	const elementCheck2 = elementReady('.unicorn', {stopOnDomReady: false});
+	const elementCheck2 = elementReady(`.${class_}`, {stopOnDomReady: false});
 
 	t.not(elementCheck1, elementCheck2);
 	t.is(await elementCheck1, undefined);
@@ -265,6 +266,20 @@ test('ensure that the whole element has loaded', async t => {
 
 	navigationElement.after('Some other part of the page, even a text node');
 	t.is(await entireCheck, await partialCheck, 'Something appears after <nav>, so it’s guaranteed that it loaded in full');
+});
+
+test('check if elements from multiple selectors are ready', async t => {
+	const id1 = composeElementId();
+	const id2 = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = id1;
+		document.body.append(element);
+	})();
+
+	const unicorn = await elementReady([`#${id1}`, `#${id2}`], {stopOnDomReady: false});
+	t.is(unicorn.id, id1, 'should catch the unicorn');
 });
 
 test('subscribe to newly added elements that match a selector', async t => {
@@ -346,6 +361,35 @@ test('subscribe to newly added elements that match a predicate', async t => {
 			break;
 		}
 	}
+});
+
+test('subscribe to newly added elements that match one of multiple selectors', async t => {
+	const id1 = composeElementId();
+	const id2 = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = id1;
+		document.body.append(element);
+		await delay(500);
+		const element2 = document.createElement('div');
+		element2.id = id2;
+		document.body.append(element2);
+	})();
+
+	const readyElements = observeReadyElements([`#${id1}`, `#${id2}`], {stopOnDomReady: false});
+
+	const readyElementIds = [];
+
+	for await (const element of readyElements) {
+		readyElementIds.push(element.id);
+
+		if (readyElementIds.length === 2) {
+			break;
+		}
+	}
+
+	t.deepEqual(readyElementIds, [id1, id2], 'should catch elements matching either selector');
 });
 
 test('ensure nothing is returned if subscribing to newly added elements but dom is ready', async t => {

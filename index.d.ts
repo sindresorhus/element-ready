@@ -94,11 +94,11 @@ console.log(element.id);
 ```
 */
 export default function elementReady<Selector extends string, Selected extends Element = ParseSelector<Selector, HTMLElement>>(
-	selector: Selector,
+	selector: Selector | readonly Selector[],
 	options?: Options
 ): Promise<Selected | undefined>;
 export default function elementReady<Selected extends Element = HTMLElement>(
-	selector: string,
+	selector: string | readonly string[],
 	options?: Options
 ): Promise<Selected | undefined>;
 
@@ -125,10 +125,10 @@ for await (const element of observeReadyElements('#unicorn')) {
 ```
 */
 export function observeReadyElements<Selector extends string, Selected extends Element = ParseSelector<Selector, HTMLElement>>(
-	selector: Selector,
+	selector: Selector | readonly Selector[],
 	options?: Options
 ): AsyncIterable<Selected>;
 export function observeReadyElements<Selected extends Element = HTMLElement>(
-	selector: string,
+	selector: string | readonly string[],
 	options?: Options
 ): AsyncIterable<Selected>;
