@@ -25,3 +25,5 @@ expectType<Promise<HTMLButtonElement | undefined>>(elementReady(':root > button'
 const readyElements = observeReadyElements('#unicorn');
 
 expectType<AsyncIterable<HTMLElement>>(readyElements);
+
+expectType<Promise<HTMLDivElement | HTMLParagraphElement | undefined>>(elementReady(['div', 'p']));
