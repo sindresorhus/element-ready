@@ -76,6 +76,7 @@ test('check if element ready inside target', async t => {
 
 test('check if different elements ready inside different targets with same selector', async t => {
 	const class_ = composeElementId();
+
 	const target1 = document.createElement('p');
 	const id1 = composeElementId();
 	const elementCheck1 = elementReady(`.${class_}`, {
