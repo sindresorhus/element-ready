@@ -374,7 +374,7 @@ test('timeout when subscribed elements are never added (timeout)', async t => {
 		readyElementsCount++;
 	}
 
-  t.is(readyElementsCount, 0, 'Should not have found any elements');
+	t.is(readyElementsCount, 0, 'Should not have found any elements');
 });
 
 test('subscribe to newly added elements that match one of multiple selectors', async t => {
