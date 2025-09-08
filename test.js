@@ -7,6 +7,7 @@ import elementReady, {observeReadyElements} from './index.js';
 const {window} = new JSDOM();
 globalThis.window = window;
 globalThis.document = window.document;
+globalThis.Node = window.Node;
 globalThis.MutationObserver = window.MutationObserver;
 
 let index = 0;

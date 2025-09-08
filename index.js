@@ -73,7 +73,7 @@ export function observeReadyElements(selector, {
 
 			for await (const {addedNodes} of iterator) {
 				for (const element of addedNodes) {
-					if (element.nodeType !== 1 || !element.matches(selector) || (predicate && !predicate(element))) {
+					if (element.nodeType !== Node.ELEMENT_NODE || !element.matches(selector) || (predicate && !predicate(element))) {
 						continue;
 					}
 
