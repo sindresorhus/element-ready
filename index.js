@@ -57,7 +57,11 @@ export function observeReadyElements(selector, {
 				return;
 			}
 
-			const iterator = domMutations(target, {childList: true, subtree: true})[Symbol.asyncIterator]();
+			const iterator = domMutations(target, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+			})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
 				target.addEventListener('DOMContentLoaded', () => {
@@ -71,7 +75,9 @@ export function observeReadyElements(selector, {
 				}, {once: true});
 			}
 
-			for await (const {addedNodes} of iterator) {
+			for await (const mutation of iterator) {
+				const addedNodes = mutation.type === 'childList' ? mutation.addedNodes : [mutation.target];
+
 				for (const element of addedNodes) {
 					if (element.nodeType !== Node.ELEMENT_NODE || !element.matches(selector) || (predicate && !predicate(element))) {
 						continue;
