@@ -436,7 +436,7 @@ test('subscribe to elements that eventually match a selector', async t => {
 		element.id = id;
 	})();
 
-	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -462,7 +462,7 @@ test('subscribe to element that eventually matches a complex selector: has', asy
 		element.append(child);
 	})();
 
-	const readyElements = observeReadyElements(`#${parentId}:has(#${childId})`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${parentId}:has(#${childId})`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -491,7 +491,7 @@ test('subscribe to element that eventually matches a complex selector: not has, 
 		child.remove();
 	})();
 
-	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -519,7 +519,7 @@ test('subscribe to element that eventually matches a complex selcetor: not has, 
 		child.remove();
 	})();
 
-	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -545,7 +545,7 @@ test('subscribe to element that eventually matches a complex selcetor: +', async
 		element.after(sibling);
 	})();
 
-	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -571,7 +571,7 @@ test('subscribe to element that eventually matches a complex selcetor: +, first 
 		sibling.before(element);
 	})();
 
-	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -597,7 +597,7 @@ test('subscribe to elements that eventually match a complex selector: ~', async 
 		element.after(sibling);
 	})();
 
-	const readyElements = observeReadyElements(`#${firstId} ~ #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)}); 2Code has alerts. Press enter to view.
+	const readyElements = observeReadyElements(`#${firstId} ~ #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2_000)});
 
 	let readyElementsCount = 0;
 
@@ -625,7 +625,7 @@ test('subscribe to elements that eventually match a predicate', async t => {
 	const readyElements = observeReadyElements(id, {
 		stopOnDomReady: false,
 		predicate: element => element.textContent && element.textContent.match(/penguin/),
-		signal: AbortSignal.timeout(2_000), 2Code has alerts. Press enter to view.
+		signal: AbortSignal.timeout(2_000),
 	});
 
 	let readyElementsCount = 0;
