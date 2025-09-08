@@ -6,7 +6,7 @@ export type Options = {
 
 	@default document
 	*/
-	readonly target?: HTMLElement | Document;
+	readonly target?: ParentNode;
 
 	/**
 	`AbortSignal` for stopping the search and resolving the promise to `undefined`.
@@ -93,14 +93,14 @@ console.log(element.id);
 //=> 'unicorn'
 ```
 */
-export default function elementReady<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
-	selector: Selector,
+export default function elementReady<Selector extends string, Selected extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector | readonly Selector[],
 	options?: Options
-): Promise<ElementName | undefined>;
-export default function elementReady<ElementName extends Element = HTMLElement>(
-	selector: string,
+): Promise<Selected | undefined>;
+export default function elementReady<Selected extends Element = HTMLElement>(
+	selector: string | readonly string[],
 	options?: Options
-): Promise<ElementName | undefined>;
+): Promise<Selected | undefined>;
 
 /**
 Detect when elements are ready in the DOM.
@@ -124,11 +124,11 @@ for await (const element of observeReadyElements('#unicorn')) {
 }
 ```
 */
-export function observeReadyElements<Selector extends string, ElementName extends Element = ParseSelector<Selector, HTMLElement>>(
-	selector: Selector,
+export function observeReadyElements<Selector extends string, Selected extends Element = ParseSelector<Selector, HTMLElement>>(
+	selector: Selector | readonly Selector[],
 	options?: Options
-): AsyncIterable<ElementName>;
-export function observeReadyElements<ElementName extends Element = HTMLElement>(
-	selector: string,
+): AsyncIterable<Selected>;
+export function observeReadyElements<Selected extends Element = HTMLElement>(
+	selector: string | readonly string[],
 	options?: Options
-): AsyncIterable<ElementName>;
+): AsyncIterable<Selected>;

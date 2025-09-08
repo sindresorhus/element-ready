@@ -53,7 +53,7 @@ export function observeReadyElements(selector, {
 } = {}) {
 	return {
 		async * [Symbol.asyncIterator]() {
-			if (signal?.aborted) {
+			if (signal?.aborted || (stopOnDomReady && isDomReady(target))) {
 				return;
 			}
 
@@ -64,10 +64,6 @@ export function observeReadyElements(selector, {
 			})[Symbol.asyncIterator]();
 
 			if (stopOnDomReady) {
-				if (isDomReady(target)) {
-					return;
-				}
-
 				target.addEventListener('DOMContentLoaded', () => {
 					iterator.return();
 				}, {once: true});
