@@ -637,3 +637,32 @@ test.failing('subscribe to elements that eventually match a predicate', async t 
 
 	t.is(readyElementsCount, 1, 'Should have found exactly one element');
 });
+
+test.failing('subscribe to elements with eventually matching character data', async t => {
+	const id = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = id;
+		element.textContent = 'unicorn';
+		document.body.append(element);
+
+		await delay(1000);
+		element.textContent = 'penguin';
+	})();
+
+	const readyElements = observeReadyElements(`#${id}`, {
+		stopOnDomReady: false,
+		predicate: element => element.textContent && element.textContent.match(/penguin/),
+		signal: AbortSignal.timeout(2000),
+	});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.textContent, 'penguin');
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
