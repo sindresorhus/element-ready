@@ -363,6 +363,20 @@ test('subscribe to newly added elements that match a predicate', async t => {
 	}
 });
 
+test('timeout when subscribed elements are never added', async t => {
+	const id = composeElementId();
+
+	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const _ of readyElements) {
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 0, 'Should not have found any elements');
+});
+
 test('subscribe to newly added elements that match one of multiple selectors', async t => {
 	const id1 = composeElementId();
 	const id2 = composeElementId();
@@ -409,5 +423,5 @@ test('ensure nothing is returned if subscribing to newly added elements but dom 
 		readyElementsCount++;
 	}
 
-	t.is(readyElementsCount, 0);
+	t.is(readyElementsCount, 0, 'Should not have found any elements');
 });

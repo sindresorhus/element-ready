@@ -41,7 +41,7 @@
 		"domready"
 	],
 	"dependencies": {
-		"dom-mutations": "^1.0.0",
+		"dom-mutations": "^1.0.2",
 		"request-animation-frames": "^1.0.0",
 		"typed-query-selector": "^2.12.0"
 	},
