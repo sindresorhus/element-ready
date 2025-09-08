@@ -531,7 +531,7 @@ test.failing('subscribe to element that eventually matches a complex selcetor: n
 	t.is(readyElementsCount, 1, 'Should have match the element once');
 });
 
-test.failing('subscribe to element that eventually matches a complex selcetor: +', async t => {
+test('subscribe to element that eventually matches a complex selcetor: +', async t => {
 	const firstId = composeElementId();
 	const secondId = composeElementId();
 	(async () => {
@@ -583,7 +583,7 @@ test.failing('subscribe to element that eventually matches a complex selcetor: +
 	t.is(readyElementsCount, 1, 'Should have found exactly one element');
 });
 
-test.failing('subscribe to elements that eventually match a complex selector: ~', async t => {
+test('subscribe to elements that eventually match a complex selector: ~', async t => {
 	const firstId = composeElementId();
 	const secondId = composeElementId();
 	(async () => {
