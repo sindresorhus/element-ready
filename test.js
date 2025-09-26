@@ -426,3 +426,244 @@ test('ensure nothing is returned if subscribing to newly added elements but dom 
 
 	t.is(readyElementsCount, 0, 'Should not have found any elements');
 });
+
+test('subscribe to elements that eventually match a selector', async t => {
+	const id = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		document.body.append(element);
+		await delay(1000);
+		element.id = id;
+	})();
+
+	const readyElements = observeReadyElements(`#${id}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.id, id);
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test.failing('subscribe to element that eventually matches a complex selector: has', async t => {
+	const parentId = composeElementId();
+	const childId = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('div');
+		element.id = parentId;
+		document.body.append(element);
+		await delay(500);
+		const child = document.createElement('p');
+		child.id = childId;
+		element.append(child);
+	})();
+
+	const readyElements = observeReadyElements(`#${parentId}:has(#${childId})`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.id, childId);
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test.failing('subscribe to element that eventually matches a complex selector: not has, valid-invalid-valid', async t => {
+	const parentId = composeElementId();
+	const childId = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('div');
+		element.id = parentId;
+		document.body.append(element);
+		await delay(500);
+		const child = document.createElement('p');
+		child.id = childId;
+		child.textContent = 'horse';
+		element.append(child);
+		await delay(500);
+		child.remove();
+	})();
+
+	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.textContent, 'horse');
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 2, 'Should have matched the element twice');
+});
+
+test.failing('subscribe to element that eventually matches a complex selcetor: not has, invalid-valid', async t => {
+	const parentId = composeElementId();
+	const childId = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('div');
+		element.id = parentId;
+		const child = document.createElement('p');
+		child.id = childId;
+		child.textContent = 'horse';
+		element.append(child);
+		document.body.append(element);
+		await delay(500);
+		child.remove();
+	})();
+
+	const readyElements = observeReadyElements(`#${parentId}:not(:has(#${childId}))`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.textContent, 'horse');
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have match the element once');
+});
+
+test('subscribe to element that eventually matches a complex selcetor: +', async t => {
+	const firstId = composeElementId();
+	const secondId = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('div');
+		element.id = firstId;
+		document.body.append(element);
+		await delay(500);
+		const sibling = document.createElement('p');
+		sibling.id = secondId;
+		element.after(sibling);
+	})();
+
+	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.id, secondId);
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test.failing('subscribe to element that eventually matches a complex selcetor: +, first added second', async t => {
+	const firstId = composeElementId();
+	const secondId = composeElementId();
+	(async () => {
+		await delay(500);
+		const sibling = document.createElement('p');
+		sibling.id = secondId;
+		document.body.append(sibling);
+		await delay(500);
+		const element = document.createElement('div');
+		element.id = firstId;
+		sibling.before(element);
+	})();
+
+	const readyElements = observeReadyElements(`#${firstId} + #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.id, secondId);
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test('subscribe to elements that eventually match a complex selector: ~', async t => {
+	const firstId = composeElementId();
+	const secondId = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('div');
+		element.id = firstId;
+		document.body.append(element);
+		await delay(500);
+		const sibling = document.createElement('p');
+		sibling.id = secondId;
+		element.after(sibling);
+	})();
+
+	const readyElements = observeReadyElements(`#${firstId} ~ #${secondId}`, {stopOnDomReady: false, signal: AbortSignal.timeout(2000)});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.id, secondId);
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test.failing('subscribe to elements that eventually match a predicate', async t => {
+	const id = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = id;
+		element.textContent = 'unicorn';
+		document.body.append(element);
+
+		await delay(1000);
+		element.textContent = 'penguin';
+	})();
+
+	const readyElements = observeReadyElements(id, {
+		stopOnDomReady: false,
+		predicate: element => element.textContent && element.textContent.match(/penguin/),
+		signal: AbortSignal.timeout(2000),
+	});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.textContent, 'penguin');
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test.failing('subscribe to elements with eventually matching character data', async t => {
+	const id = composeElementId();
+	(async () => {
+		await delay(500);
+		const element = document.createElement('p');
+		element.id = id;
+		element.textContent = 'unicorn';
+		document.body.append(element);
+
+		await delay(1000);
+		element.textContent = 'penguin';
+	})();
+
+	const readyElements = observeReadyElements(`#${id}`, {
+		stopOnDomReady: false,
+		predicate: element => element.textContent && element.textContent.match(/penguin/),
+		signal: AbortSignal.timeout(2000),
+	});
+
+	let readyElementsCount = 0;
+
+	for await (const element of readyElements) {
+		t.is(element.textContent, 'penguin');
+		readyElementsCount++;
+	}
+
+	t.is(readyElementsCount, 1, 'Should have found exactly one element');
+});
