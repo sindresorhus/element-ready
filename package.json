@@ -20,7 +20,7 @@
 		"node": ">=20"
 	},
 	"scripts": {
-		"test": "xo && ava && tsd"
+		"test": "xo && node --test test.js && tsd"
 	},
 	"files": [
 		"index.js",
