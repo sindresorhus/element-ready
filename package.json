@@ -46,10 +46,10 @@
 		"typed-query-selector": "^2.12.0"
 	},
 	"devDependencies": {
-		"ava": "^5.3.1",
-		"jsdom": "^26.1.0",
-		"p-state": "^2.0.1",
-		"tsd": "^0.32.0",
+		"ava": "^6.4.1",
+		"jsdom": "^27.0.0",
+		"p-state": "^3.0.0",
+		"tsd": "^0.33.0",
 		"xo": "^0.60.0"
 	},
 	"xo": {
