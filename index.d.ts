@@ -29,7 +29,7 @@ export type Options = {
 	const element = await elementReady('.unicorn', {signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5_000)])});
 	```
 	*/
-	readonly signal?: AbortSignal;
+	readonly signal?: AbortSignal | undefined;
 
 	/**
 	Automatically stop checking for the element to be ready after the DOM ready event. The promise is then resolved to `undefined`.
