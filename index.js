@@ -33,13 +33,9 @@ export default async function elementReady(selector, {
 			return element;
 		}
 
-		let current = element;
-		while (current) {
-			if (!waitForChildren || current.nextSibling) {
-				return element;
-			}
-
-			current = current.parentElement;
+		// Only check the element's own nextSibling, not ancestors, to avoid false positives
+		if (element && (!waitForChildren || element.nextSibling)) {
+			return element;
 		}
 	}
 }
@@ -89,14 +85,9 @@ export function observeReadyElements(selector, {
 						continue;
 					}
 
-					let current = element;
-					while (current) {
-						if (!waitForChildren || current.nextSibling) {
-							yield element;
-							break;
-						}
-
-						current = current.parentElement;
+					// Only check the element's own nextSibling, not ancestors, to avoid false positives
+					if (!waitForChildren || element.nextSibling) {
+						yield element;
 					}
 				}
 			}

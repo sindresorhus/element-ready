@@ -289,6 +289,30 @@ test('ensure that the whole element has loaded', async () => {
 	window.close();
 });
 
+test('ancestor sibling should not cause premature resolution', async () => {
+	const jsdom = new JSDOM('<div id="container"><nav id="target"></nav></div><script></script>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'loading',
+	});
+
+	const targetElement = document.querySelector('#target');
+	const entireCheck = elementReady('#target', {
+		target: document,
+		waitForChildren: true,
+	});
+
+	// Container has a nextSibling (the script), but target does not
+	// With the fix, this should NOT resolve prematurely
+	assert.equal(promiseStateSync(entireCheck), 'pending', 'Should not resolve just because an ancestor has a sibling');
+
+	targetElement.after('sibling');
+	assert.equal(await entireCheck, targetElement, 'Should resolve once target itself has a sibling');
+	window.close();
+});
+
 test('check if elements from multiple selectors are ready', async () => {
 	const id1 = composeElementId();
 	const id2 = composeElementId();
