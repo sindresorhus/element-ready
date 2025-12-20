@@ -96,7 +96,7 @@ export function observeReadyElements(selector, {
 					}
 
 					// Match the same "fully parsed" behavior as `elementReady()`.
-					if (isChildrenReady({element, target, waitForChildren})) {
+					if (!waitForChildren || isChildrenReady({element, target})) {
 						yield element;
 					}
 				}
@@ -117,13 +117,9 @@ function getMatchingElement({target, selector, predicate}) {
 	}
 }
 
-function isChildrenReady({element, target, waitForChildren}) {
-	if (!waitForChildren) {
-		return true;
-	}
-
+function isChildrenReady({element, target}) {
 	const ownerDocument = getOwnerDocument(target) ?? element.ownerDocument;
-	if (ownerDocument?.readyState !== 'loading') {
+	if (isDomReady(ownerDocument ?? element)) {
 		return true;
 	}
 
