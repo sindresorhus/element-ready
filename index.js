@@ -44,7 +44,7 @@ export default async function elementReady(selector, {
 		}
 
 		// When `waitForChildren` is enabled, resolve only once the element is guaranteed to be fully parsed.
-		if (element && isChildrenReady({element, target, waitForChildren})) {
+		if (element && (!waitForChildren || isChildrenReady({element, target}))) {
 			return element;
 		}
 	}
