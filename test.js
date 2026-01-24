@@ -289,8 +289,8 @@ test('ensure that the whole element has loaded', async () => {
 	window.close();
 });
 
-test('ancestor sibling should not cause premature resolution', async () => {
-	const jsdom = new JSDOM('<div id="container"><nav id="target"></nav></div><script></script>');
+test('deeply nested element should resolve when an ancestor has a sibling', async () => {
+	const jsdom = new JSDOM('<div id="container"><p>hello <a id="target">world</a></p></div><script></script>');
 	const {window} = jsdom;
 	const {document} = window;
 
@@ -299,17 +299,110 @@ test('ancestor sibling should not cause premature resolution', async () => {
 	});
 
 	const targetElement = document.querySelector('#target');
+	const entireCheck = elementReady('p a', {
+		target: document,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(1000),
+	});
+
+	assert.equal(await entireCheck, targetElement);
+	window.close();
+});
+
+test('element without ancestor siblings should wait for DOM ready', async () => {
+	// Simulates refined-github case: script inside react-app with no siblings
+	const jsdom = new JSDOM('<div id="app"><script id="target"></script></div>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	let readyState = 'loading';
+	Object.defineProperty(document, 'readyState', {
+		get: () => readyState,
+	});
+
+	const targetElement = document.querySelector('#target');
+	const entireCheck = elementReady('#target', {
+		target: document,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(1000),
+	});
+
+	// No ancestor has a sibling, so should stay pending
+	await delay(50);
+	assert.equal(promiseStateSync(entireCheck), 'pending');
+
+	// When DOM becomes ready, should resolve
+	readyState = 'interactive';
+	assert.equal(await entireCheck, targetElement);
+	window.close();
+});
+
+test('target sibling should not cause premature resolution', async () => {
+	const jsdom = new JSDOM('<div id="container"><nav id="target"></nav></div><script></script>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'loading',
+	});
+
+	const containerElement = document.querySelector('#container');
+	const targetElement = document.querySelector('#target');
+	const entireCheck = elementReady('#target', {
+		target: containerElement,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(1000),
+	});
+
+	assert.equal(promiseStateSync(entireCheck), 'pending');
+
+	targetElement.after('sibling');
+	assert.equal(await entireCheck, targetElement);
+	window.close();
+});
+
+test('shadow root target should resolve when DOM is ready', async () => {
+	const jsdom = new JSDOM('<div id="host"></div>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'complete',
+	});
+
+	const hostElement = document.querySelector('#host');
+	if (!hostElement.attachShadow) {
+		window.close();
+		return;
+	}
+
+	const shadowRoot = hostElement.attachShadow({mode: 'open'});
+	shadowRoot.innerHTML = '<a id="target">world</a>';
+
+	const targetElement = shadowRoot.querySelector('#target');
+	const element = await elementReady('#target', {target: shadowRoot});
+	assert.equal(element, targetElement);
+	window.close();
+});
+
+test('head sibling should not cause premature resolution', async () => {
+	const jsdom = new JSDOM('<head><script id="target"></script></head><body></body>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'loading',
+	});
+
 	const entireCheck = elementReady('#target', {
 		target: document,
 		waitForChildren: true,
 	});
 
-	// Container has a nextSibling (the script), but target does not
-	// With the fix, this should NOT resolve prematurely
-	assert.equal(promiseStateSync(entireCheck), 'pending', 'Should not resolve just because an ancestor has a sibling');
+	assert.equal(promiseStateSync(entireCheck), 'pending');
 
-	targetElement.after('sibling');
-	assert.equal(await entireCheck, targetElement, 'Should resolve once target itself has a sibling');
+	document.querySelector('#target').after('sibling');
+	assert.ok(await entireCheck);
 	window.close();
 });
 

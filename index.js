@@ -1,8 +1,18 @@
 import requestAnimationFrames from 'request-animation-frames';
 import domMutations from 'dom-mutations';
 
-const isDomReady = target =>
-	['interactive', 'complete'].includes((target.ownerDocument ?? target).readyState);
+const getOwnerDocument = target => {
+	if (target?.nodeType === Node.DOCUMENT_NODE) {
+		return target;
+	}
+
+	return target?.ownerDocument ?? target?.host?.ownerDocument;
+};
+
+const isDomReady = target => {
+	const ownerDocument = getOwnerDocument(target);
+	return ownerDocument ? ['interactive', 'complete'].includes(ownerDocument.readyState) : false;
+};
 
 export default async function elementReady(selector, {
 	target = document,
@@ -33,8 +43,8 @@ export default async function elementReady(selector, {
 			return element;
 		}
 
-		// Only check the element's own nextSibling, not ancestors, to avoid false positives
-		if (element && (!waitForChildren || element.nextSibling)) {
+		// When `waitForChildren` is enabled, resolve only once the element is guaranteed to be fully parsed.
+		if (element && (!waitForChildren || isChildrenReady({element, target}))) {
 			return element;
 		}
 	}
@@ -85,8 +95,8 @@ export function observeReadyElements(selector, {
 						continue;
 					}
 
-					// Only check the element's own nextSibling, not ancestors, to avoid false positives
-					if (!waitForChildren || element.nextSibling) {
+					// Match the same "fully parsed" behavior as `elementReady()`.
+					if (!waitForChildren || isChildrenReady({element, target})) {
 						yield element;
 					}
 				}
@@ -105,4 +115,28 @@ function getMatchingElement({target, selector, predicate}) {
 			return element;
 		}
 	}
+}
+
+function isChildrenReady({element, target}) {
+	const ownerDocument = getOwnerDocument(target) ?? element.ownerDocument;
+	if (isDomReady(ownerDocument ?? element)) {
+		return true;
+	}
+
+	// Consider the element "fully parsed" once it, or any ancestor within `target`, has a next sibling.
+	// Ignore `document.head` as it has a `nextSibling` (`body`) from the start, which is not a parsing signal.
+	let current = element;
+	while (current) {
+		if (current === target || current === ownerDocument?.head) {
+			return false;
+		}
+
+		if (current.nextSibling) {
+			return true;
+		}
+
+		current = current.parentNode;
+	}
+
+	return false;
 }
