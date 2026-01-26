@@ -337,6 +337,65 @@ test('element without ancestor siblings should wait for DOM ready', async () => 
 	window.close();
 });
 
+test('ancestor sibling added later should not cause premature resolution', async () => {
+	const jsdom = new JSDOM('<div id="app"><script id="target"></script></div>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	let readyState = 'loading';
+	Object.defineProperty(document, 'readyState', {
+		get: () => readyState,
+	});
+
+	const targetElement = document.querySelector('#target');
+	const entireCheck = elementReady('#target', {
+		target: document,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(1000),
+	});
+
+	await delay(50);
+	assert.equal(promiseStateSync(entireCheck), 'pending');
+
+	document.body.append(document.createElement('div'));
+	await delay(50);
+	assert.equal(promiseStateSync(entireCheck), 'pending');
+
+	readyState = 'interactive';
+	assert.equal(await entireCheck, targetElement);
+	window.close();
+});
+
+test('reparented element should re-evaluate ancestor siblings', async () => {
+	const jsdom = new JSDOM('<div id="app"><script id="target"></script></div>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'loading',
+	});
+
+	const targetElement = document.querySelector('#target');
+	const entireCheck = elementReady('#target', {
+		target: document,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(1000),
+	});
+
+	await delay(50);
+	assert.equal(promiseStateSync(entireCheck), 'pending');
+
+	const newParent = document.createElement('div');
+	const siblingElement = document.createElement('div');
+	const newContainer = document.createElement('div');
+	newContainer.append(newParent, siblingElement);
+	document.body.append(newContainer);
+	newParent.append(targetElement);
+
+	assert.equal(await entireCheck, targetElement);
+	window.close();
+});
+
 test('target sibling should not cause premature resolution', async () => {
 	const jsdom = new JSDOM('<div id="container"><nav id="target"></nav></div><script></script>');
 	const {window} = jsdom;
@@ -587,6 +646,40 @@ test('subscribe to elements that eventually match a selector', async () => {
 	}
 
 	assert.equal(readyElementsCount, 1, 'Should have found exactly one element');
+});
+
+test('subscribe reparented element when ancestor siblings change', async () => {
+	const id = composeElementId();
+	const readyElements = observeReadyElements(`#${id}`, {
+		stopOnDomReady: false,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(2000),
+	});
+
+	const firstContainer = document.createElement('div');
+	const targetElement = document.createElement('div');
+	targetElement.id = id;
+	firstContainer.append(targetElement);
+	document.body.append(firstContainer);
+
+	const secondContainer = document.createElement('div');
+	const newParent = document.createElement('div');
+	const siblingElement = document.createElement('div');
+	secondContainer.append(newParent, siblingElement);
+	document.body.append(secondContainer);
+
+	const iterator = readyElements[Symbol.asyncIterator]();
+	const nextElementPromise = iterator.next();
+
+	await delay(50);
+	assert.equal(promiseStateSync(nextElementPromise), 'pending');
+
+	newParent.append(targetElement);
+	targetElement.dataset.ready = 'true';
+
+	const nextResult = await nextElementPromise;
+	const resolvedElement = nextResult.value;
+	assert.equal(resolvedElement, targetElement);
 });
 
 test('subscribe to element that eventually matches a complex selector: has', {skip: 'Known to fail'}, async () => {
