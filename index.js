@@ -30,7 +30,9 @@ export default async function elementReady(selector, {
 		return getMatchingElement({target, selector, predicate});
 	}
 
-	// Interval to keep checking for it to come into the DOM
+	// Interval to keep checking for it to come into the DOM.
+	const childrenStates = waitForChildren ? new WeakMap() : undefined;
+
 	for await (const _ of requestAnimationFrames()) {
 		if (signal?.aborted) {
 			return;
@@ -43,8 +45,18 @@ export default async function elementReady(selector, {
 			return element;
 		}
 
+		if (element === undefined) {
+			continue;
+		}
+
 		// When `waitForChildren` is enabled, resolve only once the element is guaranteed to be fully parsed.
-		if (element && (!waitForChildren || isChildrenReady({element, target}))) {
+		if (!waitForChildren) {
+			return element;
+		}
+
+		const childrenState = getChildrenState(childrenStates, element, target);
+
+		if (isChildrenReady({element, target, childrenState})) {
 			return element;
 		}
 	}
@@ -62,6 +74,9 @@ export function observeReadyElements(selector, {
 			if (signal?.aborted || (stopOnDomReady && isDomReady(target))) {
 				return;
 			}
+
+			// Track per-element parsing state across mutations.
+			const childrenStates = waitForChildren ? new WeakMap() : undefined;
 
 			const iterator = domMutations(target, {
 				childList: true,
@@ -96,7 +111,14 @@ export function observeReadyElements(selector, {
 					}
 
 					// Match the same "fully parsed" behavior as `elementReady()`.
-					if (!waitForChildren || isChildrenReady({element, target})) {
+					if (!waitForChildren) {
+						yield element;
+						continue;
+					}
+
+					const childrenState = getChildrenState(childrenStates, element, target);
+
+					if (isChildrenReady({element, target, childrenState})) {
 						yield element;
 					}
 				}
@@ -117,11 +139,47 @@ function getMatchingElement({target, selector, predicate}) {
 	}
 }
 
-function isChildrenReady({element, target}) {
+function getChildrenState(childrenStates, element, target) {
+	// Cache the initial ancestor-sibling snapshot and track child changes per element.
+	const {parentNode} = element;
+	let childrenState = childrenStates.get(element);
+
+	if (!childrenState || childrenState.parentNode !== parentNode) {
+		// Reset snapshot when the element is reparented.
+		childrenState = {
+			parentNode,
+			ancestorSiblingSnapshot: getAncestorSiblingSnapshot({element, target}),
+			childNodeCount: element.childNodes.length,
+			textLength: element.textContent?.length ?? 0,
+			hasChildrenMutated: false,
+		};
+		childrenStates.set(element, childrenState);
+		return childrenState;
+	}
+
+	// Track child changes to allow later ancestor siblings to be considered valid.
+	if (!childrenState.hasChildrenMutated) {
+		const childNodeCount = element.childNodes.length;
+		const textLength = element.textContent?.length ?? 0;
+		if (childrenState.childNodeCount !== childNodeCount || childrenState.textLength !== textLength) {
+			childrenState.hasChildrenMutated = true;
+		}
+
+		childrenState.childNodeCount = childNodeCount;
+		childrenState.textLength = textLength;
+	}
+
+	return childrenState;
+}
+
+function isChildrenReady({element, target, childrenState}) {
 	const ownerDocument = getOwnerDocument(target) ?? element.ownerDocument;
 	if (isDomReady(ownerDocument ?? element)) {
 		return true;
 	}
+
+	const ancestorSiblingSnapshot = childrenState?.ancestorSiblingSnapshot;
+	const hasChildrenMutated = childrenState?.hasChildrenMutated;
 
 	// Consider the element "fully parsed" once it, or any ancestor within `target`, has a next sibling.
 	// Ignore `document.head` as it has a `nextSibling` (`body`) from the start, which is not a parsing signal.
@@ -131,7 +189,9 @@ function isChildrenReady({element, target}) {
 			return false;
 		}
 
-		if (current.nextSibling) {
+		// Only accept ancestor siblings that existed when the element first matched,
+		// unless the element's children changed or it was reparented.
+		if (current.nextSibling && (current === element || !ancestorSiblingSnapshot || ancestorSiblingSnapshot.get(current) === current.nextSibling || hasChildrenMutated)) {
 			return true;
 		}
 
@@ -139,4 +199,24 @@ function isChildrenReady({element, target}) {
 	}
 
 	return false;
+}
+
+function getAncestorSiblingSnapshot({element, target}) {
+	const ownerDocument = getOwnerDocument(target) ?? element.ownerDocument;
+	const ancestorSiblingSnapshot = new Map();
+
+	let current = element.parentNode;
+	while (current) {
+		if (current === target || current === ownerDocument?.head) {
+			break;
+		}
+
+		if (current.nextSibling) {
+			ancestorSiblingSnapshot.set(current, current.nextSibling);
+		}
+
+		current = current.parentNode;
+	}
+
+	return ancestorSiblingSnapshot;
 }
