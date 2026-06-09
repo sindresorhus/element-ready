@@ -406,6 +406,40 @@ test('head sibling should not cause premature resolution', async () => {
 	window.close();
 });
 
+test('does not re-query the DOM once the element is found while waiting for children', async () => {
+	// The element exists from the start but has no ancestor sibling, so while the document
+	// is still loading it stays pending waiting for children. Once found, the polling loop
+	// must not keep calling `querySelector` on every frame.
+	const jsdom = new JSDOM('<div id="app"><nav id="target"></nav></div>');
+	const {window} = jsdom;
+	const {document} = window;
+
+	Object.defineProperty(document, 'readyState', {
+		get: () => 'loading',
+	});
+
+	const originalQuerySelector = document.querySelector.bind(document);
+	let queryCount = 0;
+	document.querySelector = (...arguments_) => {
+		queryCount++;
+		return originalQuerySelector(...arguments_);
+	};
+
+	const entireCheck = elementReady('#target', {
+		target: document,
+		waitForChildren: true,
+		signal: AbortSignal.timeout(200),
+	});
+
+	await delay(150);
+
+	assert.equal(promiseStateSync(entireCheck), 'pending');
+	assert.equal(queryCount, 1);
+
+	await entireCheck;
+	window.close();
+});
+
 test('check if elements from multiple selectors are ready', async () => {
 	const id1 = composeElementId();
 	const id2 = composeElementId();

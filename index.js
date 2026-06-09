@@ -31,12 +31,14 @@ export default async function elementReady(selector, {
 	}
 
 	// Interval to keep checking for it to come into the DOM
+	let element;
 	for await (const _ of requestAnimationFrames()) {
 		if (signal?.aborted) {
 			return;
 		}
 
-		const element = getMatchingElement({target, selector, predicate});
+		// Only query until we first match; then just wait for it to be ready
+		element ??= getMatchingElement({target, selector, predicate});
 
 		// When it's ready, only stop if requested or found
 		if (isDomReady(target) && (stopOnDomReady || element)) {
