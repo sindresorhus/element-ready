@@ -99,6 +99,8 @@ By default, `element-ready` guarantees the element and all of its children have 
 
 By setting this to `false`, `element-ready` will resolve the promise as soon as it finds the requested selector, regardless of its content. This is ok if you're just checking if the element exists or if you want to read/change its attributes.
 
+This option only has an effect while the document is still loading. After DOM ready, children are already fully parsed.
+
 ##### predicate
 
 Type: `(element: HTMLElement) => boolean`\
